@@ -2,7 +2,7 @@
 This class is designed for up to 25 people (with 25 computers). It will cover 6x 90min class. More details to follow... 
 
 # What should we do
-## Brainstor more on the content of individual classes
+## Brainstorm more on the content of individual classes
  *GOAL: Structure of the class to be set up by the end of November*
 ### Content:
 ... to be provided ...
