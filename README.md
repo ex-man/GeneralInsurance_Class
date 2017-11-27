@@ -8,4 +8,8 @@ This repository forms a backbone to the class we teach at Universities. It is re
   4) Change is part of life (improving model results) => Already done (PETO)
   5) Other models (cross sell, retention, ...) ??? (TO BE CONFIRMED)
   
-  
+# Pre-requisites for the class
+Computers must have installed the following software
+  1) Git for windows (or alternative operating system)
+  2) R (version 3.1 or higher)
+  3) Ability to install R packages (shiny, ...)
