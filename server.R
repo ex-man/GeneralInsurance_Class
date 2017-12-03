@@ -1,21 +1,16 @@
-### Other R sources ###
-# Tab Content
-
-# tab_lesson1_server<-
-#   source(file.path("Lessons", "Lesson1", "shiny_tab1_server.R"),
-#          local = TRUE)$value
-
-tab_lesson2_server <-
-  source(file.path("Lessons", "Lesson2", "shiny_tab2_server.R"),
-         local = TRUE)$value
+### Libraries ###
+library(dplyr)
+library(magrittr)
 
 #### MAIN ####
 server <- function(input, output, session){
   
   #### Lesson 1 ####
-  #tab_lesson1_server
+  #   source(file.path("Lessons", "Lesson1", "shiny_tab1_server.R"),
+  #          local = TRUE)$value
   
   #### Lesson 2 ####
-  tab_lesson2_server
+  source(file.path("Lessons", "Lesson2", "shiny_tab2_server.R"),
+         local = TRUE)$value
   
 }
