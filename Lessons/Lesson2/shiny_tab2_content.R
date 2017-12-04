@@ -6,11 +6,14 @@ tagList(
     widths = c(2, 6),
     tabPanel("Overall",
              fluidRow(
-               column(width = 8,
+               column(width = 9,
                       tableOutput("lesson2_KPI_total_table")
                       ),
-               column(width = 4,
-                      plotOutput("lesson2_KPI_total_graph", width = 400)
+               column(width = 3,
+                      plotOutput("lesson2_KPI_total_graph", 
+                                 width = 400),
+                      plotOutput("lesson2_KPI_total_UWR_graph", 
+                                 width = 400)
                       )
               )
     ),
@@ -20,11 +23,14 @@ tagList(
                          choices = c("dimension1", "dimension2", "dimension3")
               ),
              fluidRow(
-               column(width = 8,
+               column(width = 9,
                       tableOutput("lesson2_KPI_dimension_table")
                ),
-               column(width = 4,
-                      plotOutput("lesson2_KPI_dimension_graph", width = 400)
+               column(width = 3,
+                      plotOutput("lesson2_KPI_dimension_ratio_graph", 
+                                 width = 400),
+                      plotOutput("lesson2_KPI_dimension_UWR_graph", 
+                                 width = 400)
                )
              )
     )
