@@ -33,6 +33,22 @@ tagList(
                                  width = 400)
                )
              )
+    ),
+    tabPanel("Focus Group",
+             # fluidRow(
+             #   uiOutput("lesson2_multi_dim_select_filter")
+             # ),
+             fluidRow(
+               column(width = 9,
+                      DT::dataTableOutput("lesson2_KPI_multidim_table")
+               ),
+               column(width = 3,
+                      plotOutput("lesson2_KPI_multidim_ratio_graph", 
+                                 width = 400),
+                      plotOutput("lesson2_KPI_multidim_UWR_graph", 
+                                 width = 400)
+               )
+             )
     )
   )
 )
