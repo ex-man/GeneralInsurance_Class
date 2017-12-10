@@ -14,6 +14,12 @@ Source: CRAN
 Version: 1.65.0-1
 Hash: 95f62be4d6916aae14a310a8b56a6475
 
+Package: DT
+Source: CRAN
+Version: 0.2
+Hash: 36b032203797956fedad5a25055016a9
+Requires: htmltools, htmlwidgets, magrittr
+
 Package: GGally
 Source: CRAN
 Version: 1.3.2
@@ -88,6 +94,18 @@ Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
 
+Package: curl
+Source: CRAN
+Version: 3.0
+Hash: fb0029f1c84bf9b510c4f55cda7103f1
+
+Package: devtools
+Source: CRAN
+Version: 1.13.4
+Hash: 80a77b22f641002c7ce0343baeaee300
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
+
 Package: dichromat
 Source: CRAN
 Version: 2.0-0
@@ -128,6 +146,11 @@ Hash: 46e5cb78836848aa44655e577433f54b
 Requires: MASS, digest, gtable, lazyeval, plyr, reshape2, scales,
     tibble
 
+Package: git2r
+Source: CRAN
+Version: 0.19.0
+Hash: f4f7966fc357f60dc62dbffcea917eef
+
 Package: glue
 Source: CRAN
 Version: 1.2.0
@@ -149,11 +172,23 @@ Version: 0.3.6
 Hash: 34e5c725d3ae30a76516792edcc16f24
 Requires: Rcpp, digest
 
+Package: htmlwidgets
+Source: CRAN
+Version: 0.9
+Hash: 7514f6ea9f3bef6d9b6c945095275302
+Requires: htmltools, jsonlite, yaml
+
 Package: httpuv
 Source: CRAN
 Version: 1.3.5
 Hash: 6fb95f48d0fbf453ad18ace1606b6192
 Requires: Rcpp
+
+Package: httr
+Source: CRAN
+Version: 1.3.1
+Hash: 2d32e01e53d532c812052e27a1021441
+Requires: R6, curl, jsonlite, mime, openssl
 
 Package: jsonlite
 Source: CRAN
@@ -187,6 +222,12 @@ Version: 0.8
 Hash: 045d7c594d503b41f1c28946d076c8aa
 Requires: mime
 
+Package: memoise
+Source: CRAN
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
+Requires: digest
+
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -197,6 +238,11 @@ Source: CRAN
 Version: 0.4.3
 Hash: f96d896947fcaf9b6d0074002e9f4f9d
 Requires: colorspace
+
+Package: openssl
+Source: CRAN
+Version: 0.9.9
+Hash: 3858537ac10388a5db1687450908f257
 
 Package: packrat
 Source: CRAN
@@ -261,6 +307,11 @@ Version: 1.2
 Hash: fdcac51a7f47decd60556ceefc3c26b1
 Requires: backports
 
+Package: rstudioapi
+Source: CRAN
+Version: 0.7
+Hash: e2ebaff8160aff3e6b32e6e78a693c2d
+
 Package: scales
 Source: CRAN
 Version: 0.5.0
@@ -312,6 +363,16 @@ Package: viridisLite
 Source: CRAN
 Version: 0.2.0
 Hash: 10f0c25af3dc84eaae10f5854f47efdb
+
+Package: whisker
+Source: CRAN
+Version: 0.3-2
+Hash: 803d662762e532705c2c066a82d066e7
+
+Package: withr
+Source: CRAN
+Version: 2.1.0
+Hash: 097f730987c2dc13d421b65bf01ddf08
 
 Package: xtable
 Source: CRAN
