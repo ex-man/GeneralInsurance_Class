@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.1
-RVersion: 3.4.2
+RVersion: 3.4.1
 Repos: CRAN=https://cran.rstudio.com/
 
 Package: Amelia
@@ -210,6 +210,12 @@ Package: lazyeval
 Source: CRAN
 Version: 0.2.1
 Hash: 88926ad9c43581fd0822a37c8ed09f05
+
+Package: lubridate
+Source: CRAN
+Version: 1.7.1
+Hash: 4393610161ddb7066e9ca3f7aa2188bd
+Requires: Rcpp, stringr
 
 Package: magrittr
 Source: CRAN
