@@ -35,9 +35,11 @@ tagList(
              )
     ),
     tabPanel("Focus Group",
-             # fluidRow(
-             #   uiOutput("lesson2_multi_dim_select_filter")
-             # ),
+             fluidRow(
+               column(width = 3, offset = 9,
+                      uiOutput("lesson2_KPI_multidim_select_axis_render")
+                )
+             ),
              fluidRow(
                column(width = 9,
                       DT::dataTableOutput("lesson2_KPI_multidim_table")

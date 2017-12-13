@@ -128,15 +128,18 @@ output$lesson2_KPI_dimension_UWR_graph <- renderPlot({
     coord_flip()
 })
 
-#### Sub-Tab Multi Dim (Focus Group)
+#### Sub-Tab Multi Dim (Focus Group) ####
 # dynamically generate filter widgets if columns are categorical (character or factor)
 columns_for_choice <- reactive({
-  dt <- data_lesson2_KPI_prep_react()
+  ## find all columns they are category (character or factor)
+  # dt <- data_lesson2_KPI_prep_react()
+  # 
+  # sapply(dt, function(x) {
+  #   is.character(x) || is.factor(x)
+  # }) %>% 
+  # names(dt)[.] 
   
-  sapply(dt, function(x) {
-    is.character(x) || is.factor(x)
-  }) %>% 
-  names(dt)[.]
+  c("dimension1", "dimension2", "dimension3")
 })
 
 observe({
@@ -181,6 +184,13 @@ data_lesson2_KPI_prep_filter_react <- reactive({
   
 })
 
+output$lesson2_KPI_multidim_select_axis_render <- renderUI({
+  selectInput(inputId = "lesson2_kpi_multidim_select_axis",
+              label = "Select Dimension:",
+              choices = columns_for_choice()
+  )
+})
+
 output$lesson2_KPI_multidim_table <- renderDataTable({
 
   dimensions <- names(input)[grep("lesson2_KPI_multidim_selectize_filter_", names(input))]
@@ -188,8 +198,8 @@ output$lesson2_KPI_multidim_table <- renderDataTable({
     !is.null(input[[x]])
   })
 
-  dt_prep <- data_lesson2_KPI_prep_filter_react() %>% 
-    group_by_at(vars(columns_for_choice()[grp_by])) %>% 
+  dt_prep <- data_lesson2_KPI_multidim_prep_filter_react() %>% 
+    group_by_at(vars(input$lesson2_kpi_multidim_select_axis)) %>% 
     summarize(LR = mean(LR, na.rm =TRUE),
               ER = mean(ER, na.rm = TRUE),
               CoR = mean(CoR, na.rm = TRUE),
