@@ -51,6 +51,24 @@ tagList(
                                  width = 400)
                )
              )
+    ),
+    tabPanel("Time Dimension",
+             fluidRow(
+               column(width = 4, #offset = 1,
+                      uiOutput("lesson2_KPI_time_filter_daterange_render")
+               )
+             ),
+             fluidRow(
+               column(width = 9,
+                      DT::dataTableOutput("lesson2_KPI_time_table")
+               ),
+               column(width = 3,
+                      plotOutput("lesson2_KPI_time_ratio_graph",
+                                 width = 400),
+                      plotOutput("lesson2_KPI_time_UWR_graph",
+                                 width = 400)
+               )
+             )
     )
   )
 )
