@@ -165,6 +165,7 @@ observe({
 data_lesson2_KPI_multidim_prep_filter_react <- reactive({
   dt <- data_lesson2_KPI_prep_react() 
 
+  # setup filter
   one_up_env <- environment()
   lapply(columns_for_choice(), FUN = function(x){
     col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", x)]]
@@ -175,12 +176,17 @@ data_lesson2_KPI_multidim_prep_filter_react <- reactive({
                filter_at(vars(x), all_vars(. %in% col_val)),
              envir = one_up_env
              )
-      # lapply(columns_for_choice(), function(y){
-      #   updateSelectizeInput(session = session,
-      #                        inputId = paste0("lesson2_KPI_multidim_selectize_filter_", y),
-      #                        choices = unique(dt[ , y])
-      #                      )
-      # })
+    }
+  })
+  
+  # update selections based on selected filtering
+  sapply(columns_for_choice(), function(y){
+    col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", y)]]
+    if(is.null(col_val)) {
+      updateSelectizeInput(session = session,
+                           inputId = paste0("lesson2_KPI_multidim_selectize_filter_", y),
+                           choices = unique(dt[ , y])
+      )
     }
   })
   
@@ -256,7 +262,7 @@ output$lesson2_KPI_multidim_table <- renderDataTable({
 })
 
 output$lesson2_KPI_multidim_ratio_graph <- renderPlot({
-  data_lesson2_KPI_prep_react() %>% 
+  data_lesson2_KPI_multidim_prep_filter_react() %>% 
     group_by_(as.name(input$lesson2_kpi_multidim_select_axis)) %>% 
     summarize(LR = mean(LR, na.rm =TRUE),
               ER = mean(ER, na.rm = TRUE),
@@ -281,7 +287,7 @@ output$lesson2_KPI_multidim_ratio_graph <- renderPlot({
 })
 
 output$lesson2_KPI_multidim_UWR_graph <- renderPlot({
-  data_lesson2_KPI_prep_react() %>% 
+  data_lesson2_KPI_multidim_prep_filter_react() %>% 
     group_by_(as.name(input$lesson2_kpi_multidim_select_axis)) %>% 
     summarize(UWR = sum(UWR, na.rm = TRUE)) %>% 
     ggplot() +
@@ -334,6 +340,7 @@ output$lesson2_KPI_time_filter_daterange_render <- renderUI({
 data_lesson2_KPI_time_prep_filter_react <- reactive({
   dt <- data_lesson2_KPI_prep_react() 
   
+  # setup filter
   one_up_env <- environment()
   lapply(columns_for_choice(), FUN = function(x){
     col_val <- input[[paste0("lesson2_KPI_time_selectize_filter_", x)]]
@@ -344,12 +351,17 @@ data_lesson2_KPI_time_prep_filter_react <- reactive({
                filter_at(vars(x), all_vars(. %in% col_val)),
              envir = one_up_env
       )
-      # lapply(columns_for_choice(), function(y){
-      #   updateSelectizeInput(session = session,
-      #                        inputId = paste0("lesson2_KPI_multidim_selectize_filter_", y),
-      #                        choices = unique(dt[ , y])
-      #                      )
-      # })
+    }
+  })
+
+  # update selections based on selected filtering
+  sapply(columns_for_choice(), function(y){
+    col_val <- input[[paste0("lesson2_KPI_time_selectize_filter_", y)]]
+    if(is.null(col_val)) {
+      updateSelectizeInput(session = session,
+                           inputId = paste0("lesson2_KPI_time_selectize_filter_", y),
+                           choices = unique(dt[ , y])
+      )
     }
   })
   
