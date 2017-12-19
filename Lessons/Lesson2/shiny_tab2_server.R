@@ -109,6 +109,7 @@ output$lesson2_KPI_dimension_ratio_graph <- renderPlot({
       ),
       position = "stack"
     ) +
+    geom_hline(yintercept = 1) +
     ylab("Ratios") +
     scale_y_continuous(labels = scales::percent) +
     theme_bw() +
@@ -280,6 +281,7 @@ output$lesson2_KPI_multidim_ratio_graph <- renderPlot({
       ),
       position = "stack"
     ) +
+    geom_hline(yintercept = 1) +
     ylab("Ratios") +
     scale_y_continuous(labels = scales::percent) +
     theme_bw() +
@@ -405,37 +407,43 @@ output$lesson2_KPI_time_ratio_graph <- renderPlot({
               ER = mean(ER, na.rm = TRUE),
               CoR = mean(CoR, na.rm = TRUE),
               UWR = sum(UWR, na.rm = TRUE)) %>% 
-    reshape2::melt(measure.vars = c("LR", "ER"), 
+    ungroup %>% 
+    reshape2::melt(measure.vars = c("CoR", "LR"), 
                    variable.name = "Ratio") %>% 
     ggplot() +
-    geom_col(
+    geom_area(
       aes_string(
         x = as.character("Time_YM"), 
         y = "value", 
         group = "Ratio", 
         fill = "Ratio"
       ),
-      position = "stack"
+      alpha = 0.6,
+      position = "dodge"
     ) +
     ylab("Ratios") +
+    geom_hline(yintercept = 1) +
     scale_y_continuous(labels = scales::percent) +
     theme_bw() +
-    coord_flip()
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 })
 
 output$lesson2_KPI_time_UWR_graph <- renderPlot({
   data_lesson2_KPI_time_prep_filter_react() %>% 
     group_by_(as.name("Time_YM")) %>% 
     summarize(UWR = sum(UWR, na.rm = TRUE)) %>% 
+    mutate(Line = "UWR") %>% 
+    ungroup %>% 
     ggplot() +
-    geom_col(
-      aes_string( x = as.character("Time_YM"), 
-                  y = "UWR"
+    geom_line(
+      aes_string( x = "Time_YM", 
+                  y = "UWR",
+                  group = "Line"
       ),
-      fill = "dodgerblue2"
+      color = "dodgerblue2"
     ) +
     ylab("UWR") +
     scale_y_continuous(labels = scales::dollar) +
     theme_bw() +
-    coord_flip()
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 })
