@@ -6,3 +6,4 @@ What needs to be mentioned
 * How to push
 * Branches
 * How it links to this class
+* How the pull requests + reviews work for evaluation (https://help.github.com/articles/checking-out-pull-requests-locally/)
