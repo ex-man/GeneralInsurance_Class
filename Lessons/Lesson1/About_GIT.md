@@ -13,7 +13,17 @@
 
 > Then you need to **Clone** your web directory to your local machine. The best way of doing this is derectly via R Studio by opening a project from Git repository.
 > Remember to use your own For of this class. Otherwise you will not be allowed to update any content.
-* How to pubhlish content (git push) *to be finished*
+
+* Why is there add, commit and push?
+> Git is a great tool, because it has multiple stages of your saved work. Leaving the branches apart, there are already a number of repositories.
+> There is your current folder (you can check status of it), then there is your local "staging" area, where you move files using *git add*.
+> Then there is also your online "staging" folder, where you move stuff from your local "staging" using *git commit*.
+> Once you are happy with everything, you push your changes and make them visible to everyone.
+
+> Why is it so complicated? Well, there are always shortcuts you can make. Using R you skip many of these steps, but in reality, there are many situations,
+> when you want to do partial saves, as you are not sure what will work best. These "complicated" steps will help you achieve it.
+
+* How to publish content (git push) *to be finished*
 * How to synchronise content (git pull) *to be finished*
 * Branches *to be finished*
 * How it links to this class *to be finished*
