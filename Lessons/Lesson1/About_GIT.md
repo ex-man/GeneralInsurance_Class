@@ -1,8 +1,30 @@
-What needs to be mentioned
-* What is GIT
+# This section will try to answer the following questions:
+* What is GIT?
+> This is the way we make sure we can all collaborate on the same class, that is publicly available, we all have up to date information, but we never destroy the original content (called master). Consider visiting [git wiki](https://en.wikipedia.org/wiki/Git) for more details.
 * How is it used
+> GIT is a piece of software that is installed on your computer and allows you to send commnads via command line or other software (e.g. R). You are able to operate "git" commands on any directory, that contains git folder set up. 
+> For this class, the directiry is already set up here in [github](https://github.com/ex-man/GeneralInsurance_Class), so it is enough to clone it (build a replica) in your local machine. You can do so from R Studio direcly, and this is what we recommend, as this class will do 99% of the things using R.
 * How to set it up
-* How to pull
-* How to push
-* Branches
-* How it links to this class
+> It is worth installing GIT before using it to save yourself some trouble. To check whether or not you have git installed, simply open a terminal window (*cmd.exe in windows*) and type "git --version".
+* How to start
+> We will be using github for this entire class, so you need to create an account there (you may have one already).
+
+> Then you need to **Fork** our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
+
+> Then you need to **Clone** your web directory to your local machine. The best way of doing this is derectly via R Studio by opening a project from Git repository.
+> Remember to use your own For of this class. Otherwise you will not be allowed to update any content.
+
+* Why is there add, commit and push?
+> Git is a great tool, because it has multiple stages of your saved work. Leaving the branches apart, there are already a number of repositories.
+> There is your current folder (you can check status of it), then there is your local "staging" area, where you move files using *git add*.
+> Then there is also your online "staging" folder, where you move stuff from your local "staging" using *git commit*.
+> Once you are happy with everything, you push your changes and make them visible to everyone.
+
+> Why is it so complicated? Well, there are always shortcuts you can make. Using R you skip many of these steps, but in reality, there are many situations,
+> when you want to do partial saves, as you are not sure what will work best. These "complicated" steps will help you achieve it.
+
+* How to publish content (git push) *to be finished*
+* How to synchronise content (git pull) *to be finished*
+* Branches *to be finished*
+* How it links to this class *to be finished*
+* How the pull requests + reviews work for evaluation using [pull requests](https://help.github.com/articles/checking-out-pull-requests-locally/)  *to be finished*

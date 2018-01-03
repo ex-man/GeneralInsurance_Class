@@ -1,7 +1,9 @@
 # Objective
-	To learn about more granular approach of predicting future
+	To learn about more granular approach of understanding the performance
+	
 # Content
 	1) there are other items to take into account (capital, cashflow - delay and investment, expenses - fixed/variable/commission, reinsurance)
-	2) riks segmentation raher then averaging (leave for glm?)
+	2) understand whether the portfolio is better or worse if the new information is used (possibly include chain ladder?)
 	3) TP formula at point of underwriting
-	4) building simple rate assesor, when we have relativities?
+	4) think about finding who is the driver of the underperformance => use decision trees
+	5) consider how much more the critical segment should be charged to be more profitable => SLIDER IN SHINY?
