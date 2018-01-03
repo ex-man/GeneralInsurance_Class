@@ -37,10 +37,10 @@ Install by executing :
 install.packages("shiny")
 ```
 #### HELLO WORLD app
-<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/telephones-by-region.html"/>
+<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/telephones-by-region.html"></iframe>
 
 ### Widgets and Inputs vs. Outputs
-<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/widget-gallery.html"/>
+<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/widget-gallery.html"></iframe>
 
 ### Cheatsheet and other supporting materials
 [Shiny cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf)
