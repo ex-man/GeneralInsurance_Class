@@ -3,11 +3,12 @@ Shiny
 * What `shiny` is and why it can by usefull for actuary
 * Motivation Example
 * How to install and HELLO WORLD example
-  0) folder structure is standart and good practise
+
+  0) folder structure is standard and good practise
   1) ui vs. server
   2) widgets and inputs vs. outputs
   3) HELLO WORLD app, reactivity
-* Cheatsheet and learning by doing
+* Cheatsheet and other supporting materials
 
 
 What `shiny` is and why it can by usefull for actuary
@@ -36,5 +37,13 @@ Install by executing :
 install.packages("shiny")
 ```
 #### HELLO WORLD app
-<!iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/telephones-by-region.html"/>
+<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/telephones-by-region.html"/>
 
+### Widgets and Inputs vs. Outputs
+<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/widget-gallery.html"/>
+
+### Cheatsheet and other supporting materials
+[Shiny cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf)
+
+#### Sources
+[Rstudio - Shiny](http://shiny.rstudio.com/)
