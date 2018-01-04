@@ -27,23 +27,26 @@ Perfect thing is you need only R for building this interactive framework.
 ### Motivation Example
 [SuperZip Example](https://shiny.rstudio.com/gallery/superzip-example.html)
 
-![](About_shiny_files/superzip.png)
+![](About_shiny_files/superzip.PNG)
 
 -----------------
 ### How to install and HELLO WORLD example
-
 Install by executing :
 ```
 install.packages("shiny")
+library(shiny)
 ```
 #### HELLO WORLD app
-<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/telephones-by-region.html"></iframe>
+[Telephone By Region app](https://shiny.rstudio.com/gallery/telephones-by-region.html)
+
+[Little explanation](About_shiny_files/shiny_prezi.pdf)
 
 ### Widgets and Inputs vs. Outputs
-<iframe width = "800px" height = "800px" src="https://shiny.rstudio.com/gallery/widget-gallery.html"></iframe>
+[Widgets Gallery](https://shiny.rstudio.com/gallery/widget-gallery.html)
 
 ### Cheatsheet and other supporting materials
 [Shiny cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf)
 
 #### Sources
 [Rstudio - Shiny](http://shiny.rstudio.com/)
+[Shiny - Articles](https://shiny.rstudio.com/articles/)
