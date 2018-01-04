@@ -1,7 +1,3 @@
-### Libraries ###
-library(shiny)
-library(shinythemes)
-library(DT)
 
 ### Other R sources ###
 # Tab Content
