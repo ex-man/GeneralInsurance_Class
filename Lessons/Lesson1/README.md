@@ -17,4 +17,4 @@ To learn how to use GIT, tidyverse and shiny
 > Hint: instead of `aes` you might need `aes_string` 
 
 It might look something like this:
-![](About_shiny_files/Lesson1_Homework.PNG)`
+![](About_shiny_files/Lesson1_Homework.png)`
