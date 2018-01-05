@@ -23,8 +23,24 @@
 > Why is it so complicated? Well, there are always shortcuts you can make. Using R you skip many of these steps, but in reality, there are many situations,
 > when you want to do partial saves, as you are not sure what will work best. These "complicated" steps will help you achieve it.
 
-* How to publish content (git push) *to be finished*
-* How to synchronise content (git pull) *to be finished*
-* Branches *to be finished*
-* How it links to this class *to be finished*
-* How the pull requests + reviews work for evaluation using [pull requests](https://help.github.com/articles/checking-out-pull-requests-locally/)  *to be finished*
+* How to publish content (git push)
+> Once you are happy with the changes, you need to save them to your (master) repository. This is achieved via *git push* command. This will only push the changes you have committed earlier, and raise any conflicts. We are not expecting to have any conflictis in this class, but if they arise, we will look at resolving them.
+> Remember to commit often and push reasonably frequently as well. There is no "auto-commit" and "auto-push" that you may be familiar from editors like MS Word (auto-save).
+
+* How to synchronise content (git pull or git checkout)
+> There will frequently be new content available, that is produced by others. You may want to download this content to make your local copy of the directory up to date. Pull takes the "new" things from master directory, but you may sometimes want to checkout everything to have a fresh copy of all data (this will overwrite all changes and checkout the branch as pushed).
+
+* Branches
+> Branches allow you to do a parallel development. They are very powerful, but we are  not planning to using them. You can use official documentation or watch some youtube to learn more. 
+
+> I find this very useful reference to learn more about the stuff above and the branches in one of the [visual explanations](https://marklodato.github.io/visual-git-guide/index-en.html)
+
+# How it links to this class
+Hopefully you got some insight above about what git is. We decided to use it for this class (despite being and overkill) to allow us to be more up to date with the technology stack and to allow us to interact with you better. And we want to avoid sending emails back and forth. It also has one additional feature, and that is described bellow...
+
+## Homework checking using pull requests
+We want to make sure you practice what we do in the class also at home and do not loose contact with the class. On the other hand, we work full time, so we need your help with chceking what you have done. You should be sending *pull requests* to our git project and then comment on other requests saying why they are better or worse then yours.
+
+to be finished*
+
+For more information on [pull requests](https://help.github.com/articles/checking-out-pull-requests-locally/) click on the link. *
