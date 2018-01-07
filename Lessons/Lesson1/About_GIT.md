@@ -41,6 +41,6 @@ Hopefully you got some insight above about what git is. We decided to use it for
 ## Homework checking using pull requests
 We want to make sure you practice what we do in the class also at home and do not loose contact with the class. On the other hand, we work full time, so we need your help with chceking what you have done. You should be sending *pull requests* to our git project and then comment on other requests saying why they are better or worse then yours.
 
-to be finished*
+If you are using github UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to *merge* it with your current code.
 
 For more information on [pull requests](https://help.github.com/articles/checking-out-pull-requests-locally/) click on the link. *
