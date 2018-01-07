@@ -1,8 +1,3 @@
-### Libraries ###
-library(dplyr)
-library(magrittr)
-library(ggplot2)
-library(DT)
 
 #### MAIN ####
 server <- function(input, output, session){
