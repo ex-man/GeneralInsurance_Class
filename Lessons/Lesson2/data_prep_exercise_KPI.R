@@ -8,122 +8,123 @@ library(ggplot2)
 dt_KPI_raw <- read.csv("data/lesson2_KPI.csv")
 
 ## what type of information we have? (column quick view)
-dt_KPI_raw %>% glimpse
+
 
 ## some data dictionary would be helpful, do we have some?
 
 ## what the columns contains?
-dt_KPI_raw %>% summary()
+
 
 #### looking for defects in data ####
 ## are there any missings?
-dt_KPI_raw %>% lapply(function(x) {is.na(x) %>% table}) # leave blank
+
 
 ## are there any non sense values? 
 # what are not allowed vaules for specific columns? lets look individually
 # be prepared to deal with continuous and categorical values as well
-dt_KPI_raw$Region %>% table(useNA = "ifany") # leave blank
 
-dt_KPI_raw$Losses %>% summary # leave blank
 
 #### correction of defects ####
 ## what is the feasible way to repair missing values? 
-dt_KPI_raw <- dt_KPI_raw %>% 
-  mutate(Business = ifelse(is.na(Business), "Missing", as.character(Business))) # leave blank
 
-## what is the feasibly way to repair non sense values?
-dt_KPI_raw <- dt_KPI_raw %>% 
-  filter(Premium > 0,
-          Losses > 0, 
-         Expenses > 0
-  )
 
-# viz basics, ak bude cas, tak time dimension na ulohu 
-# reflection - ze napisat co si myslia aky je dovod performanceS
+## what is the feasible way to repair non sense values?
 
-# 3 times same thing
+#### Visualization of Raw Data ####
+### What makes sense to visualize/compare at visual sense for KPIs?
 
-#### building KPIs ####
-# what is the nice way to look into Loss/Expenses/Premium information?
+## Data Preparation for Vizualization
+# Which Unit has collected the most Premium? 
 
-dt_KPI_raw %>%
-  rename(NEP = Premium,
-         Loss = Losses,
-         Expenses = Expenses,
-         Time = Year
-  ) %>% 
-  mutate(LR = Loss / NEP, # leave blank
-         ER = Expenses / NEP, # leave blank
-         CoR = (Loss + Expenses) / NEP, # leave blank 
-         UWR = NEP - Loss - Expenses, # leave blank
-         Time_Y = Time %>% substr(1, 4)
-  ) %>% 
-  summarize(LR = mean(LR, na.rm =TRUE), # leave blank
-            ER = mean(ER, na.rm = TRUE), # leave blank
-            CoR = mean(CoR, na.rm = TRUE), # leave blank
-            UWR = sum(UWR, na.rm = TRUE), # leave blank
-            Premium = sum(NEP, na.rm = TRUE) # leave blank
-  ) %>% 
-  mutate(Dimension = "Total") %>% 
-  select(Dimension, everything()) %>% 
-  mutate_at(vars(UWR, Premium), funs(scales::dollar)) %>% 
-  mutate_at(vars(LR, ER, CoR), funs(scales::percent))
 
-dt_KPI_raw <- 
-  dt_KPI_raw %>%
-  rename(NEP = Premium,
-         Loss = Losses,
-         Expenses = Expenses,
-         Time = Year
-  ) %>% 
-  mutate(LR = Loss / NEP , # leave blank
-         ER = Expenses / NEP , # leave blank
-         CoR = (Loss + Expenses) / NEP , # leave blank 
-         UWR = NEP - Loss - Expenses, # leave blank
-         Time_Y = Time %>% substr(1, 4)
-  )
+# Which Unit has spent the least Expenses? 
 
-#### visualization ####
-# What makes sense to visualize/compare at visual sense?
 
-# e.g. Business Unit View using bar charts - ggplot2::geom_col()
-dt_KPI_raw %>% 
-  group_by(Unit) %>% 
-  summarize(LR = mean(LR, na.rm =TRUE), # leave blank
-            ER = mean(ER, na.rm = TRUE), # leave blank
-            CoR = mean(CoR, na.rm = TRUE), # leave blank
-            UWR = sum(UWR, na.rm = TRUE), # leave blank
-            Premium = sum(NEP, na.rm = TRUE) # leave blank
-  ) %>% 
-  ggplot(aes(x = Unit, y = CoR)) + 
-  geom_col()
+# Which Business of previous Unit has spent the most Expenses? 
 
-# e.g. Business Unit View (Multi View on LR and ER)
-# introducing wide and long format of the table
-dt_KPI_raw %>% 
-  group_by(Unit) %>% 
-  summarize(LR = mean(LR, na.rm =TRUE), # leave blank
-            ER = mean(ER, na.rm = TRUE), # leave blank
-            CoR = mean(CoR, na.rm = TRUE), # leave blank
-            UWR = sum(UWR, na.rm = TRUE), # leave blank
-            Premium = sum(NEP, na.rm = TRUE) # leave blank
-  ) %>% 
-  reshape2::melt(measure.vars = c("ER", "LR"), 
-                variable.name = "Ratio", value.name = "Ratio_Value") %>% 
-  ggplot(aes(x = Unit, y = Ratio_Value, fill = Ratio)) + 
-  geom_col()
 
-# e.g. Business Unit View using bar charts - ggplot2::geom_col() on UWR
-dt_KPI_raw %>% 
-  group_by(Unit) %>% 
-  summarize(LR = mean(LR, na.rm =TRUE), # leave blank
-            ER = mean(ER, na.rm = TRUE), # leave blank
-            CoR = mean(CoR, na.rm = TRUE), # leave blank
-            UWR = sum(UWR, na.rm = TRUE), # leave blank
-            Premium = sum(NEP, na.rm = TRUE) # leave blank
-  ) %>% 
-  ggplot(aes(x = Unit, y = UWR)) + 
-  geom_col()
+## Basic Viz.
+## Vizualize your findings on simple bar charts - ggplot2::geom_col()
+
+# Which Unit has collected the most Premium? 
+
+
+# Which Unit has spent the least Expenses? 
+
+
+# Which Business of previous Unit has spent the most Expenses? 
+
+
+# Bonus - Show all Costs Insurance Company has as a stacked bar for 
+# Expenses and Losses grouped by Units
+
+
+### Reflection (5 min) - write a short comment to your notes in repository on what do you think is the best and worst Unit performer.
+# Feel free to do more data exploration.
+
+
+
+################################################################################
+
+#### Building KPIs ####
+# Is there a better way to look into Losses/Expenses/Premium information?
+
+
+
+
+
+
+
+
+
+#### Visualization of KPIs ####
+### What makes sense to visualize/compare at visual sense for KPIs?
+
+## Try to find answers on next questions using new KPIs terms you learned
+# Which Unit looks bad in terms of Losses? 
+
+
+# Which Unit looks pretty good in terms of Expenses? 
+
+
+# Which Business of previous Unit looks bad in terms of Expenses? 
+
+
+# Bonus - Make a stacked bar for Losses and Expenses using new KPIs term you learn. 
+# Does it help you to explore something new?
+
+
+### Reflection again (5 min) - write a short comment to your notes in repository on what do you think is 
+# the best and worst Unit performer based on what have you learned recently.
+# Feel free to do more data exploration.
+
+
+
+################################################################################
+
+#### UWR ####
+# Is there even better way on how to look on portfolios? Previously we spoke about Ratios 
+# and relative performances. Can you create something similar but as a absolute performance?
+# How could be absolute performance defined?
+
+
+
+# Which Unit looks pretty good in terms of UWR? 
+
+
+# Which Business of previous Unit looks bad in terms of UWR? 
+
+
+### Reflection again (5 min) - write a short comment to your notes in repository on what do you think is 
+# the best and worst Unit performer based on what have you learned recently.
+# Feel free to do more data exploration.
+
+
+
+################################################################################
 
 #### shiny ####
 # where it makes sense to use dynamic range / create interactivity?
+
+# Go to the root folder of the repository and type shiny::runApp() for running the Class Shiny app.
+# Edit files shiny_tab2_content.R (as ui.R for lesson2) and shiny_tab2_server.R (as server.R for lesson2)

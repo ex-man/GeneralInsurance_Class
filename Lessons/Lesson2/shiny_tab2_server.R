@@ -9,109 +9,19 @@ data_lesson2_KPI_prep_react <- reactive({
   dt <- data_lesson2_react()
   
   prepared <- 
-    dt %>% 
-    filter(Premium > 0,
-          Losses > 0, 
-         Expenses > 0
-    ) %>% 
-    rename(NEP = Premium,
-           Loss = Losses,
-           Expenses = Expenses,
-           Time = Year
-    ) %>% 
-    mutate(LR = Loss / NEP , # leave blank
-           ER = Expenses / NEP , # leave blank
-           CoR = (Loss + Expenses) / NEP , # leave blank 
-           UWR = NEP - Loss - Expenses, # leave blank
-           Time_Y = Time %>% substr(1, 4)
-    ) 
+    dt %>% # copy all data manipulation we have done in data preparation for KPIs definition
+    #
+    #
+    #
+    #
   
   prepared
 })
 
-#### Sub-Tab Overall ####
-output$lesson2_KPI_total_table <- renderDataTable({
-  data_lesson2_KPI_prep_react() %>% 
-    summarize(LR = mean(LR, na.rm =TRUE), # leave blank
-              ER = mean(ER, na.rm = TRUE), # leave blank
-              CoR = mean(CoR, na.rm = TRUE), # leave blank
-              UWR = sum(UWR, na.rm = TRUE), # leave blank
-              Premium = sum(NEP, na.rm = TRUE) # leave blank
-    ) %>% 
-    mutate(Dimension = "Total") %>% 
-    select(Dimension, everything()) %>% 
-    mutate_at(vars(UWR, Premium), funs(scales::dollar)) %>% 
-    mutate_at(vars(LR, ER, CoR), funs(scales::percent))
-})
-
 #### Sub-Tab Multi Dim (Focus Group) ####
 # dynamically generate filter widgets if columns are categorical (character or factor)
-columns_for_choice <- reactive({
-  # find all columns they are category (character or factor)
-  dt <- data_lesson2_KPI_prep_react()
-
-  sapply(dt, function(x) {
-    is.character(x) || is.factor(x)
-  }) %>%
-  names(dt)[.]
-  
-  # c("dimension1", "dimension2", "dimension3")
-})
-
-observe({
-  lapply(columns_for_choice(), FUN = function(x){
-    insertUI(
-      selector = "#lesson2_KPI_multidim_table",
-      where = "beforeBegin",
-      ui = selectizeInput(inputId = paste0("lesson2_KPI_multidim_selectize_filter_", x),
-                          label = paste0("Filter by ", x),
-                          multiple = TRUE, 
-                          choices = unique(data_lesson2_KPI_prep_react()[ , x])
-      )
-      
-    )
-  })
-})
-
-# data prep based on filtering
-data_lesson2_KPI_multidim_prep_filter_react <- reactive({
-  dt <- data_lesson2_KPI_prep_react() 
-  
-  # setup filter
-  one_up_env <- environment()
-  lapply(columns_for_choice(), FUN = function(x){
-    col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", x)]]
-    
-    if(!is.null(col_val)) {
-      assign("dt", 
-             dt %>% 
-               filter_at(vars(x), all_vars(. %in% col_val)),
-             envir = one_up_env
-      )
-    }
-  })
-  
-  # update selections based on selected filtering
-  sapply(columns_for_choice(), function(y){
-    col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", y)]]
-    if(is.null(col_val)) {
-      updateSelectizeInput(session = session,
-                           inputId = paste0("lesson2_KPI_multidim_selectize_filter_", y),
-                           choices = unique(dt[ , y])
-      )
-    }
-  })
-  
-  dt
-  
-})
-
-output$lesson2_KPI_multidim_select_axis_render <- renderUI({
-  selectInput(inputId = "lesson2_kpi_multidim_select_axis",
-              label = "Select Dimension:",
-              choices = columns_for_choice()
-  )
-})
+source(file.path("Lessons", "Lesson2", "Support", "dynamic_filter.R"),
+       local = TRUE)$value
 
 ######################################
 output$lesson2_KPI_multidim_table <- renderDataTable({
@@ -121,12 +31,13 @@ output$lesson2_KPI_multidim_table <- renderDataTable({
   dt_prep <- 
     dt_prep %>%
     group_by_at(vars(input$lesson2_kpi_multidim_select_axis)) %>% 
-    summarize(LR = mean(LR, na.rm =TRUE),
-              ER = mean(ER, na.rm = TRUE),
-              CoR = mean(CoR, na.rm = TRUE),
-              UWR = sum(UWR, na.rm = TRUE),
-              Premium = sum(NEP, na.rm = TRUE)
-    )
+    # summarize(LR = , 
+    #           ER = ,
+    #           CoR = ,
+    #           Premium = ,
+    #           UWR = 
+    # )
+    
   
   DT::datatable(dt_prep,
                 rownames = FALSE,
@@ -138,186 +49,34 @@ output$lesson2_KPI_multidim_table <- renderDataTable({
 output$lesson2_KPI_multidim_ratio_graph <- renderPlot({
 
   data_lesson2_KPI_multidim_prep_filter_react() %>% 
-    group_by_(as.name(input$lesson2_kpi_multidim_select_axis)) %>% 
-    summarize(LR = mean(LR, na.rm =TRUE),
-              ER = mean(ER, na.rm = TRUE),
-              CoR = mean(CoR, na.rm = TRUE),
-              UWR = sum(UWR, na.rm = TRUE)) %>% 
-    reshape2::melt(measure.vars = c("LR", "ER"), 
-                   variable.name = "Ratio") %>% 
+    group_by_at(vars(input$lesson2_kpi_multidim_select_axis)) %>% 
+    # summarize(LR = , 
+    #           ER = ,
+    #           CoR = ,
+    #           Premium = ,
+    #           UWR = 
+    # ) %>% 
     ggplot() +
-    geom_col(
-      aes_string(
-        x = as.character(input$lesson2_kpi_multidim_select_axis), 
-        y = "value", 
-        group = "Ratio", 
-        fill = "Ratio"
-      ),
-      position = "stack"
-    ) +
-    geom_hline(yintercept = 1) +
-    ylab("Ratios") +
-    scale_y_continuous(labels = scales::percent) +
-    theme_bw() +
-    coord_flip()
+      geom_col(
+      #
+      #
+      #
+      #
+      #
+      ) +
+      geom_hline(yintercept = 1) +
+      ylab("Ratios") +
+      scale_y_continuous(labels = scales::percent) +
+      theme_bw() +
+      coord_flip()
+  
 })
 
 output$lesson2_KPI_multidim_UWR_graph <- renderPlot({
+  # Homework
   data_lesson2_KPI_multidim_prep_filter_react() %>% 
-    group_by_(as.name(input$lesson2_kpi_multidim_select_axis)) %>% 
-    summarize(UWR = sum(UWR, na.rm = TRUE)) %>% 
-    ggplot() +
-    geom_col(
-      aes_string( x = as.character(input$lesson2_kpi_multidim_select_axis), 
-                  y = "UWR"
-      ),
-      fill = "dodgerblue2"
-    ) +
-    ylab("UWR") +
-    scale_y_continuous(labels = scales::dollar) +
-    theme_bw() +
-    coord_flip()
+
+
 })
 
 
-
-
-
-
-
-
-# #### Sub-Tab Time Dimension ####
-# # View the learned measures based on time dimension
-# 
-# observe({
-#   lapply(columns_for_choice(), FUN = function(x){
-#     insertUI(
-#       selector = "#lesson2_KPI_time_table",
-#       where = "beforeBegin",
-#       ui = selectizeInput(inputId = paste0("lesson2_KPI_time_selectize_filter_", x),
-#                           label = paste0("Filter by ", x),
-#                           multiple = TRUE, 
-#                           choices = unique(data_lesson2_KPI_prep_react()[ , x])
-#       )
-#       
-#     )
-#   })
-# })
-# 
-# output$lesson2_KPI_time_filter_daterange_render <- renderUI({
-#   dateRangeInput("lesson2_KPI_time_filter_daterange",
-#                  label = "Date Range:",
-#                  start = min(data_lesson2_KPI_prep_react()$Time) %>% as.Date,
-#                  end = max(data_lesson2_KPI_prep_react()$Time) %>% as.Date
-#   )
-# })
-# 
-# 
-# data_lesson2_KPI_time_prep_filter_react <- reactive({
-#   dt <- data_lesson2_KPI_prep_react() 
-#   
-#   # setup filter
-#   one_up_env <- environment()
-#   lapply(columns_for_choice(), FUN = function(x){
-#     col_val <- input[[paste0("lesson2_KPI_time_selectize_filter_", x)]]
-#     
-#     if(!is.null(col_val)) {
-#       assign("dt", 
-#              dt %>% 
-#                filter_at(vars(x), all_vars(. %in% col_val)),
-#              envir = one_up_env
-#       )
-#     }
-#   })
-#   
-#   # update selections based on selected filtering
-#   sapply(columns_for_choice(), function(y){
-#     col_val <- input[[paste0("lesson2_KPI_time_selectize_filter_", y)]]
-#     if(is.null(col_val)) {
-#       updateSelectizeInput(session = session,
-#                            inputId = paste0("lesson2_KPI_time_selectize_filter_", y),
-#                            choices = unique(dt[ , y])
-#       )
-#     }
-#   })
-#   
-#   dt %>% 
-#     filter_(lazyeval::interp(
-#       ~ as.Date(Time) >= from,
-#       from = as.Date(input$lesson2_KPI_time_filter_daterange[1])
-#     )) %>%
-#     filter_(lazyeval::interp(
-#       ~ as.Date(Time) <= to,
-#       to = as.Date(input$lesson2_KPI_time_filter_daterange[2])
-#     ))
-#   
-#   
-# })
-# 
-# output$lesson2_KPI_time_table <- renderDataTable({
-#   
-#   dt_prep <- data_lesson2_KPI_time_prep_filter_react() %>% 
-#     group_by_at(vars("Time_Y")) %>% 
-#     summarize(LR = mean(LR, na.rm =TRUE),
-#               ER = mean(ER, na.rm = TRUE),
-#               CoR = mean(CoR, na.rm = TRUE),
-#               UWR = sum(UWR, na.rm = TRUE),
-#               Premium = sum(NEP, na.rm = TRUE)
-#     ) #%>% 
-#   # mutate_at(vars(UWR, Premium), funs(scales::dollar)) %>% 
-#   # mutate_at(vars(LR, ER, CoR), funs(scales::percent)) 
-#   
-#   DT::datatable(dt_prep,
-#                 rownames = FALSE,
-#                 class = "hover") %>% 
-#     DT::formatPercentage(c("LR", "ER", "CoR")) %>% 
-#     DT::formatCurrency(c("UWR", "Premium"), digits = 0)
-# })
-# 
-# output$lesson2_KPI_time_ratio_graph <- renderPlot({
-#   data_lesson2_KPI_time_prep_filter_react() %>% 
-#     group_by_(as.name("Time_Y")) %>% 
-#     summarize(LR = mean(LR, na.rm =TRUE),
-#               ER = mean(ER, na.rm = TRUE),
-#               CoR = mean(CoR, na.rm = TRUE),
-#               UWR = sum(UWR, na.rm = TRUE)) %>% 
-#     ungroup %>% 
-#     reshape2::melt(measure.vars = c("CoR", "LR"), 
-#                    variable.name = "Ratio") %>% 
-#     ggplot() +
-#     geom_area(
-#       aes_string(
-#         x = as.character("Time_Y"), 
-#         y = "value", 
-#         group = "Ratio", 
-#         fill = "Ratio"
-#       ),
-#       alpha = 0.6,
-#       position = "dodge"
-#     ) +
-#     ylab("Ratios") +
-#     geom_hline(yintercept = 1) +
-#     scale_y_continuous(labels = scales::percent) +
-#     theme_bw() +
-#     theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# })
-# 
-# output$lesson2_KPI_time_UWR_graph <- renderPlot({
-#   data_lesson2_KPI_time_prep_filter_react() %>% 
-#     group_by_(as.name("Time_Y")) %>% 
-#     summarize(UWR = sum(UWR, na.rm = TRUE)) %>% 
-#     mutate(Line = "UWR") %>% 
-#     ungroup %>% 
-#     ggplot() +
-#     geom_line(
-#       aes_string( x = "Time_Y", 
-#                   y = "UWR",
-#                   group = "Line"
-#       ),
-#       color = "dodgerblue2"
-#     ) +
-#     ylab("UWR") +
-#     scale_y_continuous(labels = scales::dollar) +
-#     theme_bw() +
-#     theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# })
