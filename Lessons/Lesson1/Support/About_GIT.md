@@ -12,7 +12,7 @@
 > Then you need to **Fork** our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
 
 > Then you need to **Clone** your web directory to your local machine. The best way of doing this is derectly via R Studio by opening a project from Git repository.
-> Remember to use your own For of this class. Otherwise you will not be allowed to update any content.
+> Remember to use your own **Fork** of this class. Otherwise you will not be allowed to update any content.
 
 * Why is there add, commit and push?
 > Git is a great tool, because it has multiple stages of your saved work. Leaving the branches apart, there are already a number of repositories.
@@ -28,10 +28,10 @@
 > Remember to commit often and push reasonably frequently as well. There is no "auto-commit" and "auto-push" that you may be familiar from editors like MS Word (auto-save).
 
 * How to synchronise content (git pull or git checkout)
-> There will frequently be new content available, that is produced by others. You may want to download this content to make your local copy of the directory up to date. Pull takes the "new" things from master directory, but you may sometimes want to checkout everything to have a fresh copy of all data (this will overwrite all changes and checkout the branch as pushed).
+> There will frequently be new content available, that is produced by others. You may want to download this content to make your local copy of the directory up to date. **Pull** takes the "new" things from master directory, but you may sometimes want to **Checkout** everything to have a fresh copy of all data (this will overwrite all changes and checkout the branch as pushed).
 
 * Branches
-> Branches allow you to do a parallel development. They are very powerful, but we are  not planning to using them. You can use official documentation or watch some youtube to learn more. 
+> **Branches** allow you to do a parallel development. They are very powerful, but we are  not planning to using them. You can use official documentation or watch some youtube to learn more. 
 
 > I find this very useful reference to learn more about the stuff above and the branches in one of the [visual explanations](https://marklodato.github.io/visual-git-guide/index-en.html)
 
