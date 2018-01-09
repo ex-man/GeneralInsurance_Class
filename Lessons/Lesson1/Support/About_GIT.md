@@ -9,7 +9,7 @@
 * How to start
 > We will be using github for this entire class, so you need to create an account there (you may have one already).
 
-> Then you need to [**Fork**](About_git_files/Fork.png) our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
+> Then you need to **Fork** ![](About_git_files/Fork.png) our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
 
 > Then you need to **Clone** your web directory to your local machine. The best way of doing this is directly via R Studio by opening a project from Git repository.
 > Remember to use your own **Fork** of this class. Otherwise you will not be allowed to update any content.
