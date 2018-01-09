@@ -9,9 +9,9 @@
 * How to start
 > We will be using github for this entire class, so you need to create an account there (you may have one already).
 
-> Then you need to **Fork** our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
+> Then you need to [**Fork**](About_git_files/Fork.png) our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without mesing around with anyone. 
 
-> Then you need to **Clone** your web directory to your local machine. The best way of doing this is derectly via R Studio by opening a project from Git repository.
+> Then you need to **Clone** your web directory to your local machine. The best way of doing this is directly via R Studio by opening a project from Git repository.
 > Remember to use your own **Fork** of this class. Otherwise you will not be allowed to update any content.
 
 * Why is there add, commit and push?
@@ -24,7 +24,7 @@
 > when you want to do partial saves, as you are not sure what will work best. These "complicated" steps will help you achieve it.
 
 * How to publish content (git push)
-> Once you are happy with the changes, you need to save them to your (master) repository. This is achieved via *git push* command. This will only push the changes you have committed earlier, and raise any conflicts. We are not expecting to have any conflictis in this class, but if they arise, we will look at resolving them.
+> Once you are happy with the changes, you need to save them to your (master) repository. This is achieved via *git push* command. This will only push the changes you have committed earlier, and raise any conflicts. We are not expecting to have any conflicts in this class, but if they arise, we will look at resolving them.
 > Remember to commit often and push reasonably frequently as well. There is no "auto-commit" and "auto-push" that you may be familiar from editors like MS Word (auto-save).
 
 * How to synchronise content (git pull or git checkout)
@@ -33,7 +33,7 @@
 * Branches
 > **Branches** allow you to do a parallel development. They are very powerful, but we are  not planning to using them. You can use official documentation or watch some youtube to learn more. 
 
-> I find this very useful reference to learn more about the stuff above and the branches in one of the [visual explanations](https://marklodato.github.io/visual-git-guide/index-en.html)
+![](About_git_files/GIT_Cheat_Sheet.png)
 
 # How it links to this class
 Hopefully you got some insight above about what git is. We decided to use it for this class (despite being and overkill) to allow us to be more up to date with the technology stack and to allow us to interact with you better. And we want to avoid sending emails back and forth. It also has one additional feature, and that is described bellow...
