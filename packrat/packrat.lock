@@ -8,6 +8,18 @@ Source: CRAN
 Version: 1.65.0-1
 Hash: 95f62be4d6916aae14a310a8b56a6475
 
+Package: ChainLadder
+Source: CRAN
+Version: 0.2.4
+Hash: 0015f2d9ca40bedd964fa49b59410764
+Requires: MASS, actuar, cplm, ggplot2, reshape2, statmod, systemfit,
+    tweedie
+
+Package: DBI
+Source: CRAN
+Version: 0.7
+Hash: 1ab72df487f06ad5f0de05446cdd4bd6
+
 Package: DT
 Source: CRAN
 Version: 0.2
@@ -18,6 +30,11 @@ Package: MASS
 Source: CRAN
 Version: 7.3-47
 Hash: cef924b1619219cfc32edbb8a340e652
+
+Package: MatrixModels
+Source: CRAN
+Version: 0.4-1
+Hash: 60a5c75e57aae4a0ce76cb7422939aaf
 
 Package: R6
 Source: CRAN
@@ -34,6 +51,23 @@ Source: CRAN
 Version: 0.12.13
 Hash: b9d8d89ff10ca2d8bfdaccdf83045ba1
 
+Package: RcppEigen
+Source: CRAN
+Version: 0.3.3.3.0
+Hash: 933dc08308024e34b6f23f0e25f5fcf1
+Requires: Rcpp
+
+Package: SparseM
+Source: CRAN
+Version: 1.77
+Hash: 08f1f60e1038957030bcd9f4a58d22d8
+
+Package: actuar
+Source: CRAN
+Version: 2.1-1
+Hash: 2381c0479d8b0c843b9675a9f4469df4
+Requires: expint
+
 Package: assertthat
 Source: CRAN
 Version: 0.2.0
@@ -48,6 +82,12 @@ Package: base64enc
 Source: CRAN
 Version: 0.1-3
 Hash: c590d29e555926af053055e23ee79efb
+
+Package: biglm
+Source: CRAN
+Version: 0.9-1
+Hash: b44dddf9cc91e6b6890a0668335f2cc5
+Requires: DBI
 
 Package: bindr
 Source: CRAN
@@ -71,10 +111,27 @@ Version: 1.17.1
 Hash: 97cb6f6293cd18d17df77a6383cc6763
 Requires: bitops
 
+Package: car
+Source: CRAN
+Version: 2.1-5
+Hash: 3c9e1eac57d1c381f7ce9562895eb33b
+Requires: MASS, pbkrtest, quantreg
+
+Package: coda
+Source: CRAN
+Version: 0.19-1
+Hash: e5aff7792ef292cd4306e58e25e403fe
+
 Package: colorspace
 Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
+
+Package: cplm
+Source: CRAN
+Version: 0.7-5
+Hash: a097b6e49a5a075d51c332a0c6e0dfee
+Requires: biglm, coda, ggplot2, minqa, reshape2, statmod, tweedie
 
 Package: dichromat
 Source: CRAN
@@ -98,6 +155,11 @@ Source: CRAN
 Version: 0.10.1
 Hash: 54d95f4ec6d0300100413ed0127d89ae
 Requires: stringr
+
+Package: expint
+Source: CRAN
+Version: 0.1-4
+Hash: 08f60d982f9653201209910691da6e6a
 
 Package: formatR
 Source: CRAN
@@ -165,6 +227,18 @@ Source: CRAN
 Version: 0.2.0
 Hash: 3d6e7608e65bbf5cb170dab1e3c9ed8b
 
+Package: lme4
+Source: CRAN
+Version: 1.1-14
+Hash: 63d85a1793162979799c8ce8af7c9ff1
+Requires: MASS, Rcpp, RcppEigen, minqa, nloptr
+
+Package: lmtest
+Source: CRAN
+Version: 0.9-35
+Hash: 370fc77c3949074497a1dac38180b4a9
+Requires: zoo
+
 Package: magrittr
 Source: CRAN
 Version: 1.5
@@ -181,16 +255,33 @@ Source: CRAN
 Version: 0.5
 Hash: 463550cf44fb6f0a2359368f42eebe62
 
+Package: minqa
+Source: CRAN
+Version: 1.2.4
+Hash: 4e2bdfa21b292ed3cd56c04d203ef37e
+Requires: Rcpp
+
 Package: munsell
 Source: CRAN
 Version: 0.4.3
 Hash: f96d896947fcaf9b6d0074002e9f4f9d
 Requires: colorspace
 
+Package: nloptr
+Source: CRAN
+Version: 1.0.4
+Hash: 8053df240a4635aeb54fc68c6de67709
+
 Package: packrat
 Source: CRAN
 Version: 0.4.8-1
 Hash: 6ad605ba7b4b476d84be6632393f5765
+
+Package: pbkrtest
+Source: CRAN
+Version: 0.4-7
+Hash: f195c3a0f527f69c491569c5cbaaf1db
+Requires: MASS, lme4
 
 Package: pkgconfig
 Source: CRAN
@@ -207,6 +298,12 @@ Source: CRAN
 Version: 1.8.4
 Hash: 9598fbff0cce13bee89ae3a50230d93f
 Requires: Rcpp
+
+Package: quantreg
+Source: CRAN
+Version: 5.33
+Hash: 30421e83e9d36563250019b6b2adafce
+Requires: MatrixModels, SparseM
 
 Package: reshape2
 Source: CRAN
@@ -231,6 +328,12 @@ Source: CRAN
 Version: 1.2
 Hash: fdcac51a7f47decd60556ceefc3c26b1
 Requires: backports
+
+Package: sandwich
+Source: CRAN
+Version: 2.4-0
+Hash: 754ae8e02f70c5561f75f7a95ea452cc
+Requires: zoo
 
 Package: scales
 Source: CRAN
@@ -257,6 +360,11 @@ Source: CRAN
 Version: 0.1.6
 Hash: 226d56d7469587da40b0f96180e711b4
 
+Package: statmod
+Source: CRAN
+Version: 1.4.30
+Hash: 8056353aa1923b5e708d08d83f02fe16
+
 Package: stringi
 Source: CRAN
 Version: 1.1.5
@@ -268,11 +376,22 @@ Version: 1.2.0
 Hash: 25a86d7f410513ebb7c0bc6a5e16bdc3
 Requires: magrittr, stringi
 
+Package: systemfit
+Source: CRAN
+Version: 1.1-20
+Hash: df8fae980569b081f7702f42692c8d9b
+Requires: MASS, car, lmtest, sandwich
+
 Package: tibble
 Source: CRAN
 Version: 1.3.4
 Hash: 3b72bdedb6c27fb216574ab9b15f2d43
 Requires: Rcpp, rlang
+
+Package: tweedie
+Source: CRAN
+Version: 2.2.5
+Hash: eb030cd8028497e65b2878f4c2098188
 
 Package: viridisLite
 Source: CRAN
@@ -288,3 +407,8 @@ Package: yaml
 Source: CRAN
 Version: 2.1.14
 Hash: c81230c3a7d9ba20607ad6b4331173d1
+
+Package: zoo
+Source: CRAN
+Version: 1.8-0
+Hash: df9711767f56f086e8a8d1f0fb926ff6
