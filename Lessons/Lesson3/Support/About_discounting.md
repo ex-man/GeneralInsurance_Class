@@ -11,7 +11,7 @@ Now let’s try to be more exact. What do we need to calculate this? Of course t
 
 So what is the other most important factor?
 
-Usually we would use a formula like this one: ![Loss_y = Loss_x * (1 + interest)^(y-x)](https://latex.codecogs.com/gif.download?Loss_y%20%3D%20Loss_x%20*%20%281%20+%20interest%29%5E%7B%28y-x%29%7D)
+Usually we would use a formula like this one: `Loss_y = Loss_x * (1 + interest)^(y-x)`
 
 The durations `(y-x)` is the answer. Most likely some information about the claims history and the payments will help us derive it. There are a number of approaches we can take. We can start at simple averaging through __mean payment term__ (weighted by amount?) to proper [reserving development triangles](https://en.wikipedia.org/wiki/Chain-ladder_method) and then applying swap rates.
 
