@@ -7,3 +7,7 @@
 	3) TP formula at point of underwriting
 	4) think about finding who is the driver of the underperformance => use decision trees
 	5) consider how much more the critical segment should be charged to be more profitable => SLIDER IN SHINY?
+
+### Lesson Flow:
+1) [Discounting](Support/About_discounting.md): `discounting.exercise.R`
+2) Repository update
