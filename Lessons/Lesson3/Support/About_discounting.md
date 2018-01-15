@@ -99,11 +99,7 @@ You have collected some reasonable premium, that is probably less then the value
  into your notes.
  
  Obviously, the bigger the size, the more capital is needed. But this still does not meant something is more or less risky.
- It is much better to weight the requirement by size. For this reason we use 
- 
- '''''
- Capital Intensity Ratio(CIR) = Required Capital / Net Earned Premium.
-'''''
+ It is much better to weight the requirement by size. For this reason we use `Capital_Intensity_Ratio(CIR) = Required_Capital / Net_Earned_Premium(NEP)`.
  
  Use the following data [CIR] to try to come up with some examples that support your ideas from your reflection. (Exercise5)
  > Look at the data provided. Identify examples, where 2 portfolios are similar (1 dimension is different), and the CIR is
