@@ -1,3 +1,61 @@
+# Triangles in insurance
+Do you know what this is? It is the core of Reserving and in many cases also pricing. This is how the numbers from previous
+class were produced (at leass the Losses). It is a very simple approach to get many answers like:
+
+1) How long does it take to fully pay the claims?
+2) How fast are they paid?
+3) Is the initial estimate of the future conservative or optimistic?
+
+There are far more questions and answers available, and there are many methods that can do the job. But for now, let's understand
+at least the basics.
+
+## What is a triangle
+As losses take sometimes a huge number of years to be reported and then some more years to be paid, it is very hard
+to say at the end of the year whether we have "saved" enough money. For this reason, it makes sense to keep history
+of all claims related to 1 period.
+
+Imagine this simple situation that shows a history of a single policy:
+1) 1st December 2016 - insurance contract was signed to protect against car crash injury
+2) 20th November 2017 - there was an accident. The person goes to hospital and does not care about calling insurance company
+3) 1st January 2018 - person is finally home, but he will not be able to work for unknown time
+4) 5th January 2018 - claim is reported. Doctors say, the person may require anoteher surgery in 6 months
+5) 1st February 2018 - new symptoms are found (they seem to be coming from the accident) ...
+6) a few years later - the person finally starts working, but is partially disabled
+
+Think about which year each information relates to (Exercise)
+> Write down into your notes, what you think... In which year(s) of data can we find the above situation. Then let's discuss.
+
+It make sense to keep a chronological history of how much was paid for each of the items above. If you have many policies and
+not just the one as above, it makes sense to group them together and form a chronological payment history for every year.
+This is then usually displayed as a "triangle", where the rows represent the years of origin (policy, accident, reporting date)
+and the columns represent how long it took until the information was recognized.
+
+## What do we do with this?
+Well, we want to take the advantage of the history that we have collected and predict what is likely to happen with the latest
+year, that we have just got to know about. It is basically a variation of the Linear Regression, where you learn from past
+patterns and apply them to predict future. To get what we are talking about, it is worth visualising this a bit.
+
+Use the ChainLadder package and explore the visaualize the triangle object from example there (Exercise)
+> What would you do to "finish-off" the unfinished lines if you were drawing this on a piece of paper?
+> Can you think about some basic maths, that would help you with that?
+
+At the end this is all about age-to-age factors. There are many methods that calculate them, but at the end once you get them
+you know, how much more the claim will be in x years.
+
+Now try to calculate them (Exercise)
+> Use the data provided [Claims history data for 2 lines and 3 claim types] and try to understand the differences between then.
+> What can you say about line 1 and line 2? (Start by doing some summaries)
+> What is the difference between loss type 1, 2, and 3? (hint: check the first 2 moments)
+> How are the differences reflected in age-to-age factors? (worth visualizing and plugging into chainladder method)
+
+## Short or Long tail
+In insurance this means how fast is the data fully developed. The age-to-age factors help you understand exactly this. What would
+the age-to-age factors look like to make the business short/long tail? Are the lines of business in the exercise above short or 
+long tailed?
+
+So hopefully by this time you know how the losses were calculated for you to use in previous class...
+-------------------------------
+
 # Discounting  losses
 
 It is very unlikely, that we incur the whole loss on the __very first day__. This allows the insurance company to __invest__ the premium received and earn som interest on it. So one way of thinking about our previous example would be to think about __the future value of money__ collected at the time of the claim. In reality we need to know the answers now, so __discounting the losses__ is more practical then earning interest on expenses.
@@ -25,20 +83,7 @@ and then applying swap rates.
 
 -------------------------------
 
-## Chain ladder and triangles
-Do you know what this is? It is the core of Reserving and in many cases also pricing. On the other hand, it is a very simple
-approach to get many answers like:
 
-1) How long does it take to fully pay the claims?
-2) How fast are they paid?
-3) Is the initial estimate of the future conservative or optimistic?
-
-There are far more questions and answers available, and there are many variations of this method. But for now, let's understand
-at least the basics.
-
---- TO  BE  FINISHED ---
-
--------------------------------
 
 Let’s do a bit of math (Exerise2)
 > Use the __Data__ provided in [`data/lesson2_KPI.csv`](../../../data/lesson2_KPI.csv) and try to come up with 
@@ -68,17 +113,12 @@ Let’s analyse it a bit (Exercise3)
 
 --------------------------------
 
-# Latest view of the loss development
---- to be finished ---
-
-
-
+# Capital requirements
 
 To make it even more real, we need to take into account another perspective as well. 
 This is the amount of money we need to hold to be able to pay the claims right when they appear. 
 In here the claims volatility __kicks in__.
 
-# Capital requirements
 _Imagine you are starting insuring against flood._
 
 The floods usually happen once every 100 years and when it happens, it destroys your house significantly. 
@@ -116,3 +156,6 @@ You have collected some reasonable premium, that is probably less then the value
  of the capital needed for that portfolio. What is the Economic profit before tax (NPV Latest view UWR net of Capital costs) for each
  portfolio? Which one of them is the most profitable? Is the worst one from previous investigation still the worst?
  
+
+# Latest view of the loss development
+--- to be finished ---
