@@ -76,6 +76,7 @@ This piece of code is a template that can be used at the start of development of
 
 Further resources
 -----------------
+There are many interesting resources and more extensive tutorials on Internet for further learning. We recommend a couple of them on the links below.
 
 ### Widgets and Inputs vs. Outputs
 [Widgets Gallery](https://shiny.rstudio.com/gallery/widget-gallery.html)
@@ -86,3 +87,5 @@ Further resources
 #### Sources
 [Rstudio - Shiny](http://shiny.rstudio.com/)
 [Shiny - Articles](https://shiny.rstudio.com/articles/)
+[Shiny App formats](https://shiny.rstudio.com/articles/app-formats.html)
+[Shiny - Tutorial](https://shiny.rstudio.com/tutorial/)
