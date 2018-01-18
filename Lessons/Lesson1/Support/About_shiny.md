@@ -48,7 +48,12 @@ Shiny Intro
 -----------------
 To get started with Shiny we will need RStudio, or R GUI and a web browser. Before we start to do anything with shiny, we will have to install the package. To do so, we need to run the following code on our machine `install.packages("shiny")`.
 
-### Basic app script description 
+### How shiny works
+Shiny apps are basically web applications that run on some server. There are different kinds of servers on which the apps can be run. There can be a web server that contains the app, or a local computer.
+
+In this course we will run all apps from a local machine.
+
+### Basic app script description
 Every shiny app consists of two parts: `ui` and `server`, where `ui` stands for "user interface". User interface part basically takes care of everything that will be displayed in the browser. Server part manages everything that is going on it the background. That is mainly calculation of R scripts, processing of the inputs that user provides in the interaction with the user interface, and also preparation of outputs that are produced based on the R code and the user interaction.
 
 There are two ways of creating shiny apps. First is to have a single R script called "app.R" that contains both `ui` and `server` part. In this case, the R script must contain also command for launching the app. The command looks like this: `shinyApp(ui = ui, server = server)`
