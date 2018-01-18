@@ -1,10 +1,12 @@
 # Objective
-To learn how to use GIT, tidyverse and shiny
+#### To learn how to use GIT, Tidyverse and Shiny ####
+In this class we will use [**GIT**](Support/About_GIT.md) to colaborate and share contents. And we will use some very usefull **R** packages. [**Tidyverse**](Support/About_tidyverse.md) is used for working with data applying database principles and [**Shiny**](Support/About_shiny.md) will help us to visualise results of analysis in graphical way. 
+
 ## Content
-1) [git](Support/About_GIT.md) - what is git and why we use it (15 min)
+1) [GIT](Support/About_GIT.md) - what is Git and why we use it (15 min)
 2) GitHub - set account, fork directory (15 min)
-3) my first commit/push - create notes for the class to lesson 1 folder (5 min)
-4) compare different forks + other exercises (10 min)
+3) My first commit/push - create notes for the class to lesson 1 folder (5 min)
+4) Compare different forks + other exercises (10 min)
 5) [Tidyverse](Support/About_tidyverse.md) - collection of useful tools in R for data scientist (actuary as well) (20 min)
 6) [Shiny](Support/About_shiny.md) intro - what is it and why is it + hello world shiny app (25 min)
 
@@ -17,4 +19,5 @@ To learn how to use GIT, tidyverse and shiny
 > Hint: instead of `aes` you might need `aes_string` 
 
 It might look something like this:
+
 ![](Support/About_shiny_files/Lesson1_Homework.png)`
