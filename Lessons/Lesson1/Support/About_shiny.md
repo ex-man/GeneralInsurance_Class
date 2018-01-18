@@ -79,6 +79,24 @@ And since this is a single R script shiny app, we have to call the `shinyApp()` 
 
 This piece of code is a template that can be used at the start of development of any shiny app.
 
+### Inputs and outputs
+Basically every shiny app will contain two sets of elements - inputs and outputs. We will use these to interact with a user and with our server R scripts. Since we want to show both inputs and outputs to the shiny app user, we will add this kind of elements as arguments to `fluidPage()`.
+
+```
+ui <- fluidPage(
+  *# Input() elements, *
+  *# Output() elements *
+)
+```
+
+Since we want to have an interactive interface to make a user able to interact with the R script running in the server part of our app, we will need some elements where the user will be able to pass some input to our script.
+
+In shiny there are many input elements that are ready for use, for example dropdown menus, buttons, sliders etc. These elements are called widgets. Widgets have simple syntax with their own sets of required parameters to run correctly. However, all widgets have in common first two arguments:
++a name - this is the code name of the widget that is invisible for a shiny app user, we will need it in our R codes to reference the values provided from the widget
++a label - the label appears on the web page created by the shiny app, it should be a string (can be also an empty string)
+
+To see available widgets with explanation of values that they return and their respective R codes visit [this link](https://shiny.rstudio.com/gallery/widget-gallery.html).
+
 Further resources
 -----------------
 There are many interesting resources and more extensive tutorials on Internet for further learning. We recommend a couple of them on the links below.
