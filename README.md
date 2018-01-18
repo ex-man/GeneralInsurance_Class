@@ -1,8 +1,8 @@
 # GeneralInsurance_Class
 This repository forms a backbone to the class we teach at Universities. It is related to General insurance and covers the following topics:
   
-  1) [How it all works](/Lessons/Lesson1/README.md) (GIT, R version, SHINY, basic terminology)
-  2) [Losses and Premium](/Lessons/Lesson2/README.md) (introduction to Loss Ratio)
+  1) [How it all works](/Lessons/Lesson1/README.md) (introduction to GIT, R version, SHINY plus basic terminology)
+  2) [Losses and Premium](/Lessons/Lesson2/README.md) (introduction to Loss Ratio, Expense Ratio and other KPIs)
   3) [Other sources of income and costs](/Lessons/Lesson3/README.md) (introduction to Technical Price)
   4) [Use past data to predict future experience](/Lessons/Lesson4/README.md) (introduction to GLM modelling)
   5) [Change is part of life](/Lessons/Lesson5/README.md) (improving model results) => Already done (PETO)
