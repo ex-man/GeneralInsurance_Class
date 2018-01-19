@@ -85,12 +85,12 @@ This piece of code is a template that can be used at the start of development of
 ### Inputs and outputs
 Basically every shiny app will contain two sets of elements - inputs and outputs. We will use these to interact with a user and with our server R scripts. Since we want to show both inputs and outputs to the shiny app user, we will add this kind of elements as arguments to `fluidPage()`.
 
-```
+<pre><code>
 ui <- fluidPage(
-  *# Input() elements, *
-  *# Output() elements *
+  <i># Input() elements, </i>
+  <i># Output() elements </i>
 )
-```
+</code></pre>
 
 Everything we put in the `fluidPage` object will be what will appear on the web page of our shiny app.
 
