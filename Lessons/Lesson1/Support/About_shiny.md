@@ -62,20 +62,23 @@ The second way to write apps is to have two separate scripts - the first script 
 
 In both of the cases shiny looks for the `ui` and `server` part. Throughout this course we will use the second approach. We prefer this way because as codes of an app grow, the split into two separate files makes it easier to navigate in the files.
 
-The minimum code for a working shiny app are the following lines
+The minimum code for a working shiny app are the following lines saved in a script called "server.R"
 ```
 library(shiny)
-
-ui <- fluidPage()
 server <- function(input, output){}
-
-shinyApp(ui = ui, server = server)
 ```
-At the start of every shiny app we will have to load shiny library to be able to run any app. Then comes the definition of the `ui` part. It must return a `fluidPage()` object. This object basically rewrites everything within to HTML, CSS and JavaScript codes and hence does all the web developement work for us.
+and this line of code saved in "ui.R" in the same folder as the previous script.
+```
+ui <- fluidPage()
+```
 
-Afterwards, the server part is defined. It must be a function with input and output parameters. The body of the function can contain R codes and scripts that do all the heavy work that will be displayed in form of outputs on the web page.
+To see this app, we have to save these two scripts, then highlight code in "server.R" and run it. A browser tab will be opened and we should see empty web page.
 
-And since this is a single R script shiny app, we have to call the `shinyApp()` function where we define what are the `ui` and `server` parts of the R script.
+At the start of every shiny app we will have to load shiny library to be able to run any app. Afterwards, the server part is defined. It must be a function with input and output parameters. The body of the function can contain R codes and scripts that do all the heavy work that will be displayed in form of outputs on the web page.
+
+Then comes the definition of the `ui` part. It must return a `fluidPage()` object. This object basically rewrites everything within to HTML, CSS and JavaScript codes and hence does all the web developement work for us.
+
+And since this is not a single R script shiny app, we don't have to call the `shinyApp()` function.
 
 This piece of code is a template that can be used at the start of development of any shiny app.
 
@@ -89,13 +92,23 @@ ui <- fluidPage(
 )
 ```
 
+Everything we put in the `fluidPage` object will be what will appear on the web page of our shiny app.
+
+#### Let's have a look at inputs
+
 Since we want to have an interactive interface to make a user able to interact with the R script running in the server part of our app, we will need some elements where the user will be able to pass some input to our script.
 
 In shiny there are many input elements that are ready for use, for example dropdown menus, buttons, sliders etc. These elements are called widgets. Widgets have simple syntax with their own sets of required parameters to run correctly. However, all widgets have in common first two arguments:
-+a name - this is the code name of the widget that is invisible for a shiny app user, we will need it in our R codes to reference the values provided from the widget
-+a label - the label appears on the web page created by the shiny app, it should be a string (can be also an empty string)
++a name - This is  avery important parameter. It is the code name of the widget that is invisible for a shiny app user but we will need it in our R codes to reference the values provided from the widget. The name must be unique for every widget of the shiny app.
++a label - The label appears on the web page created by the shiny app. It should be a string (can be also an empty string).
 
 To see available widgets with explanation of values that they return and their respective R codes visit [this link](https://shiny.rstudio.com/gallery/widget-gallery.html).
+
+#### Outputs
+
+Outputs are web page elements that are used to display some content to a user. The outputs are elements that can be changed as the user interacts with the input elements of the app, or as the R script is executed. For example we can output data in form of plots, tables or text.
+
+Just like in case of inputs for every type of output there is a separate function. Every output has to have one parameter and that is `outputId`. This is again the code name that should be unique and will be used in our R script to interact with the output in our shiny app.
 
 Further resources
 -----------------
