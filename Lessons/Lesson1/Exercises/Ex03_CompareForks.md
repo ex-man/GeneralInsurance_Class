@@ -39,7 +39,7 @@ like
 > Set *base fork* to co-student's fork  
 > Set *base* to **master** (unless he/she has renamed or branched something)  
 > Set *head fork* to fork you created in **Step2**  
-> Set *base* to **master** (unless you have renamed or branched something)
+> Set *base* to **master** (unless you have renamed or branched something)  
 > And **Create pull request**
 
 More about **Pull Requests** can be found [here](https://help.github.com/articles/checking-out-pull-requests-locally)
