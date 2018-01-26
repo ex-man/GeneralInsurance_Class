@@ -13,7 +13,7 @@
 
 > Navigate to the repository using command line or in Windows Explorer use Right-Click -> GitBash tool when being in folder for your project.  
 
-> You will be using the following commands, try to resolve the correct order (google may help):  
+> You will be using the following commands, try to resolve the correct order (this [page](http://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html) or this [page](https://juristr.com/blog/2013/04/git-explained/) may help):  
 *git commit -m "Committing my second change"*  
 *git status*  
 *git add .*  
