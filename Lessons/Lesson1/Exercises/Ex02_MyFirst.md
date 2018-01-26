@@ -1,30 +1,22 @@
-# Here you can find a set of exercises to make to familiarise yourself with .git
-* Starting with Git
-> As per the About_GIT section you needd to have GIT installed, have an account on gihub. 
-> Once you have this done, fork our repository and then clone it using R to your local machine.
+# My First Commit and Push
+* Edit File
+> Go to your github fork, navigate to Lessons/Lesson1/Notes and edit the notes file (this file is for you to comment on what you have learnt about) make changes directly using web UI. How do you save changes? What is the "save" called in git?
 
-* My first ...
-> Go to your github fork, navigat to Lessons/Lesson1/Notes and edit the notes file
-> (this file is for you to comment on what you have learnt about)
-> make changes in the web UI. How do you save changes? What is the "save" called in git?
-
-* Stay in sync
-> Now you need to make sure your local folder contains all your comments. Open R studio and synchronize with your online version.
-> PULL changes to your local repository.
+* Stay Synchronised
+> Now you need to make sure your local folder contains all your comments. Open R studio and synchronize with your online version. **PULL** changes to your local repository. Then open *Notes.md* from project on your computer in R. Can you see the changes?
 
 * Publish content using R
+> Now change content of *Notes.md* adding more notes. **Save** it to your project. Then **Commit** changes using RStudio interface giving it description *"Committing my first change"*. And **Push** it to GitHub.
 
-* Publish more content using command line
-> 1) Navigate to the repository in command line or use right-click git bash tool.
-> 2) You will be using the following commands, try to resolve the correct order (google may help):
+* Publish content using command line
+> Change content of *Notes.md* again and **Save** it.  
 
-```
-git commit -m "Committing my first change"
-git status
-git add .
-git push
-```
+> Navigate to the repository using command line or in Windows Explorer use Right-Click -> GitBash tool when being in folder for your project.  
 
-* Pull updates from the GeneralInsuranceClass master
+> You will be using the following commands, try to resolve the correct order (google may help):  
+*git commit -m "Committing my second change"*  
+*git status*  
+*git add .*  
+*git push*  
 
-* Understand how homework is submitted => Pull Request on GeneralInsuranceClass master
+
