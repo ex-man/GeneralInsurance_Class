@@ -2,31 +2,38 @@
 # Libraries
 library(dplyr)
 library(ggplot2)
+library(ChainLadder)
 
 # data about KPIs
 dt_KPI <- read.csv("data/lesson2_KPI.csv")
+dt_LatestView <- read.csv("data/lesson3_latestView.csv")
 
 ########################################
 ## Exercise 1
-# There are a couple of different types of business in the data from previous lesson. 
+#  As we will be working with ChainLadder library, explore it a little bit.
+#  To understand what it is doing run the example below (demo from ChainLadder library)
 
-# What do you think, how long are the average delays in payments? Set up a table, 
-# that will show your assumptions and commit it to your git repository. 
+GenIns
+plot(GenIns)
+plot(GenIns, lattice=TRUE)
 
-# What is driving your thinking? Take a note about that in your notes file.
+# think about some math, that could project the furure for the "unfinished lines" (e.g. liner models?)
 
+# to explore a bit of math, look at the exmaples from help section on "chainladder" function
 
+# now try to predict what happens with the linse using the chain ladder technique (hint: search for predict)
 
-
-
-
+#SOLUTION
+#--------
+GenIns_d <- predict(chainladder(GenIns))
+plot(GenIns_d)
+#--------
 
 
 ########################################
 ## Exercise 2
 # Use the __Date__ provided in "dt_KPI" and try to come up with diferent estimates of the average duration. 
 # If you want to be really sophisticated, consider using  R package - chainladder to implement a chain ladder methodology.
-library(ChainLadder)
 
 # Does the value calculated correspond to your assumed value for the given business in Exercise 1? Comment on the findings in your notes...
 
