@@ -104,6 +104,22 @@ In shiny there are many input elements that are ready for use, for example dropd
 
 To see available widgets with explanation of values that they return and their respective R codes visit [this link](https://shiny.rstudio.com/gallery/widget-gallery.html).
 
+With that said, let's try it out in a shiny app. We will take the basic app that was introduced in the previous section and add an input component into it. In this case, we will use a slider. The code of our new app will have the following `ui` part
+
+```
+ui <- fluidPage(
+	sliderInput(
+		inputId = "chosen_number",
+		label = "Choose a number",
+		value = 7,
+		min = 1,
+		max = 10
+	)
+)
+```
+
+Now we can run this new app. It will now contain also the new input element that we added. Since we didn't connect the input widget to any particular working part of code, it will not affect the run of the application. We can still change the value on the slider, though.
+
 #### Outputs
 
 Outputs are web page elements that are used to display some content to a user. The outputs are elements that can be changed as the user interacts with the input elements of the app, or as the R script is executed. For example we can output data in form of plots, tables or text.

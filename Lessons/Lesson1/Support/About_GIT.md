@@ -33,7 +33,8 @@
 * Branches
 > **Branches** allow you to do a parallel development. They are very powerful, but we are  not planning to using them. You can use official documentation or watch some YouTube to learn more. 
 
-![](About_git_files/GIT_Cheat_Sheet.png)
+* Git Explained For Beginners
+> More about commands in Git can be found [here](https://juristr.com/blog/2013/04/git-explained/)
 
 # How it links to this class
 Hopefully you got some insight above about what git is. We decided to use it for this class (despite being and overkill) to allow us to be more up to date with the technology stack and to allow us to interact with you better. And we want to avoid sending emails back and forth. It also has one additional feature, and that is described bellow...
