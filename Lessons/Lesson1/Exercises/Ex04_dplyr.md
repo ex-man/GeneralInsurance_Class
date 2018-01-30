@@ -27,11 +27,11 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
 #### 6 basic `dplyr` verbs
 > In this exercise let's practice `dplyr` and **piping** on simple dataset.  
 >  
-> Firstly let's `read` some data in  
+> Firstly let's `read` some data in:  
 ``` r
 dt_KPI <- read.csv("../../data/lesson2_KPI.csv")
 ```
-> We can select top 6 rows using `head` function 
+> We can select top 6 rows using `head` function. 
 ``` r
 dt_KPI %>% head
 ```
@@ -46,7 +46,7 @@ dt_KPI %>% head
     ## 6 Alandia Unit1     Big Criminals 2012  406094.8  309548.2 2755107
 ```
 
-> OK, now let's create additonal column (*Combined*) by `mutate` and showing first 6 rows right away  
+> OK, now let's create additonal column (*Combined*) by `mutate` and showing first 6 rows right away.  
 ``` r
 dt_KPI %>% 
   mutate(Combined = Losses + Expenses) %>% head
@@ -68,12 +68,12 @@ dt_KPI %>%
     ## 5 10020688
     ## 6   715643
 ```
-> What if we want to see only losses? Let's `select` it to output
+> What if we want to see only losses? Let's `select` it to output:  
 ``` r
 dt_KPI %>% 
   select(Region, Losses) %>% head
 ```
-> this is giving us  
+> This is giving us  
 ``` r
     ##    Region    Losses
     ## 1 Alandia 2520045.7
@@ -113,7 +113,7 @@ dt_KPI %>%
     ## 5    Cegro Unit14   Small     <NA> 2015 -1862066   1601650.9   -380880.4
     ## 6    Cegro Unit12   Small     <NA> 2016 -1397744   -264918.0 -12588349.4
 ```
-> Or we may want to `summarise` data to see some basic statistic about it 
+> Or we may want to `summarise` data to see some basic statistic about it. 
 ``` r
 dt_KPI %>% 
   summarise(Loss_avg = mean(Losses)) %>% head
@@ -123,7 +123,7 @@ dt_KPI %>%
     ##   Loss_avg
     ## 1 29227137
 ```
-> We may also want to see the summary split by one (or more) of columns  
+> We may also want to see the summary split by one (or more) of columns.  
 ``` r
 dt_KPI %>% 
   group_by(Region) %>% 
