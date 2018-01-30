@@ -126,6 +126,28 @@ Outputs are web page elements that are used to display some content to a user. T
 
 Just like in case of inputs for every type of output there is a separate function. Every output has to have one parameter and that is `outputId`. This is again the code name that should be unique and will be used in our R script to interact with the output in our shiny app.
 
+To see all types of output functions, visit [this page](https://shiny.rstudio.com/reference/shiny/1.0.5/), section "UI Outputs".
+
+Let's try to use it in the shiny app as well. Firstly, we will update the `ui` code. Since we want to display some output, we will have to put some output function to the `fluidPage` element. In this example we will add to our shiny app `plotOutput` function. Our new `ui` code will now look like this
+
+```
+ui <- fluidPage(
+    sliderInput(
+        inputId = "chosen_number",
+        label = "Choose a number",
+        value = 7,
+        min = 1,
+        max = 10
+    ),
+    plotOutput("chart")
+)
+```
+
+We can run the shiny app now. There are a couple of things to notice here. First is that elements contained in the `fluidPage` are separated by commas.
+The second thing is a bit hidden in the web page source code. Since we didn't tell our app what we want to see on the plot that is output, there is nothing much to see in the app. But when we have a look at the source code of the app, we can notice that there are some HTML tags added that allocate room for the `plotOutput`.
+
+So now we know how to add input and output elements to the `fluidPage`. But we also want to see some output from the app. To achieve this, we will have to make some changes in our `server` code.
+
 Further resources
 -----------------
 There are many interesting resources and more extensive tutorials on Internet for further learning. We recommend a couple of them on the links below.
