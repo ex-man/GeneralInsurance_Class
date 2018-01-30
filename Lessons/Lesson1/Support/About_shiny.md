@@ -99,8 +99,10 @@ Everything we put in the `fluidPage` object will be what will appear on the web 
 Since we want to have an interactive interface to make a user able to interact with the R script running in the server part of our app, we will need some elements where the user will be able to pass some input to our script.
 
 In shiny there are many input elements that are ready for use, for example dropdown menus, buttons, sliders etc. These elements are called widgets. Widgets have simple syntax with their own sets of required parameters to run correctly. However, all widgets have in common first two arguments:
-+a name - This is  avery important parameter. It is the code name of the widget that is invisible for a shiny app user but we will need it in our R codes to reference the values provided from the widget. The name must be unique for every widget of the shiny app.
-+a label - The label appears on the web page created by the shiny app. It should be a string (can be also an empty string).
+
+- a name - This is a very important parameter. It is the code name of the widget that is invisible for a shiny app user but we will need it in our R codes to reference the values provided from the widget. The name must be unique for every widget of the shiny app.
+
+- a label - The label appears on the web page created by the shiny app. It should be a string (can be also an empty string).
 
 To see available widgets with explanation of values that they return and their respective R codes visit [this link](https://shiny.rstudio.com/gallery/widget-gallery.html).
 
