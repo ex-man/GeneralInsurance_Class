@@ -139,9 +139,9 @@ ui <- fluidPage(
         label = "Choose a number",
         value = 7,
         min = 1,
-        max = 10
+        max = 100
     ),
-    plotOutput("chart")
+    plotOutput(outputId = "chart")
 )
 ```
 
@@ -149,6 +149,40 @@ We can run the shiny app now. There are a couple of things to notice here. First
 The second thing is a bit hidden in the web page source code. Since we didn't tell our app what we want to see on the plot that is output, there is nothing much to see in the app. But when we have a look at the source code of the app, we can notice that there are some HTML tags added that allocate room for the `plotOutput`.
 
 So now we know how to add input and output elements to the `fluidPage`. But we also want to see some output from the app. To achieve this, we will have to make some changes in our `server` code.
+
+### Putting inputs and outputs together
+
+Until now we have looked at separate elements of shiny apps. Now it is time to make use of them in one app that makes these elements work together. This part takes place in the `server` function of a shiny app.
+
+The concept of working with inputs and outputs in our shiny app is fairly simple. The key elements here are the parameters of the server function and IDs of the input and output elements.
+
+The server function in our case occupies a single code called `server.R`. The function has two parameters - input and output. We use these parameters when we want to work with inputs and outputs, respectively.
+
+#### Inputs
+
+When we want to use a value that is passed from a user to the app by an input widget, we reference this value using the input parameter of the server function and the name of the widget. For example if we want to use the value from the slider in our app, we would reference the value from the slider as `input$chosen_number`. This is because we set the `inputId` parameter of the slider to be `chosen_number`.
+
+#### Outputs and render functions
+
+To create a visible output in a shiny app we have to use the output parameter of the server function. Just like we did it with the inputs, we use the parameter and the output ID of the output element.
+
+Compared to the inputs, there is one more step we have to do to really display something in an app. We will need a render function.
+
+Render function is a function that takes R code as an argument and uses this code to render an output object to display a visible output in an app. We can put there a single command but if we use curly brackets inside a render function, we can put there unlimited number of lines of R code or run an entire R script from there.
+
+Similarly to the inputs and output, there are several types of render functions. We use different render functions based on the type of the output we want to display. These functions in some cases create analogous pairs with the output functions, for example `plotOutput` and `renderPlot` or `textOutput` and `renderText`.
+
+To see all types of the rendering functions please visit "Renderig functions" section on [this page](https://shiny.rstudio.com/reference/shiny/1.0.5/).
+
+Now let's try it out in our app from the previous example. We will do it in two steps. The first step will be that we will render a plot in our app. For example we can display a histogram of 100 random numbers generated from normal distribution. We will use the same `ui` as before but we will make a couple of changes in `server`. It will look like this
+
+```
+server <- function(input, output){
+    output$chart <- renderPlot(
+        hist(rnorm(100))
+    )
+}
+```
 
 Further resources
 -----------------
