@@ -15,7 +15,7 @@ abs(min(c(1, 4, 2, 8, -5)))
 ``` r
   ## [1] 5
 ```    
-> with `dplyr` we can code the same thing using **Piping**
+> with `dplyr` we can code the same thing using **piping**
 ``` r
 c(1, 4, 2, 8, -5) %>% min %>% abs
 ```
@@ -25,7 +25,7 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
 ```    
 
 #### 6 basic dplyr verbs
-
+>In this exercise let's practice 
 ``` r
 dt_KPI <- read.csv("../../data/lesson2_KPI.csv")
 
