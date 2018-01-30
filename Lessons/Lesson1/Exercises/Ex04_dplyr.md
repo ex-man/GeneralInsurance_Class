@@ -1,15 +1,17 @@
 ### Exercise - dplyr
-
+> Open R project for this class in R Studio  
+> Run following command in R console to link to `dplyr` library:
 ``` r
 library(dplyr)
 ```
 
 #### Piping
-
+> Now let's try to calculate simple thing using multiple encapsulated functions.
 ``` r
 abs(min(c(1, 4, 2, 8, -5)))
 ```
-
+> Can you understand what this command does?  
+> Is following result what you've expected?  
     ## [1] 5
 
 vs.
