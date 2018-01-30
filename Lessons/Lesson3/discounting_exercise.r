@@ -7,6 +7,7 @@ library(ChainLadder)
 # data about KPIs
 dt_KPI <- read.csv("data/lesson2_KPI.csv")
 dt_LatestView <- read.csv("data/lesson3_latestView.csv")
+dt_PaidCase <- read.csv("data/lesson3_PaidCase.csv")
 
 ########################################
 ## Exercise 1
@@ -32,6 +33,34 @@ plot(GenIns_d)
 
 ########################################
 ## Exercise 2
+#  Now let's have a look at a couple of different triangles. The data is provided for 2 different businesses.
+#  It also shows 3 different claim types for each. Can you describe how different they are?
+#  Hint: Consider the length of tail, volatility, average sizes...
+
+#SOLUTION
+#--------
+# understand the data
+summary(dt_PaidCase)
+# create a variable => filter data and covert to triangle. then convert to cummulative to use chainladder
+Case_06_att <- dt_PaidCase %>% 
+                filter(level_2 == "N06K1" & level_5 == "ATT" & dataset_type == "CASE") %>% 
+                select(ay:Expr1) %>% as.triangle(origin="ay", dev="dev", value="Expr1") %>% incr2cum(na.rm = TRUE)
+
+### DATA TO BE SORTED OUT FIRST (remove NAs)
+### --------------------------
+
+plot(Case_06_att)
+plot(predict(chainladder(Case_06_att)))
+
+
+#--------
+
+
+
+
+
+########################################
+## Exercise 3
 # Use the __Date__ provided in "dt_KPI" and try to come up with diferent estimates of the average duration. 
 # If you want to be really sophisticated, consider using  R package - chainladder to implement a chain ladder methodology.
 
@@ -47,7 +76,7 @@ plot(GenIns_d)
 
 
 ########################################
-## Exercise 3
+## Exercise 4
 # Now, let’s have a look at it from the other way around. 
 # The following dataset includes the same data you were analysing in class 1, but it is all discounted...
 claims <- read.csv("data/claims.csv")
