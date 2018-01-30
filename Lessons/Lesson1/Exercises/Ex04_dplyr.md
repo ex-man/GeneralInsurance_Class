@@ -12,15 +12,17 @@ abs(min(c(1, 4, 2, 8, -5)))
 ```
 > Can you understand what this command does?  
 > Is following result what you've expected?  
-    ## [1] 5
-
-vs.
-
+``` r
+  ## [1] 5
+```    
+> with `dplyr` we can code the same thing using **Piping**
 ``` r
 c(1, 4, 2, 8, -5) %>% min %>% abs
 ```
-
-    ## [1] 5
+> result is the same
+``` r
+  ## [1] 5
+```    
 
 #### 6 basic dplyr verbs
 
