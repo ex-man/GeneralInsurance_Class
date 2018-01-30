@@ -22,7 +22,7 @@ dplyr - data transformation package
 
 > These all combine naturally with `group_by()` which allows you to perform any operation "by group". You can learn more about them in `vignette("dplyr")`. As well as these single-table verbs, dplyr also provides a variety of two-table verbs, which you can learn about in `vignette("two-table")`.
 
-> Let's try it now in R
+> Let's [try it](../Exercises/Ex04_dplyr.md) now in R
 
 ggplot2 - data visualization package
 ------------------------------------
