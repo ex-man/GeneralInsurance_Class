@@ -1,5 +1,5 @@
 ### Exercise - dplyr
-> We will work with local repository you have cloned in the first (Git) exercise.  
+> We will work with the local repository you have cloned in the first (Git) exercise.  
 > Open R project for this class in R Studio  
 > Run following command in R console to link to `dplyr` library:
 ``` r
