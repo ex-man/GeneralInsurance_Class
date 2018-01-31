@@ -1,4 +1,5 @@
 ### Exercise - dplyr
+> We will work with local repository you have cloned in the first (Git) exercise.  
 > Open R project for this class in R Studio  
 > Run following command in R console to link to `dplyr` library:
 ``` r
@@ -68,7 +69,7 @@ dt_KPI %>%
     ## 5 10020688
     ## 6   715643
 ```
-> What if we want to see only losses? Let's `select` it to output:  
+> What if we want to see only *Region* and *Losses*? Let's `select` it to output:  
 ``` r
 dt_KPI %>% 
   select(Region, Losses) %>% head
@@ -116,7 +117,7 @@ dt_KPI %>%
 > Or we may want to `summarise` data to see some basic statistic about it. 
 ``` r
 dt_KPI %>% 
-  summarise(Loss_avg = mean(Losses)) %>% head
+  summarise(Loss_avg = mean(Losses))
 ```
 > gives us average loss  
 ``` r
