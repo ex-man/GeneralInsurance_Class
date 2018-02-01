@@ -53,14 +53,18 @@ Incur_HH_sml <- dt_PaidCase %>%
   select(ay:SumOfamount) %>% as.triangle(origin="ay", dev="dy", value="SumOfamount") ## %>% incr2cum(na.rm = TRUE)
 
 
-### DATA TO BE SORTED OUT FIRST (remove NAs)
-### --------------------------
+## Now start plotting things to see more information
 
 plot(Paid_HH_sml)
 plot(predict(chainladder(Paid_HH_sml)))
 
 plot(Incur_HH_sml)
 plot(predict(chainladder(Incur_HH_sml)))
+
+## And get the aging factors and some other stat's out to see more details
+ata(Paid_HH_sml)
+ata(Incur_HH_sml)
+
 #--------
 
 
@@ -69,19 +73,23 @@ plot(predict(chainladder(Incur_HH_sml)))
 
 ########################################
 ## Exercise 3
-# Use the __Date__ provided in "dt_KPI" and try to come up with diferent estimates of the average duration. 
-# If you want to be really sophisticated, consider using  R package - chainladder to implement a chain ladder methodology.
+# Use the data provided in exercise 2 and try to come up with an estimates of the average duration. 
+# How does it work? Well, discounting apart, in what year does the average payment happen? 
+# HINT: (Here you definitely use paid claims, and it is enough to calculate weighted average of incremental payment)
+
+##  get the weights
+Incr_Paid_HH_sml <- Paid_HH_sml %>% cum2incr() %>% ata() %>% attr("vwtd")
+
+## average duration
+sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9))
 
 # Does the value calculated correspond to your assumed value for the given business in Exercise 1? Comment on the findings in your notes...
 
-# Now, assume an interest rate of 5%.
-#How will the Net Present Value of the Underwriting Result (NPV)UWR change for the portfolio identified in lesson 1?
+# Now, assume an interest rate of 5%. How will the discounting change this?
+sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] * (1/1.05^c(1:9)) * c(1:9)) ##this is a simplification. CL should happen on discounted data
 
-
-
-
-
-
+# Recall what is UWR from Lesson 2. Assume premium and expenses are calculated on day 1.
+# Can you calculate a sigle number, that could be used to discount the claims to arrive to Net present value of UWR?
 
 ########################################
 ## Exercise 4
