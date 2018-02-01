@@ -42,17 +42,25 @@ plot(GenIns_d)
 # understand the data
 summary(dt_PaidCase)
 # create a variable => filter data and covert to triangle. then convert to cummulative to use chainladder
-Case_06_att <- dt_PaidCase %>% 
-                filter(level_2 == "N06K1" & level_5 == "ATT" & dataset_type == "CASE") %>% 
-                select(ay:Expr1) %>% as.triangle(origin="ay", dev="dev", value="Expr1") %>% incr2cum(na.rm = TRUE)
+Paid_HH_sml <- dt_PaidCase %>% 
+                filter(Business == "House" & ClaimSize == "Small" & dataset_type == "PAID") %>% 
+                select(ay:SumOfamount) %>% as.triangle(origin="ay", dev="dy", value="SumOfamount") ## %>% incr2cum(na.rm = TRUE)
+
+Incur_HH_sml <- dt_PaidCase %>% 
+  filter(Business == "House" & ClaimSize == "Small") %>%
+  group_by(Business,ClaimSize,ay,dy) %>%
+  summarise(SumOfamount=sum(SumOfamount)) %>%
+  select(ay:SumOfamount) %>% as.triangle(origin="ay", dev="dy", value="SumOfamount") ## %>% incr2cum(na.rm = TRUE)
+
 
 ### DATA TO BE SORTED OUT FIRST (remove NAs)
 ### --------------------------
 
-plot(Case_06_att)
-plot(predict(chainladder(Case_06_att)))
+plot(Paid_HH_sml)
+plot(predict(chainladder(Paid_HH_sml)))
 
-
+plot(Incur_HH_sml)
+plot(predict(chainladder(Incur_HH_sml)))
 #--------
 
 
