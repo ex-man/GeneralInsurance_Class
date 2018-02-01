@@ -1,1 +1,1 @@
-#Intro to losses and expenses
+# Introduction to losses and expenses
