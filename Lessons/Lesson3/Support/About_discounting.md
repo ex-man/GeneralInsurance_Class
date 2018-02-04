@@ -1,6 +1,6 @@
 # Triangles in insurance
-Do you know what this is? It is the core of Reserving and in many cases also pricing. This is how the numbers from previous
-class were produced (at leass the Losses). It is a very simple approach to get many answers like:
+Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous
+class were produced. It is a very simple way to get many answers like:
 
 1) How long does it take to fully pay the claims?
 2) How fast are they paid?
@@ -10,7 +10,7 @@ There are far more questions and answers available, and there are many methods t
 at least the basics.
 
 ## What is a triangle
-As losses take sometimes a huge number of years to be reported and then some more years to be paid, it is very hard
+As losses take sometimes a number of years to be reported and then some more years to be paid, it is very hard
 to say at the end of the year whether we have "saved" enough money. For this reason, it makes sense to keep history
 of all claims related to 1 period.
 
@@ -22,7 +22,7 @@ Imagine this simple situation that shows a history of a single policy:
 5) 1st February 2018 - new symptoms are found (they seem to be coming from the accident) ...
 6) a few years later - the person finally starts working, but is partially disabled
 
-Think about which year each information relates to (Exercise)
+Think about which year each information relates to (Exercise0)
 > Write down into your notes, what you think... In which year(s) of data can we find the above situation. Then let's discuss.
 
 It make sense to keep a chronological history of how much was paid for each of the items above. If you have many policies and
@@ -35,23 +35,23 @@ Well, we want to take the advantage of the history that we have collected and pr
 year, that we have just got to know about. It is basically a variation of the Linear Regression, where you learn from past
 patterns and apply them to predict future. To get what we are talking about, it is worth visualising this a bit.
 
-Use the ChainLadder package and explore the visaualize the triangle object from example there (Exercise)
+Use the ChainLadder package and explore the visaualize the triangle object from example there (Exercise1)
 > What would you do to "finish-off" the unfinished lines if you were drawing this on a piece of paper?
 > Can you think about some basic maths, that would help you with that?
 
 At the end this is all about age-to-age factors. There are many methods that calculate them, but at the end once you get them
 you know, how much more the claim will be in x years.
 
-Now try to calculate them (Exercise)
-> Use the data provided [Claims history data for 2 lines and 3 claim types] and try to understand the differences between then.
+Now try to calculate them (Exercise2)
+> Use the data provided [Claims history data for 2 lines and 2 claim types] and try to understand the differences between then.
 > What can you say about line 1 and line 2? (Start by doing some summaries)
-> What is the difference between loss type 1, 2, and 3? (hint: check the first 2 moments)
+> What is the difference between loss type 1 a 2?
 > How are the differences reflected in age-to-age factors? (worth visualizing and plugging into chainladder method)
 
 ## Short or Long tail
 In insurance this means how fast is the data fully developed. The age-to-age factors help you understand exactly this. What would
 the age-to-age factors look like to make the business short/long tail? Are the lines of business in the exercise above short or 
-long tailed?
+long tailed? Try to come up with the meant payment term (weighted average of the duration until the claim is paid) (Exercise3)
 
 So hopefully by this time you know how the losses were calculated for you to use in previous class...
 -------------------------------
@@ -62,11 +62,14 @@ It is very unlikely, that we incur the whole loss on the __very first day__. Thi
 
 -------------------------------
 
-Think a bit now (Exercise1)
+Think a bit now (Exercise3)
 > There are a couple of different types of business in the data from previous lesson. 
 What do you think, how long are the average delays in payments? Set up a table, that will 
 show your assumptions and commit it to your git repository. What is driving your thinking? 
 Take a note about that in your notes file.
+
+Let's check the data now (Exercise4). Were your expectations above supported by the calculation?
+Add comments to your notes if needed...
 
 Now let’s try to be more exact. What do we need to calculate this? Of course the interest rates, 
 but let’s park that for now and use just [risk free rates](https://en.wikipedia.org/wiki/Risk-free_interest_rate). 
@@ -77,39 +80,20 @@ Usually we would use a formula like this one: `Loss_y = Loss_x * (1 + interest)^
 
 The durations `(y-x)` is the answer. Most likely some information about the claims history 
 and the payments will help us derive it. There are a number of approaches we can take. 
-We can start at simple averaging through __mean payment term__ (weighted by amount?) 
-to proper [reserving development triangles](https://en.wikipedia.org/wiki/Chain-ladder_method) 
-and then applying swap rates.
-
+We can start at simple averaging through discounting for the period equal to aveage duration.
+Then do the proper age-to-age factors, that we can derive from triangles and then applying 
+swap rates (or any other interest rates) (Exercise5)
 -------------------------------
 
 
 
-Let’s do a bit of math (Exerise2)
-> Use the __Data__ provided in [`data/lesson2_KPI.csv`](../../../data/lesson2_KPI.csv) and try to come up with 
-different estimates of the average duration. If you want to be really sophisticated, consider 
-using [R package](https://cran.r-project.org/web/packages/ChainLadder/index.html) to implement a chain ladder methodology.
+Now let's get back to the data we were analysing in lesson 2
+> Use the additional data that extend what was provided in lesson2 [`data/lesson3_NPV.csv`](../../../data/lesson3_NPV.csv) and try to come up with different estimates of the average duration for different lines of business. Assume, the interest rates are at 2%/
 
-> Does the value calculated correspond to your assumed value for the given business in Exercise 1?
+> Does the value calculated correspond to your assumed value for the given business in Exercise 3? (Exercise 6)
 Comment on the findings in your notes...
 
-> Now, assume an interest rate of 5%. How will the [Net Present Value](https://en.wikipedia.org/wiki/Net_present_value) 
-of the Underwriting Result (NPV)UWR change for the portfolio identified in lesson 1?
-
-So we have done some basic math...
-
---------------------------------
-
-Now, let’s have a look at it from a different perspective. 
-The following dataset [`data/claims.csv`](../../../data/claims.csv) => *this data set is to be changed* includes the same data you were analyzing in class 1, 
-but it is all discounted...
-
-Let’s analyse it a bit (Exercise3)
-> What is the average duration in all of these cases assuming a discount rate of XXX?
-
-> Were your assumptions about this correct? 
-
-> What is the worst performing portfolio now?
+> Now, apply the discount factors to the data provided in lesson 2 and update your portfolio performance diagnostics. How will the [Net Present Value](https://en.wikipedia.org/wiki/Net_present_value) of the Underwriting Result (NPV)UWR change for the portfolio identified in lesson 1? Will the worst/best performer still be the same?
 
 --------------------------------
 
