@@ -27,42 +27,10 @@ dplyr - data transformation package
 ggplot2 - data visualization package
 ------------------------------------
 
-> “The simple graph has brought more information to the data analyst’s mind than any other device.” — John Tukey
+> “The simple graph has brought more information to the data analyst’s mind than any other device.” — John Tukey  
+> Althoug R has a lot of systems of providing graphics, `ggplot2` is one of the most elegant and most versatile system for visualiaztion in R. ggplot2 implements the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), a coherent system for describing and building graphs.  
 
-Althoug R has a lot of systems of providing graphics, `ggplot2` is one of the most elegant and most versatile system for visualiaztion in R. ggplot2 implements the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), a coherent system for describing and building graphs.
-
-### First Plot - Scatter
-
-``` r
-library(ggplot2)
-
-ggplot(data = dt_KPI) +
-  geom_point(mapping = aes(x = Premium, y = Expenses))
-```
-
-![](About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
-
-### Aesthetics and layers
-
-``` r
-ggplot(data = dt_KPI) +
-  geom_point(mapping = aes(x = Premium, y = Expenses, colour = Region))
-```
-
-![](About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-1.png)
-
-### Geometric Objects and iheritance of aesthetics
-
-``` r
-ggplot(data = dt_KPI,
-       mapping = aes(x = Premium, y = Expenses, colour = Region)
-) +
-geom_point() +
-geom_smooth()
-```
-
-![](About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
-
+> Let's [try it](../Exercises/Ex05_dplyr.md) now in R
 Other Material, Literature and Credits
 --------------------------------------
 
