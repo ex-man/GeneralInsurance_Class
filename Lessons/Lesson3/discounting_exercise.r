@@ -160,4 +160,26 @@ NPV_data <- read.csv("data/NPV.csv")
 
 # What is the worst performing portfolio now?
 
+########################################
+## Exercise 7
+# Imagine there are 100 houses around a river and each is worth 100,000.
+# A big flood happens once every 100 and destroys everything.
+# A small one every 5 years and destroys 1 house.
+# What is the average loss per year (simple premium)? What is the volatility of the losses?
+
+# How much do you think a reasonable premium should be to protect the customers?
+
+
+########################################
+## Exercise 8 - reflect in notes
+
+
+########################################
+## Exercise 9
+
+# Look at the data provided. Identify examples, where 2 portfolios are similar (1 dimension is different), and the CIR is bigger or smaller. Be creative and find any dependencies...
+
+CIR_data <- read.csv("data/lesson3_CIR.csv")
+
+# What is the total value of capital required to run the whole business from lesson 2? How has it changed ovr the years?
 
