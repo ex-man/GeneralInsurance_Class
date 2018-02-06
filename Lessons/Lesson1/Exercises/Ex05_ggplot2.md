@@ -58,3 +58,4 @@ geom_smooth()
 > This feature of `ggplot` is called **inheritance**. You can do lot's using it.  
 ![](../Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
+> You can find out more about `ggplot` features on [ggplot2 cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf).
