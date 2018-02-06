@@ -22,7 +22,7 @@ dplyr - data transformation package
 
 > These all combine naturally with `group_by()` which allows you to perform any operation "by group". You can learn more about them in `vignette("dplyr")`. As well as these single-table verbs, dplyr also provides a variety of two-table verbs, which you can learn about in `vignette("two-table")`.
 
-> Let's [try it](../Exercises/Ex04_dplyr.md) now in R
+> Let's [try it](../Exercises/Ex04_dplyr.md) now in R  
 
 ggplot2 - data visualization package
 ------------------------------------
@@ -32,6 +32,7 @@ ggplot2 - data visualization package
 > Althoug R has a lot of systems of providing graphics, `ggplot2` is one of the most elegant and most versatile system for visualiaztion in R. ggplot2 implements the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), a coherent system for describing and building graphs.  
 
 > Let's [try it](../Exercises/Ex05_ggplot2.md) now in R
+
 Other Material, Literature and Credits
 --------------------------------------
 
