@@ -18,6 +18,6 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 
 > Hint: instead of `aes` you might need `aes_string` 
 
-It might look something like this:
+It might look something like this:  
 
 ![](Support/About_shiny_files/Lesson1_Homework.png)`

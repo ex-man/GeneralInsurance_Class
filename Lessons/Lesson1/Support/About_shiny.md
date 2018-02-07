@@ -24,7 +24,6 @@ For such a case `shiny` might come quite handy as it provides very interactive w
 Perfect thing is you need only R for building this interactive framework.
 
 Shiny is an R package. This package was created for users who want to create web based applications in R but don't have the necessary skills in creation of interactive websites. Using shiny, users can create the aplication engine in R and shiny takes care of web page functionality, such as interactive input and output elements, javascript codes etc.
-
 -----------------
 ### Motivation Example
 [SuperZip Example](https://shiny.rstudio.com/gallery/superzip-example.html)
@@ -42,7 +41,6 @@ library(shiny)
 [Telephone By Region app](https://shiny.rstudio.com/gallery/telephones-by-region.html)
 
 [Little explanation](About_shiny_files/shiny_prezi.pdf)
-
 
 Shiny Intro
 -----------------
