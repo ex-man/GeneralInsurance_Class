@@ -10,22 +10,22 @@ library(ggplot2)
 dt_KPI <- read.csv("data/lesson2_KPI.csv")
 ```
 > ggplot2 is based on the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), the idea that you can build every graph from the same components:
-* a **data set**,
-* a **coordinate system**,
-* and **geoms** — visual marks that represent data points.
+* a **data** or source __to__ visualize,
+* a **aesthetics** or __what__ to visualize,
+* and **geoms** or __how__ to visualize it — visual layers that represent specific dimensions from data.
 
 ### First Plot - Scatter
 > Now let's try to show our data on simple scatter plot  
 ``` r
 ggplot(data = dt_KPI,aes(x = Premium, y = Expenses)) + geom_point()
 ```
-> We used `ggplot` function specifying **data set** to use, `aes` function to specify aestetics (visualisation) and ***geoms*** function `geom_point` to specify how data should be represemeted.  
-> Note that we used `+` sign to add layer with points to chart. We will use this technique in future steps as well.  
+> We used `ggplot` function specifying **data** set to use, `aes` function to specify aestetics (visualisation) and ***geoms*** function `geom_point` to specify how data should be represemeted.  
+> Note that we used `+` sign to add geom layer to chart. We will use this technique in future steps as well.  
 
 ![](../Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
 
 ### Aesthetics and layers
-> In previous example we set **data set** and **coordinate system** on global level setting axes to ***Premium*** and ***Expenses***. We will do the same now but specifying it for points only. This is usefull when you want to show multiple measures on same chart having their own axes.  
+> In previous example we set **data** and **aesthetics** on global level, setting axes in **geoms** to ***Premium*** and ***Expenses***. We will do the same now but specifying it for geom `geom_points` only. This is usefull when you want to show multiple measures on same chart having their own axes.  
 > In addition we will also specify colour of dots varying colour by ***Region***.  
 ``` r
 ggplot(data = dt_KPI) +
@@ -43,7 +43,7 @@ ggplot(data = dt_KPI)
 + geom_smooth(mapping = aes(x = Premium, y = Expenses))
 ````
 > Note that there is one regresion line for whole dataset.  
-> Also note that we had to specify `x` and `y` for each **geom** separatelly.  
+> Also note that we can specify `x` and `y` for each **geom** separatelly.  
 ![](../Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
 > What if we specify `aes` on global (`ggplot`) level.
