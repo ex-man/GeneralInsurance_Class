@@ -11,26 +11,24 @@ Shiny
 
 -----------------
 ### HELLO WORLD example
-> In following paragrphs we will look at much simpler `shiny` app in more detail.  
-[Telephone By Region app](https://shiny.rstudio.com/gallery/telephones-by-region.html)
+> In following paragrphs we will look at much simpler `shiny` app in more detail. We will use [Telephone By Region app](https://shiny.rstudio.com/gallery/telephones-by-region.html).
 
 Shiny Intro
 -----------------
-To get started with `shiny` we will need RStudio, or R GUI and a web browser. Before we start to do anything with `shiny`, we will have to install the package. To do so, we need to run the following code on our machine `install.packages("shiny")`.
-
-### How shiny works
-`Shiny` apps are basically web applications that run on some server. There are different kinds of servers on which the apps can be run. There can be a web server that contains the app, or a local computer.
-
-In this course we will run all apps from a local machine.
+> `Shiny` apps are basically web applications that run on some server. There are different kinds of servers web server that contains the app, or even a local computer. In this course we will run all apps from a local machine.
 
 ### Basic app script description
-Every `shiny` app consists of two parts: `ui` and `server`, where `ui` stands for "user interface". User interface part basically takes care of everything that will be displayed in the browser. Server part manages everything that is going on it the background. That is mainly calculation of R scripts, processing of the inputs that user provides in the interaction with the user interface, and also preparation of outputs that are produced based on the R code and the user interaction.
+> Every `shiny` app consists of two parts: `ui` and `server`.  
+> `ui` (stands for "user interface") basically takes care of everything that will be displayed in the browser.  
+> `server` part manages everything that is going on it the background like calculation of R scripts, processing of the inputs that user provides and also preparation of outputs based on the R code.  
+> There are two ways of creating `shiny` app.
 
-There are two ways of creating `shiny` apps. First is to have a single R script called "app.R" that contains both `ui` and `server` part. In this case, the R script must contain also command for launching the app. The command looks like this: `shinyApp(ui = ui, server = server)`
-
-The second way to write apps is to have two separate scripts - the first script called "ui.R" and the second one called "server.R". These two must be placed in a single folder.
-
-In both of the cases `shiny` looks for the `ui` and `server` part. Throughout this course we will use the second approach. We prefer this way because as codes of an app grow, the split into two separate files makes it easier to navigate in the files.
+> 1. **`app.R`** - single R script that contains both `ui` and `server` part. In this case, the R script must contain also command for launching the app.
+``` r
+shinyApp(ui = ui, server = server)
+```
+> 2. **`ui.R`** and **`server.R`** - two separate scripts that must be placed in a single folder.
+> Throughout this course we will use the second approach. We prefer this way because as codes of an app grow, the split into two separate files makes it easier to navigate in the files.
 
 The minimum code for a working `shiny` app are the following lines saved in a script called "server.R"
 ```
