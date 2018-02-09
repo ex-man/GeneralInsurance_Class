@@ -30,17 +30,16 @@ shinyApp(ui = ui, server = server)
 > 2. **`ui.R`** and **`server.R`** - two separate scripts that must be placed in a single folder.
 > Throughout this course we will use the second approach. We prefer this way because as codes of an app grow, the split into two separate files makes it easier to navigate in the files.
 
-The minimum code for a working `shiny` app are the following lines saved in a script called "server.R"
-```
+> The minimum code for a working `shiny` app are the following lines saved in **`server.R`**
+``` r
 library(shiny)
 server <- function(input, output){}
 ```
-and this line of code saved in "ui.R" in the same folder as the previous script.
-```
+and this line of code saved in **`ui.R`**
+``` r
 ui <- fluidPage()
 ```
-
-To see this app, we have to save these two scripts, then highlight code in "server.R" and run it. A browser tab will be opened and we should see empty web page.
+> To see the result we have to save these two scripts and run code in **`server.R`**. A browser tab will be opened and we should see empty web page.
 
 At the start of every `shiny` app we will have to load `shiny` library to be able to run any app. Afterwards, the server part is defined. It must be a function with input and output parameters. The body of the function can contain R codes and scripts that do all the heavy work that will be displayed in form of outputs on the web page.
 
