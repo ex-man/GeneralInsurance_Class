@@ -6,7 +6,7 @@ Shiny
 > `Shiny` is an R package for users who want to create web based applications in R but don't have the necessary skills. Using `shiny`, users can create the aplication engine in R and `shiny` takes care of web page functionality.
 
 ### Motivation Example
-> This is an example of interactive page based on data created in `shiny`.  
+> This is an example of interactive page created in `shiny`.  
 [LEGO Set Visualizer](https://gallery.shinyapps.io/lego-viz)  
 
 -----------------
@@ -35,7 +35,7 @@ shinyApp(ui = ui, server = server)
 library(shiny)
 server <- function(input, output){}
 ```
-and this line of code saved in **`ui.R`**
+> and this line of code saved in **`ui.R`**
 ``` r
 ui <- fluidPage()
 ```
