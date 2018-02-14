@@ -78,51 +78,18 @@ So what is the other most important factor?
 
 Usually we would use a formula like this one: `Loss_y = Loss_x * (1 + interest)^(y-x)`
 
-Let’s do a bit of math (Exerise2)
-> Use the __Date__ provided in [`data/lesson2_KPI.csv`](../../../data/lesson2_KPI.csv) and try to come up with diferent estimates of the average duration. If you want to be really sophisticated, consider using [R package](https://cran.r-project.org/web/packages/ChainLadder/index.html) to implement a chain ladder methodology.
-
-> Does the value calculated correspond to your assumed value for the given business in Exercise 1? Comment on the findings in your notes...
-
-> Now, assume an interest rate of 5%. How will the [Net Present Value](https://en.wikipedia.org/wiki/Net_present_value) of the Underwriting Result (NPV)UWR change for the portfolio identified in lesson 1?
-
-So we have done some basic math...
-
---------------------------------
-
-Now, let’s have a look at it from the other way around. 
-The following dataset [`data/claims.csv`](../../../data/claims.csv) includes the same data you were analysing in class 1, but it is all discounted...
-
-Let’s analyse it a bit (Exercise3)
-> What is the average duration in all of these cases assuming a discount rate of XXX?
-
-> Were your assumptions about this correct? 
-
-> What is the worst performing portfolio now?
-
---------------------------------
-
-To make it even more real, we need to take into account another perspective as well. 
-This is the amount of money we need to hold to be able to pay the claims right when they appear. In here the claims volatility __kicks in__.
-
-_Imagine you are starting insuring against flood._
-
-The floods usually happen once every 100 years and when it happens, it destroys your house signifficantly. 
-
-You have collected some reasonable premium, that is probably less then the value of the loss you can expect (no one would pay the same amout of money that the repair will cost to the insurance company, as thay would rather save it in a bank). The next year, the flood comes... and so the insurance company must pay... __But do they have enough money?__
-=======
-The durations `(y-x)` is the answer. Most likely some information about the claims history 
-and the payments will help us derive it. There are a number of approaches we can take. 
-We can start at simple averaging through discounting for the period equal to aveage duration.
-Then do the proper age-to-age factors, that we can derive from triangles and then applying 
-swap rates (or any other interest rates) (Exercise5)
+The durations until payments `(y-x)` is a generic answer. Information about the claims history 
+and the payments will help us derive it.
+We can start at simple averaging (as in the previous exercise) and saying that is the duration discounting for the period equal to aveage duration.
+But we can be more precise in weighting and use the age-to-age factors more precisely. So let's try that... (Exercise5) This detailed approach is usually used with the Swap rates for individual durations. You can try that at home...
 -------------------------------
 
 
 
-Now let's get back to the data we were analysing in lesson 2
-> Use the additional data that extend what was provided in lesson2 [`data/lesson3_NPV.csv`](../../../data/lesson3_NPV.csv) and try to come up with different estimates of the average duration for different lines of business. Assume, the interest rates are at 2%/
+Now let's get back to the data we were analysing in lesson 2 (Exercise 6)
+> Use the additional data that extend what was provided in lesson2 [`data/lesson3_NPV.csv`](../../../data/lesson3_NPV.csv) and try to come up with different estimates of the average duration for different lines of business. Assume, the interest rates are at 2%.
 
-> Does the value calculated correspond to your assumed value for the given business in Exercise 3? (Exercise 6)
+> Does the value calculated correspond to your assumed value for the given business in Exercise 3?
 Comment on the findings in your notes...
 
 > Now, apply the discount factors to the data provided in lesson 2 and update your portfolio performance diagnostics. How will the [Net Present Value](https://en.wikipedia.org/wiki/Net_present_value) of the Underwriting Result (NPV)UWR change for the portfolio identified in lesson 1? Will the worst/best performer still be the same?
@@ -133,7 +100,7 @@ Comment on the findings in your notes...
 
 To make it even more real, we need to take into account another perspective as well. 
 This is the amount of money we need to hold to be able to pay the claims right when they appear. 
-In here the claims volatility __kicks in__.
+In here the __claims volatility__ kicks in.
 
 _Imagine you are starting insuring against flood._
 
@@ -142,22 +109,20 @@ The floods usually happen once every 100 years and when it happens, it destroys 
 You have collected some reasonable premium, that is probably less then the value of the loss you can expect 
 (no one would pay the same amount of money that the repair will cost to the insurance company, as they would 
  rather save it in a bank). The next year, the flood comes... and so the insurance company must pay... 
- __But do they have enough money?__ How much money would you expect them to have? (reflect in your notes sections)
+ __But do they have enough money?__ How much money would you expect them to have? (reflect in your notes sections) (Exercise 7)
  
  ## Risk based capital
  Insurance industry is very regulated. One of the main reason is the situation above. No government wants it's people
  to be unprotected or unpaid if a claim happens. That means, an insurance company must have some extra money on top of
- the expected claim payments to allow for the event to happen at different times then just average occurances (once every
- 100 year like in example above).
+ the expected claim payments to allow for the event to happen at different times then just average occurances (once every 100 year like in example above).
  
- What is driving the capital requirement? (Exercise4)
- > Think about why a portfolio may need more (or less) capital to be allowed to insure business. Write down your ideas
- into your notes.
+ What is driving the capital requirement? (Exercise8)
+ > Think about why a portfolio may need more (or less) capital to be allowed to insure business. Write down your ideas into your notes.
  
  Obviously, the bigger the size, the more capital is needed. But this still does not meant something is more or less risky.
  It is much better to weight the requirement by size. For this reason we use `Capital_Intensity_Ratio(CIR) = Required_Capital / Net_Earned_Premium(NEP)`.
  
- Use the following data [CIR] to try to come up with some examples that support your ideas from your reflection. (Exercise5)
+ Use the following data [CIR] to try to come up with some examples that support your ideas from your reflection in previous exercise. (Exercise9)
  > Look at the data provided. Identify examples, where 2 portfolios are similar (1 dimension is different), and the CIR is
  bigger or smaller. Be creative and find any dependencies...
  
@@ -167,11 +132,25 @@ You have collected some reasonable premium, that is probably less then the value
  margin for insurance companies in google (depending on their rating and risk profile). Let's assume, we need to return additiona
  10% on top of the money that we borrow. Let's also assume we have no free capital now and we have to borrow everything.
  
- How does this additional challenge change the porfitabilty of the buiness? (Exercise6)
- > Using the same data we have discounted and calculated latest view of, try to allow for additional 10% (on top of risk free rate)
- of the capital needed for that portfolio. What is the Economic profit before tax (NPV Latest view UWR net of Capital costs) for each
+ How does this additional challenge change the porfitabilty of the buiness? (Exercise10)
+ > Using the same data we have discounted, try to allow for additional 10% (on top of risk free rate)
+ of the capital needed for that portfolio. What is the Economic profit before tax (NPV UWR net of Capital costs) for each
  portfolio? Which one of them is the most profitable? Is the worst one from previous investigation still the worst?
+
+--------------------------------
+# Latest view of the loss development
+Ok, so now you should know something about triangles and discounting and capital and how it all links together. 
+There is another use of the triangles though and the very last adjustment to our profitability.
+As the external capital is usually quite expensive, insurers need to sometimes strengthen the reserves to have more money
+saved for adverse claims (like the flood in the capital section). There are also claims, that have happened and we are not aware of yet,
+which is another reason for having extra money saved. Over the years, the reserves are released, as claims are paid 
+and the money is not needed. So can we somehow project what the future losses will be after all reserve releases?
+There is an additional dataset provided, that shows historical view of the losses for a given year, and it is updated year on year.
+
+# HOMEWORK CANDIDATE
+> Use this final triangle to come up with your view on what the ultimate loss for 2016 will look like for every portfolio.
+> Calculate the extra money, that will be released in a couple of years.
+> Present the latest view NPV UWR for all portfolios and show that as a diagnostic in your dashboard from lesson 2.
+
  
 
-# Latest view of the loss development
---- to be finished ---
