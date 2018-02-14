@@ -103,8 +103,7 @@ ui <- fluidPage(
 > Similarly to the inputs and output, there are several types of render functions. We use different render functions based on the type of the output we want to display. These functions in some cases create analogous pairs with the output functions, for example `plotOutput` and `renderPlot` or `textOutput` and `renderText`.  
 > To see all types of the rendering functions please visit "Renderig functions" section on [this page](https://shiny.rstudio.com/reference/shiny/1.0.5/).  
 
-> Now let's try it out in our app from the previous example. We will do it in two steps. The first step will be that we will render a plot in our app. For example we can display a histogram of 100 random numbers generated from uniform distribution. We will use the same `ui.R` as before but we will make a couple of changes in `server.R`. It will look like this
-
+> Now let's try it out in our app from the previous example. We will do it in two steps. The first step will be that we will render a plot in our app. For example we can display a histogram of 100 random numbers generated from uniform distribution. We will use the same `ui.R` as before but we will make a couple of changes in `server.R`. It will look like this  
 ``` r
 library(shiny)
 
@@ -114,7 +113,7 @@ server <- function(input, output){
     )
 }
 ```
-> When we run this app (do not forget to **Save** your changes), we should see our slider, and a chart that is completely unrelated to the value that is provided by the slider. We haven't connected them yet but we will do it in the second step.  
+> When we run this app (do not forget to **Save** your changes), we should see our slider, and a chart that is completely unrelated to the value that is provided by the slider. We haven't connected them yet but we will do it in the second step.   
 
 > What we want to do now is to take the value that a user chooses using the slider and use it to generate the selected number of random numbers. Using the instructions from this section we will further modify the server function to look like this
 ``` r
@@ -129,5 +128,5 @@ server <- function(input, output){
   )
 }
 ```
-> This time the slider is connected to what we see on the plot. When the slider moves, it returns a new value which is then used to generate a different number of random values which are then displayed on the chart.
+> This time the slider is connected to what we see on the plot. When the slider moves, it returns a new value which is then used to generate a different number of random values which are then displayed on the chart.  
 > A thing to note here is that we don't have to write any line of code to tell our app to watch out for the changes of the slider. This is carried out automatically by shiny and it is called reactivity. Now we have basically built a simple shiny app with a reactive input slider and a reactive output histogram.
