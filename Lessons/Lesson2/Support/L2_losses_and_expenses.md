@@ -20,6 +20,4 @@ Variable expenses are those that change when the volume of the business changes.
 ## Data preparation
 
 So we want to start by looking at our portfolio and try to figure out if it is doing well in terms of profitability. In the ideal situation we could jump right into the data. However, actuaries often have to first prepare their data to get them into a form where they can be used for an analysis.
-Let’s prepare our data then.
-
-Open the general insurance class project in RStudio and go to the folder called “Lesson2”. Open the file `data_prep_exercise_KPI.R`, load the libraries and the data.
+So we will start with it in `data_prep_exercise_KPI.R`
