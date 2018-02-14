@@ -1,4 +1,4 @@
-# My First Commit and Push
+### Exercise - Commit and Push
 * Compare Forks
 > On GitHub page navigate to your **Fork**.  
 > Go to ![](../Support/About_git_files/Insights.png)  
