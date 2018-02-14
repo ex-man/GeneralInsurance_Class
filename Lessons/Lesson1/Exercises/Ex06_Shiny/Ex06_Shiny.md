@@ -128,5 +128,5 @@ server <- function(input, output){
   )
 }
 ```
-> This time the slider is connected to what we see on the plot. When the slider moves, it returns a new value which is then used to generate a different number of random values which are then displayed on the chart.  
+> This time the slider is connected to what we see on the plot. When the slider moves, it returns a new value which is then used to generate a different number of random values which are then displayed on the chart. `ylim` parameter of `hist` function fixes y axis such that the effect of moving the slider is more visible.  
 > A thing to note here is that we don't have to write any line of code to tell our app to watch out for the changes of the slider. This is carried out automatically by shiny and it is called reactivity. Now we have basically built a simple shiny app with a reactive input slider and a reactive output histogram.
