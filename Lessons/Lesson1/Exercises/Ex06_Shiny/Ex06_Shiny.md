@@ -1,3 +1,7 @@
+## Exercise - Shiny App  
+
+> Open RStudio and create two new R files in `../Lessons/Lesson1/Exercises/Ex06_Shiny` in your local repository.  
+
 > The minimum code for a working `shiny` app are the following lines saved in **`server.R`**
 ``` r
 library(shiny)
@@ -7,15 +11,17 @@ server <- function(input, output){}
 ``` r
 ui <- fluidPage()
 ```
-> To see the result we have to save these two scripts and run code in **`server.R`**. A browser tab will be opened and we should see empty web page.
+> Add this code to your files.  
 
-At the start of every `shiny` app we will have to load `shiny` library to be able to run any app. Afterwards, the server part is defined. It must be a function with input and output parameters. The body of the function can contain R codes and scripts that do all the heavy work that will be displayed in form of outputs on the web page.
+> To see the result we have to save these two scripts and run code in **`server.R`**. A browser tab will be opened and we should see empty web page.  
 
-Then comes the definition of the `ui` part. It must return a `fluidPage()` object. This object basically rewrites everything within to HTML, CSS and JavaScript codes and hence does all the web developement work for us.
+> At the start of every `shiny` app we will have to load `shiny` library to be able to run any app. Afterwards, the server part is defined. It must be a function with input and output parameters. The body of the function can contain R codes and scripts that do all the heavy work that will be displayed in form of outputs on the web page.  
 
-And since this is not a single R script `shiny` app, we don't have to call the `shinyApp()` function.
+> Then comes the definition of the `ui` part. It must return a `fluidPage()` object. This object basically rewrites everything within to HTML, CSS and JavaScript codes and hence does all the web developement work for us.  
 
-This piece of code is a template that can be used at the start of development of any `shiny` app.
+> And since this is not a single R script `shiny` app, we don't have to call the `shinyApp()` function.  
+
+> This piece of code is a template that can be used at the start of development of any `shiny` app.  
 
 ### Inputs and outputs
 Basically every `shiny` app will contain two sets of elements - inputs and outputs. We will use these to interact with a user and with our server R scripts. Since we want to show both inputs and outputs to the `shiny` app user, we will add this kind of elements as arguments to `fluidPage()`.
