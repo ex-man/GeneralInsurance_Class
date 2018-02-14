@@ -30,6 +30,8 @@ shinyApp(ui = ui, server = server)
 > 2. **`ui.R`** and **`server.R`** - two separate scripts that must be placed in a single folder.
 > Throughout this course we will use the second approach. We prefer this way because as codes of an app grow, the split into two separate files makes it easier to navigate in the files.
 
+> Now let's [try](../Exercises/Ex04_dplyr.md) second approach in R  
+
 Other Material, Literature and Credits
 --------------------------------------
 ### Widgets and Inputs vs. Outputs
