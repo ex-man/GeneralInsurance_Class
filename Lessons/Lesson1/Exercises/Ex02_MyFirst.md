@@ -1,4 +1,4 @@
-# My First Commit and Push
+### Exercise - My First Commit and Push
 * Edit File
 > Go to your github fork, navigate to Lessons/Lesson1/Notes and edit the notes file (this file is for you to comment on what you have learnt about) make changes directly using web UI. How do you save changes? What is the "save" called in git?
 
