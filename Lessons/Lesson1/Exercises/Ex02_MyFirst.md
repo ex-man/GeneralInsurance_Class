@@ -1,14 +1,14 @@
 ### Exercise - My First Commit and Push
-* Edit File
+**Edit File**
 > Go to your github fork, navigate to Lessons/Lesson1/Notes and edit the notes file (this file is for you to comment on what you have learnt about) make changes directly using web UI. How do you save changes? What is the "save" called in git?
 
-* Stay Synchronised
+**Stay Synchronised**
 > Now you need to make sure your local folder contains all your comments. Open R studio and synchronize with your online version. **PULL** changes to your local repository. Then open *Notes.md* from project on your computer in R. Can you see the changes?
 
-* Publish content using R
+**Publish content using R**
 > Now change content of *Notes.md* adding more notes. **Save** it to your project. Then **Commit** changes using RStudio interface giving it description *"Committing my first change"*. And **Push** it to GitHub.
 
-* Publish content using command line
+**Publish content using command line**
 > Change content of *Notes.md* again and **Save** it.  
 
 > Navigate to the repository using command line or in Windows Explorer use Right-Click -> GitBash tool when being in folder for your project.  
