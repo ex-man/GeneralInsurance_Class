@@ -1,4 +1,4 @@
-### Exercise - Fork
+## Exercise - Fork
 > **Create your personal Fork**  
 > As per the About_GIT section you needd to have GIT installed, have an account on gihub. 
 
