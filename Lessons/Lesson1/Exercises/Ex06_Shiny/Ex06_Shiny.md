@@ -26,7 +26,7 @@ ui <- fluidPage()
 ### Inputs and outputs
 > Basically every `shiny` app consists of two types of elements - inputs and outputs. We will use these to interact with a user and with our `server.R` scripts. 
 > These two types of elements are put as arguments to `fluidPage()`.
-<pre><code>
+<pre><code> r
 ui <- fluidPage(
   <i># Input() element(s), </i>
   <i># Output() element(s) </i>
@@ -66,7 +66,7 @@ ui <- fluidPage(
 > To see all types of output functions, visit [this page](https://shiny.rstudio.com/reference/shiny/1.0.5/), section "UI Outputs".
 
 > Let's try to use it in our `shiny` app. Firstly, we will update the `ui` code. 
-```
+``` r
 ui <- fluidPage(
     sliderInput(
         inputId = "chosen_number",
