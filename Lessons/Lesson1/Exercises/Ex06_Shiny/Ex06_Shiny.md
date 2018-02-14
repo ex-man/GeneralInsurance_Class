@@ -26,7 +26,7 @@ ui <- fluidPage()
 ### Inputs and outputs
 > Basically every `shiny` app consists of two types of elements - inputs and outputs. We will use these to interact with a user and with our `server.R` scripts. 
 > These two types of elements are put as arguments to `fluidPage()`.
-<pre><code> r
+<pre><code>
 ui <- fluidPage(
   <i># Input() element(s), </i>
   <i># Output() element(s) </i>
