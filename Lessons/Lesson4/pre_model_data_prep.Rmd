@@ -1,0 +1,41 @@
+---
+title: "Pre-Model Analysis and data preparation "
+output: html_notebook
+---
+
+### Exercise 1
+> go to `loss_analysis.R` and make a few data checks
+
+# Policy vs. Claims data
+> What data do we need for modelling? What are we going to model actually?
+> This is crucial question for the business problem you are trying to solve.
+
+### Exercise 2
+> Go to Exercise 2 and try to think about what could be a good 'target'/ event 
+> you are trying to predict from data you have.
+
+## Modeling data level
+> Next question you should ask yourself before you jump directly into modeling is 
+> How granular you need data to be prepared. 
+> What makes sense to model in our case? Is it quality of the potential/future policy?
+> Is it claim amount or something completely different?
+
+Claims data are at *claims* level.
+```{r}
+dt_Claims <- read.csv("../../data/claims.csv")
+dt_Claims %>% nrow()
+dt_Claims %>% distinct(NrClaim) %>% nrow()
+dt_Claims %>% distinct(NrPolicy) %>% nrow() 
+```
+Policy data are at *policy* level.
+```{r}
+dt_Policy <- read.csv("../../data/policy_history.csv")
+dt_Policy %>% nrow()
+dt_Policy %>% distinct(NrClaim) %>% nrow()
+dt_Policy %>% distinct(NrPolicy) %>% nrow() 
+```
+
+## tie cisla su divne, nema to byt naopak?
+
+## Target creation
+
