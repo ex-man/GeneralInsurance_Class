@@ -8,15 +8,21 @@ library(ggplot2)
 dt_KPI_raw <- read.csv("data/lesson2_KPI.csv")
 
 ## what type of information we have? (column quick view)
+# to have a quick overview of data use glimpse() function from dplyr
 
 
-## some data dictionary would be helpful, do we have some?
+## its good to know what your data contains and what the columns means,
+# usually Data Governance team could help you with this question,
+# lets imagine we are aware what our columns means
 
 ## what the columns contains?
+# the function summary() might help you to answer this
 
 
 #### looking for defects in data ####
 ## are there any missings?
+# try to find missings for specific column firstly
+# can you generalize this process for whole dataset? can you utilize any kind of loop here?
 
 
 ## are there any non sense values? 
@@ -35,7 +41,10 @@ dt_KPI_raw <- read.csv("data/lesson2_KPI.csv")
 
 ## Data Preparation for Vizualization
 # Which Unit has collected the most Premium? 
-
+dt_KPI_raw %>% 
+  group_by(Unit) %>% 
+  summarize(Premium = sum(Premium, na.rm = TRUE)) %>% 
+  arrange(desc(Premium))
 
 # Which Unit has spent the least Expenses? 
 
@@ -45,9 +54,15 @@ dt_KPI_raw <- read.csv("data/lesson2_KPI.csv")
 
 ## Basic Viz.
 ## Vizualize your findings on simple bar charts - ggplot2::geom_col()
-
 # Which Unit has collected the most Premium? 
-
+dt_KPI_raw %>% 
+  group_by(Unit) %>% 
+  summarize(Premium = sum(Premium, na.rm = TRUE),
+            Expenses = sum(Expenses, na.rm = TRUE),
+            Losses = sum(Losses, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = reorder(Unit, -Premium), y = Premium)) + 
+  geom_col()
 
 # Which Unit has spent the least Expenses? 
 
