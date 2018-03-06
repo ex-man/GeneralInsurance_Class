@@ -172,11 +172,16 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
+<div id="policy-and-claims-data-exploration" class="section level1">
+<h1>Policy and Claims data exploration</h1>
+<p>Ze ideme z portfolio dat do granularnejsich na poistkovej urovni a chceme urobit basic data exploration, co tam vlastne je.</p>
+<p>ze nech urobia podobne checks ako v lesson 2.</p>
 <div id="exercise-1" class="section level3">
 <h3>Exercise 1</h3>
 <blockquote>
 <p>go to <code>loss_analysis.R</code> and make a few data checks</p>
 </blockquote>
+</div>
 </div>
 <div id="policy-vs.claims-data" class="section level1">
 <h1>Policy vs. Claims data</h1>
@@ -204,8 +209,8 @@ dt_Claims %&gt;% nrow()</code></pre>
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQzNjVcbiJ9 -->
 <pre><code>[1] 4365</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOckNsYWltKSAlPiUgbnJvdygpICMgdW5pcXVlIGNvbWJpbmF0aW9uIG9mIGFsbCBmZWF0dXJlcyBpbiBcbmBgYCJ9 -->
-<pre class="r"><code>dt_Claims %&gt;% distinct(NrClaim) %&gt;% nrow() # unique combination of all features in </code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOckNsYWltKSAlPiUgbnJvdygpXG5gYGAifQ== -->
+<pre class="r"><code>dt_Claims %&gt;% distinct(NrClaim) %&gt;% nrow()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQzNDlcbiJ9 -->
 <pre><code>[1] 4349</code></pre>
@@ -221,38 +226,41 @@ dt_Claims %&gt;% nrow()</code></pre>
 <p>Policy data are at <em>policy</em> level.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfUG9saWN5IDwtIHJlYWQuY3N2KFwiLi4vLi4vZGF0YS9wb2xpY3lfaGlzdG9yeS5jc3ZcIilcbmR0X1BvbGljeSAlPiUgbnJvdygpXG5gYGAifQ== -->
-<pre class="r"><code>dt_Policy &lt;- read.csv(&quot;../../data/policy_history.csv&quot;)
-dt_Policy %&gt;% nrow()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOckNsYWltKSAlPiUgbnJvdygpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r dt_Policy %&gt;% distinct(NrClaim) %&gt;% nrow()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMwNTA0XG4ifQ== -->
 <pre><code>[1] 30504</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOckNsYWltKSAlPiUgbnJvdygpXG5gYGAifQ== -->
-<pre class="r"><code>dt_Policy %&gt;% distinct(NrClaim) %&gt;% nrow()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMwNTA0XG4ifQ== -->
-<pre><code>[1] 30504</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSBcbmBgYCJ9 -->
-<pre class="r"><code>dt_Policy %&gt;% distinct(NrPolicy) %&gt;% nrow() </code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSBcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r dt_Policy %&gt;% distinct(NrPolicy) %&gt;% nrow()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMwMjU3XG4ifQ== -->
 <pre><code>[1] 30257</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-<div id="tie-cisla-su-divne-nema-to-byt-naopak" class="section level2">
-<h2>tie cisla su divne, nema to byt naopak?</h2>
+<p>vyrob exposuire, mergni claimy</p>
 </div>
 <div id="target-creation" class="section level2">
 <h2>Target creation</h2>
+<p>urob tgarget viacere a vyspvetli preco tieto davaju zmysel (severita~ gamma, frequencia~ poison) histogramy targetov, mozno test ze ci fituje na gammu.</p>
+<div id="one-way" class="section level3">
+<h3>One-Way</h3>
+<p>pouzitim targetu urob onw-way v ggplote a na DU moznost shiny? urob jeden example ktory dava zmysel, a druhy nech najdu oni.</p>
+</div>
+</div>
+<div id="first-model" class="section level2">
+<h2>First Model</h2>
+<p>ups 30% dat vyhodenych, preco?</p>
+<p>lebo missiny v tvojich features, musis nakodit na “Unknown” categoricky elvel</p>
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJlLU1vZGVsIEFuYWx5c2lzIGFuZCBkYXRhIHByZXBhcmF0aW9uICIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyMjIEV4ZXJjaXNlIDEKPiBnbyB0byBgbG9zc19hbmFseXNpcy5SYCBhbmQgbWFrZSBhIGZldyBkYXRhIGNoZWNrcwoKIyBQb2xpY3kgdnMuIENsYWltcyBkYXRhCj4gV2hhdCBkYXRhIGRvIHdlIG5lZWQgZm9yIG1vZGVsbGluZz8gV2hhdCBhcmUgd2UgZ29pbmcgdG8gbW9kZWwgYWN0dWFsbHk/Cj4gVGhpcyBpcyBjcnVjaWFsIHF1ZXN0aW9uIGZvciB0aGUgYnVzaW5lc3MgcHJvYmxlbSB5b3UgYXJlIHRyeWluZyB0byBzb2x2ZS4KCiMjIyBFeGVyY2lzZSAyCj4gR28gdG8gRXhlcmNpc2UgMiBhbmQgdHJ5IHRvIHRoaW5rIGFib3V0IHdoYXQgY291bGQgYmUgYSBnb29kICd0YXJnZXQnLyBldmVudCAKPiB5b3UgYXJlIHRyeWluZyB0byBwcmVkaWN0IGZyb20gZGF0YSB5b3UgaGF2ZS4KCiMjIE1vZGVsaW5nIGRhdGEgbGV2ZWwKPiBOZXh0IHF1ZXN0aW9uIHlvdSBzaG91bGQgYXNrIHlvdXJzZWxmIGJlZm9yZSB5b3UganVtcCBkaXJlY3RseSBpbnRvIG1vZGVsaW5nIGlzIAo+IEhvdyBncmFudWxhciB5b3UgbmVlZCBkYXRhIHRvIGJlIHByZXBhcmVkLiAKPiBXaGF0IG1ha2VzIHNlbnNlIHRvIG1vZGVsIGluIG91ciBjYXNlPyBJcyBpdCBxdWFsaXR5IG9mIHRoZSBwb3RlbnRpYWwvZnV0dXJlIHBvbGljeT8KPiBJcyBpdCBjbGFpbSBhbW91bnQgb3Igc29tZXRoaW5nIGNvbXBsZXRlbHkgZGlmZmVyZW50PwoKQ2xhaW1zIGRhdGEgYXJlIGF0ICpjbGFpbXMqIGxldmVsLgpgYGB7cn0KZHRfQ2xhaW1zIDwtIHJlYWQuY3N2KCIuLi8uLi9kYXRhL2NsYWltcy5jc3YiKQpkdF9DbGFpbXMgJT4lIG5yb3coKQpkdF9DbGFpbXMgJT4lIGRpc3RpbmN0KE5yQ2xhaW0pICU+JSBucm93KCkKZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSAKYGBgClBvbGljeSBkYXRhIGFyZSBhdCAqcG9saWN5KiBsZXZlbC4KYGBge3J9CmR0X1BvbGljeSA8LSByZWFkLmNzdigiLi4vLi4vZGF0YS9wb2xpY3lfaGlzdG9yeS5jc3YiKQpkdF9Qb2xpY3kgJT4lIG5yb3coKQpkdF9Qb2xpY3kgJT4lIGRpc3RpbmN0KE5yQ2xhaW0pICU+JSBucm93KCkKZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSAKYGBgCgojIyB0aWUgY2lzbGEgc3UgZGl2bmUsIG5lbWEgdG8gYnl0IG5hb3Bhaz8KCiMjIFRhcmdldCBjcmVhdGlvbgoK</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByZS1Nb2RlbCBBbmFseXNpcyBhbmQgZGF0YSBwcmVwYXJhdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgUG9saWN5IGFuZCBDbGFpbXMgZGF0YSBleHBsb3JhdGlvbg0KWmUgaWRlbWUgeiBwb3J0Zm9saW8gZGF0IGRvIGdyYW51bGFybmVqc2ljaCBuYSBwb2lzdGtvdmVqIHVyb3ZuaSBhIGNoY2VtZSB1cm9iaXQgYmFzaWMgZGF0YSBleHBsb3JhdGlvbiwgY28gdGFtIHZsYXN0bmUgamUuDQoNCnplIG5lY2ggdXJvYmlhIHBvZG9ibmUgY2hlY2tzIGFrbyB2IGxlc3NvbiAyLg0KDQojIyMgRXhlcmNpc2UgMQ0KPiBnbyB0byBgbG9zc19hbmFseXNpcy5SYCBhbmQgbWFrZSBhIGZldyBkYXRhIGNoZWNrcw0KDQojIFBvbGljeSB2cy4gQ2xhaW1zIGRhdGENCj4gV2hhdCBkYXRhIGRvIHdlIG5lZWQgZm9yIG1vZGVsbGluZz8gV2hhdCBhcmUgd2UgZ29pbmcgdG8gbW9kZWwgYWN0dWFsbHk/DQo+IFRoaXMgaXMgY3J1Y2lhbCBxdWVzdGlvbiBmb3IgdGhlIGJ1c2luZXNzIHByb2JsZW0geW91IGFyZSB0cnlpbmcgdG8gc29sdmUuDQoNCiMjIyBFeGVyY2lzZSAyDQo+IEdvIHRvIEV4ZXJjaXNlIDIgYW5kIHRyeSB0byB0aGluayBhYm91dCB3aGF0IGNvdWxkIGJlIGEgZ29vZCAndGFyZ2V0Jy8gZXZlbnQgDQo+IHlvdSBhcmUgdHJ5aW5nIHRvIHByZWRpY3QgZnJvbSBkYXRhIHlvdSBoYXZlLg0KDQojIyBNb2RlbGluZyBkYXRhIGxldmVsDQo+IE5leHQgcXVlc3Rpb24geW91IHNob3VsZCBhc2sgeW91cnNlbGYgYmVmb3JlIHlvdSBqdW1wIGRpcmVjdGx5IGludG8gbW9kZWxpbmcgaXMgDQo+IEhvdyBncmFudWxhciB5b3UgbmVlZCBkYXRhIHRvIGJlIHByZXBhcmVkLiANCj4gV2hhdCBtYWtlcyBzZW5zZSB0byBtb2RlbCBpbiBvdXIgY2FzZT8gSXMgaXQgcXVhbGl0eSBvZiB0aGUgcG90ZW50aWFsL2Z1dHVyZSBwb2xpY3k/DQo+IElzIGl0IGNsYWltIGFtb3VudCBvciBzb21ldGhpbmcgY29tcGxldGVseSBkaWZmZXJlbnQ/DQoNCkNsYWltcyBkYXRhIGFyZSBhdCAqY2xhaW1zKiBsZXZlbC4NCmBgYHtyfQ0KZHRfQ2xhaW1zIDwtIHJlYWQuY3N2KCIuLi8uLi9kYXRhL2NsYWltcy5jc3YiKQ0KZHRfQ2xhaW1zICU+JSBucm93KCkNCmR0X0NsYWltcyAlPiUgZGlzdGluY3QoTnJDbGFpbSkgJT4lIG5yb3coKQ0KZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSANCmBgYA0KUG9saWN5IGRhdGEgYXJlIGF0ICpwb2xpY3kqIGxldmVsLg0KYGBge3J9DQpkdF9Qb2xpY3kgPC0gcmVhZC5jc3YoIi4uLy4uL2RhdGEvcG9saWN5X2hpc3RvcnkuY3N2IikNCmR0X1BvbGljeSAlPiUgbnJvdygpDQpkdF9Qb2xpY3kgJT4lIGRpc3RpbmN0KE5yQ2xhaW0pICU+JSBucm93KCkNCmR0X1BvbGljeSAlPiUgZGlzdGluY3QoTnJQb2xpY3kpICU+JSBucm93KCkgDQpgYGANCg0Kdnlyb2IgZXhwb3N1aXJlLCBtZXJnbmkgY2xhaW15DQoNCiMjIFRhcmdldCBjcmVhdGlvbg0KDQp1cm9iIHRnYXJnZXQgdmlhY2VyZSBhIHZ5c3B2ZXRsaSBwcmVjbyB0aWV0byBkYXZhanUgem15c2VsIChzZXZlcml0YX4gZ2FtbWEsIGZyZXF1ZW5jaWF+IHBvaXNvbikNCmhpc3RvZ3JhbXkgdGFyZ2V0b3YsIG1vem5vIHRlc3QgemUgY2kgZml0dWplIG5hIGdhbW11Lg0KDQojIyMgT25lLVdheQ0KcG91eml0aW0gdGFyZ2V0dSB1cm9iIG9udy13YXkgdiBnZ3Bsb3RlIGEgbmEgRFUgbW96bm9zdCBzaGlueT8NCnVyb2IgamVkZW4gZXhhbXBsZSBrdG9yeSBkYXZhIHpteXNlbCwgYSBkcnVoeSBuZWNoIG5hamR1IG9uaS4NCg0KDQoNCiMjIEZpcnN0IE1vZGVsDQoNCnVwcyAzMCUgZGF0IHZ5aG9kZW55Y2gsIHByZWNvPw0KDQpsZWJvIG1pc3NpbnkgdiB0dm9qaWNoIGZlYXR1cmVzLCBtdXNpcyBuYWtvZGl0IG5hICJVbmtub3duIiBjYXRlZ29yaWNreSBlbHZlbA0KDQo=</div>
 
 
 

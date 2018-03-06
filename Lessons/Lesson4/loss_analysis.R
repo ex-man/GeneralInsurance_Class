@@ -24,12 +24,11 @@ dt_Claims <- read.csv("data/claims.csv")
 #  As models should predict something (future in our case), we take historical data and trend them. 
 #  Think about at least 3 different things you could model 
 #  (number of ..., average of ..., sum of ..., size of ..., ...)
-#  Come up with some high level statistics about the variables per year on all data. And project to future
 
 
 ########################################
 ## Exercise 3
-#  As we have already talked about the losses, we will be tring to model time weighted average loss.
+#  As we have already talked about the losses, we will be trying to model time weighted average loss.
 #  What do you need to calculate this?
 #  HINT: Think about what triangles we were using in lesson 3 + earned portion of the policy in the year
 

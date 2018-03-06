@@ -1,7 +1,12 @@
 ---
-title: "Pre-Model Analysis and data preparation "
+title: "Pre-Model Analysis and data preparation"
 output: html_notebook
 ---
+
+# Policy and Claims data exploration
+Ze ideme z portfolio dat do granularnejsich na poistkovej urovni a chceme urobit basic data exploration, co tam vlastne je.
+
+ze nech urobia podobne checks ako v lesson 2.
 
 ### Exercise 1
 > go to `loss_analysis.R` and make a few data checks
@@ -35,7 +40,22 @@ dt_Policy %>% distinct(NrClaim) %>% nrow()
 dt_Policy %>% distinct(NrPolicy) %>% nrow() 
 ```
 
-## tie cisla su divne, nema to byt naopak?
+vyrob exposuire, mergni claimy
 
 ## Target creation
+
+urob tgarget viacere a vyspvetli preco tieto davaju zmysel (severita~ gamma, frequencia~ poison)
+histogramy targetov, mozno test ze ci fituje na gammu.
+
+### One-Way
+pouzitim targetu urob onw-way v ggplote a na DU moznost shiny?
+urob jeden example ktory dava zmysel, a druhy nech najdu oni.
+
+
+
+## First Model
+
+ups 30% dat vyhodenych, preco?
+
+lebo missiny v tvojich features, musis nakodit na "Unknown" categoricky elvel
 
