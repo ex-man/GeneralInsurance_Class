@@ -174,20 +174,21 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <div id="policy-and-claims-data-exploration" class="section level1">
 <h1>Policy and Claims data exploration</h1>
-<p>Ze ideme z portfolio dat do granularnejsich na poistkovej urovni a chceme urobit basic data exploration, co tam vlastne je.</p>
-<p>ze nech urobia podobne checks ako v lesson 2.</p>
-<div id="exercise-1" class="section level3">
-<h3>Exercise 1</h3>
-<blockquote>
-<p>go to <code>loss_analysis.R</code> and make a few data checks</p>
-</blockquote>
+<p>As mentioned in previous lessons, we identified good and bad performers in term of portfolios. To identify, which group of people/companies are guilty for that performance we need <strong>more granular data</strong>. And so we received <em>Claims</em> and <em>Policy</em> data from out IT department.</p>
+<p>Let’s look at them.</p>
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
+<p>Please make a few data checks (fields info, some summary stats, quality checks about missings, …) as you learned in previous lessons.</p>
+<p>You can follow up auxiliary questions in <code>loss_analysis.R</code> at Exercise 1.</p>
+<p>Write a few sentences about what have you found and commit your notes.</p>
 </div>
 </div>
 <div id="policy-vs.claims-data" class="section level1">
 <h1>Policy vs. Claims data</h1>
-<blockquote>
-<p>What data do we need for modelling? What are we going to model actually? This is crucial question for the business problem you are trying to solve.</p>
-</blockquote>
+<div id="now-the-crucial-questions-what-are-you-gonna-model-and-what-data-will-you-need-for-that-purpose" class="section level4">
+<h4>Now the crucial questions: What are you gonna model and what data will you need for that purpose?</h4>
+<p>Write a few sentences about what do you think and commit your notes.</p>
+</div>
 <div id="exercise-2" class="section level3">
 <h3>Exercise 2</h3>
 <blockquote>
@@ -202,8 +203,9 @@ $(document).ready(function () {
 <p>Claims data are at <em>claims</em> level.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfQ2xhaW1zIDwtIHJlYWQuY3N2KFwiLi4vLi4vZGF0YS9jbGFpbXMuY3N2XCIpXG5kdF9DbGFpbXMgJT4lIG5yb3coKVxuYGBgIn0= -->
-<pre class="r"><code>dt_Claims &lt;- read.csv(&quot;../../data/claims.csv&quot;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmR0X0NsYWltcyA8LSByZWFkLmNzdihcIi4uLy4uL2RhdGEvY2xhaW1zLmNzdlwiKVxuZHRfQ2xhaW1zICU+JSBucm93KClcbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr)
+dt_Claims &lt;- read.csv(&quot;../../data/claims.csv&quot;)
 dt_Claims %&gt;% nrow()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQzNjVcbiJ9 -->
@@ -215,27 +217,23 @@ dt_Claims %&gt;% nrow()</code></pre>
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQzNDlcbiJ9 -->
 <pre><code>[1] 4349</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSBcbmBgYCJ9 -->
-<pre class="r"><code>dt_Claims %&gt;% distinct(NrPolicy) %&gt;% nrow() </code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2R0X0NsYWltcyAlPiUgZGlzdGluY3QoTnJQb2xpY3kpICU+JSBucm93KCkgXG5gYGAifQ== -->
+<pre class="r"><code>#dt_Claims %&gt;% distinct(NrPolicy) %&gt;% nrow() </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQzNTlcbiJ9 -->
-<pre><code>[1] 4359</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Policy data are at <em>policy</em> level.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOckNsYWltKSAlPiUgbnJvdygpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r dt_Policy %&gt;% distinct(NrClaim) %&gt;% nrow()</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfUG9saWN5IDwtIHJlYWQuY3N2KFwiLi4vLi4vZGF0YS9wb2xpY3lfaGlzdG9yeS5jc3ZcIilcbmR0X1BvbGljeSAlPiUgbnJvdygpXG5gYGAifQ== -->
+<pre class="r"><code>dt_Policy &lt;- read.csv(&quot;../../data/policy_history.csv&quot;)
+dt_Policy %&gt;% nrow()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMwNTA0XG4ifQ== -->
 <pre><code>[1] 30504</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSBcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r dt_Policy %&gt;% distinct(NrPolicy) %&gt;% nrow()</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHRfUG9saWN5ICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSBcbmBgYCJ9 -->
+<pre class="r"><code>dt_Policy %&gt;% distinct(NrPolicy) %&gt;% nrow() </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMwMjU3XG4ifQ== -->
 <pre><code>[1] 30257</code></pre>
@@ -260,7 +258,7 @@ dt_Claims %&gt;% nrow()</code></pre>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByZS1Nb2RlbCBBbmFseXNpcyBhbmQgZGF0YSBwcmVwYXJhdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgUG9saWN5IGFuZCBDbGFpbXMgZGF0YSBleHBsb3JhdGlvbg0KWmUgaWRlbWUgeiBwb3J0Zm9saW8gZGF0IGRvIGdyYW51bGFybmVqc2ljaCBuYSBwb2lzdGtvdmVqIHVyb3ZuaSBhIGNoY2VtZSB1cm9iaXQgYmFzaWMgZGF0YSBleHBsb3JhdGlvbiwgY28gdGFtIHZsYXN0bmUgamUuDQoNCnplIG5lY2ggdXJvYmlhIHBvZG9ibmUgY2hlY2tzIGFrbyB2IGxlc3NvbiAyLg0KDQojIyMgRXhlcmNpc2UgMQ0KPiBnbyB0byBgbG9zc19hbmFseXNpcy5SYCBhbmQgbWFrZSBhIGZldyBkYXRhIGNoZWNrcw0KDQojIFBvbGljeSB2cy4gQ2xhaW1zIGRhdGENCj4gV2hhdCBkYXRhIGRvIHdlIG5lZWQgZm9yIG1vZGVsbGluZz8gV2hhdCBhcmUgd2UgZ29pbmcgdG8gbW9kZWwgYWN0dWFsbHk/DQo+IFRoaXMgaXMgY3J1Y2lhbCBxdWVzdGlvbiBmb3IgdGhlIGJ1c2luZXNzIHByb2JsZW0geW91IGFyZSB0cnlpbmcgdG8gc29sdmUuDQoNCiMjIyBFeGVyY2lzZSAyDQo+IEdvIHRvIEV4ZXJjaXNlIDIgYW5kIHRyeSB0byB0aGluayBhYm91dCB3aGF0IGNvdWxkIGJlIGEgZ29vZCAndGFyZ2V0Jy8gZXZlbnQgDQo+IHlvdSBhcmUgdHJ5aW5nIHRvIHByZWRpY3QgZnJvbSBkYXRhIHlvdSBoYXZlLg0KDQojIyBNb2RlbGluZyBkYXRhIGxldmVsDQo+IE5leHQgcXVlc3Rpb24geW91IHNob3VsZCBhc2sgeW91cnNlbGYgYmVmb3JlIHlvdSBqdW1wIGRpcmVjdGx5IGludG8gbW9kZWxpbmcgaXMgDQo+IEhvdyBncmFudWxhciB5b3UgbmVlZCBkYXRhIHRvIGJlIHByZXBhcmVkLiANCj4gV2hhdCBtYWtlcyBzZW5zZSB0byBtb2RlbCBpbiBvdXIgY2FzZT8gSXMgaXQgcXVhbGl0eSBvZiB0aGUgcG90ZW50aWFsL2Z1dHVyZSBwb2xpY3k/DQo+IElzIGl0IGNsYWltIGFtb3VudCBvciBzb21ldGhpbmcgY29tcGxldGVseSBkaWZmZXJlbnQ/DQoNCkNsYWltcyBkYXRhIGFyZSBhdCAqY2xhaW1zKiBsZXZlbC4NCmBgYHtyfQ0KZHRfQ2xhaW1zIDwtIHJlYWQuY3N2KCIuLi8uLi9kYXRhL2NsYWltcy5jc3YiKQ0KZHRfQ2xhaW1zICU+JSBucm93KCkNCmR0X0NsYWltcyAlPiUgZGlzdGluY3QoTnJDbGFpbSkgJT4lIG5yb3coKQ0KZHRfQ2xhaW1zICU+JSBkaXN0aW5jdChOclBvbGljeSkgJT4lIG5yb3coKSANCmBgYA0KUG9saWN5IGRhdGEgYXJlIGF0ICpwb2xpY3kqIGxldmVsLg0KYGBge3J9DQpkdF9Qb2xpY3kgPC0gcmVhZC5jc3YoIi4uLy4uL2RhdGEvcG9saWN5X2hpc3RvcnkuY3N2IikNCmR0X1BvbGljeSAlPiUgbnJvdygpDQpkdF9Qb2xpY3kgJT4lIGRpc3RpbmN0KE5yQ2xhaW0pICU+JSBucm93KCkNCmR0X1BvbGljeSAlPiUgZGlzdGluY3QoTnJQb2xpY3kpICU+JSBucm93KCkgDQpgYGANCg0Kdnlyb2IgZXhwb3N1aXJlLCBtZXJnbmkgY2xhaW15DQoNCiMjIFRhcmdldCBjcmVhdGlvbg0KDQp1cm9iIHRnYXJnZXQgdmlhY2VyZSBhIHZ5c3B2ZXRsaSBwcmVjbyB0aWV0byBkYXZhanUgem15c2VsIChzZXZlcml0YX4gZ2FtbWEsIGZyZXF1ZW5jaWF+IHBvaXNvbikNCmhpc3RvZ3JhbXkgdGFyZ2V0b3YsIG1vem5vIHRlc3QgemUgY2kgZml0dWplIG5hIGdhbW11Lg0KDQojIyMgT25lLVdheQ0KcG91eml0aW0gdGFyZ2V0dSB1cm9iIG9udy13YXkgdiBnZ3Bsb3RlIGEgbmEgRFUgbW96bm9zdCBzaGlueT8NCnVyb2IgamVkZW4gZXhhbXBsZSBrdG9yeSBkYXZhIHpteXNlbCwgYSBkcnVoeSBuZWNoIG5hamR1IG9uaS4NCg0KDQoNCiMjIEZpcnN0IE1vZGVsDQoNCnVwcyAzMCUgZGF0IHZ5aG9kZW55Y2gsIHByZWNvPw0KDQpsZWJvIG1pc3NpbnkgdiB0dm9qaWNoIGZlYXR1cmVzLCBtdXNpcyBuYWtvZGl0IG5hICJVbmtub3duIiBjYXRlZ29yaWNreSBlbHZlbA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByZS1Nb2RlbCBBbmFseXNpcyBhbmQgZGF0YSBwcmVwYXJhdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgUG9saWN5IGFuZCBDbGFpbXMgZGF0YSBleHBsb3JhdGlvbg0KQXMgbWVudGlvbmVkIGluIHByZXZpb3VzIGxlc3NvbnMsIHdlIGlkZW50aWZpZWQgZ29vZCBhbmQgYmFkIHBlcmZvcm1lcnMgaW4gdGVybSBvZiBwb3J0Zm9saW9zLiBUbyBpZGVudGlmeSwgd2hpY2ggZ3JvdXAgb2YgcGVvcGxlL2NvbXBhbmllcyBhcmUgZ3VpbHR5IGZvciB0aGF0IHBlcmZvcm1hbmNlIHdlIG5lZWQgKiptb3JlIGdyYW51bGFyIGRhdGEqKi4gQW5kIHNvIHdlIHJlY2VpdmVkICpDbGFpbXMqIGFuZCAqUG9saWN5KiBkYXRhIGZyb20gb3V0IElUIGRlcGFydG1lbnQuDQoNCkxldCdzIGxvb2sgYXQgdGhlbS4NCg0KIyMgRXhlcmNpc2UgMQ0KUGxlYXNlIG1ha2UgYSBmZXcgZGF0YSBjaGVja3MgKGZpZWxkcyBpbmZvLCBzb21lIHN1bW1hcnkgc3RhdHMsIHF1YWxpdHkgY2hlY2tzIGFib3V0IG1pc3NpbmdzLCAuLi4pIGFzIHlvdSBsZWFybmVkIGluIHByZXZpb3VzIGxlc3NvbnMuDQoNCllvdSBjYW4gZm9sbG93IHVwIGF1eGlsaWFyeSBxdWVzdGlvbnMgaW4gYGxvc3NfYW5hbHlzaXMuUmAgYXQgRXhlcmNpc2UgMS4NCg0KV3JpdGUgYSBmZXcgc2VudGVuY2VzIGFib3V0IHdoYXQgaGF2ZSB5b3UgZm91bmQgYW5kIGNvbW1pdCB5b3VyIG5vdGVzLg0KDQojIFBvbGljeSB2cy4gQ2xhaW1zIGRhdGENCiMjIyMgTm93IHRoZSBjcnVjaWFsIHF1ZXN0aW9uczogV2hhdCBhcmUgeW91IGdvbm5hIG1vZGVsIGFuZCB3aGF0IGRhdGEgd2lsbCB5b3UgbmVlZCBmb3IgdGhhdCBwdXJwb3NlPw0KDQpXcml0ZSBhIGZldyBzZW50ZW5jZXMgYWJvdXQgd2hhdCBkbyB5b3UgdGhpbmsgYW5kIGNvbW1pdCB5b3VyIG5vdGVzLg0KDQoNCiMjIyBFeGVyY2lzZSAyDQo+IEdvIHRvIEV4ZXJjaXNlIDIgYW5kIHRyeSB0byB0aGluayBhYm91dCB3aGF0IGNvdWxkIGJlIGEgZ29vZCAndGFyZ2V0Jy8gZXZlbnQgDQo+IHlvdSBhcmUgdHJ5aW5nIHRvIHByZWRpY3QgZnJvbSBkYXRhIHlvdSBoYXZlLg0KDQojIyBNb2RlbGluZyBkYXRhIGxldmVsDQo+IE5leHQgcXVlc3Rpb24geW91IHNob3VsZCBhc2sgeW91cnNlbGYgYmVmb3JlIHlvdSBqdW1wIGRpcmVjdGx5IGludG8gbW9kZWxpbmcgaXMgDQo+IEhvdyBncmFudWxhciB5b3UgbmVlZCBkYXRhIHRvIGJlIHByZXBhcmVkLiANCj4gV2hhdCBtYWtlcyBzZW5zZSB0byBtb2RlbCBpbiBvdXIgY2FzZT8gSXMgaXQgcXVhbGl0eSBvZiB0aGUgcG90ZW50aWFsL2Z1dHVyZSBwb2xpY3k/DQo+IElzIGl0IGNsYWltIGFtb3VudCBvciBzb21ldGhpbmcgY29tcGxldGVseSBkaWZmZXJlbnQ/DQoNCkNsYWltcyBkYXRhIGFyZSBhdCAqY2xhaW1zKiBsZXZlbC4NCmBgYHtyfQ0KbGlicmFyeShkcGx5cikNCmR0X0NsYWltcyA8LSByZWFkLmNzdigiLi4vLi4vZGF0YS9jbGFpbXMuY3N2IikNCmR0X0NsYWltcyAlPiUgbnJvdygpDQpkdF9DbGFpbXMgJT4lIGRpc3RpbmN0KE5yQ2xhaW0pICU+JSBucm93KCkNCiNkdF9DbGFpbXMgJT4lIGRpc3RpbmN0KE5yUG9saWN5KSAlPiUgbnJvdygpIA0KYGBgDQpQb2xpY3kgZGF0YSBhcmUgYXQgKnBvbGljeSogbGV2ZWwuDQpgYGB7cn0NCmR0X1BvbGljeSA8LSByZWFkLmNzdigiLi4vLi4vZGF0YS9wb2xpY3lfaGlzdG9yeS5jc3YiKQ0KZHRfUG9saWN5ICU+JSBucm93KCkNCmR0X1BvbGljeSAlPiUgZGlzdGluY3QoTnJQb2xpY3kpICU+JSBucm93KCkgDQpgYGANCg0Kdnlyb2IgZXhwb3N1aXJlLCBtZXJnbmkgY2xhaW15DQoNCiMjIFRhcmdldCBjcmVhdGlvbg0KDQp1cm9iIHRnYXJnZXQgdmlhY2VyZSBhIHZ5c3B2ZXRsaSBwcmVjbyB0aWV0byBkYXZhanUgem15c2VsIChzZXZlcml0YX4gZ2FtbWEsIGZyZXF1ZW5jaWF+IHBvaXNvbikNCmhpc3RvZ3JhbXkgdGFyZ2V0b3YsIG1vem5vIHRlc3QgemUgY2kgZml0dWplIG5hIGdhbW11Lg0KDQojIyMgT25lLVdheQ0KcG91eml0aW0gdGFyZ2V0dSB1cm9iIG9udy13YXkgdiBnZ3Bsb3RlIGEgbmEgRFUgbW96bm9zdCBzaGlueT8NCnVyb2IgamVkZW4gZXhhbXBsZSBrdG9yeSBkYXZhIHpteXNlbCwgYSBkcnVoeSBuZWNoIG5hamR1IG9uaS4NCg0KDQoNCiMjIEZpcnN0IE1vZGVsDQoNCnVwcyAzMCUgZGF0IHZ5aG9kZW55Y2gsIHByZWNvPw0KDQpsZWJvIG1pc3NpbnkgdiB0dm9qaWNoIGZlYXR1cmVzLCBtdXNpcyBuYWtvZGl0IG5hICJVbmtub3duIiBjYXRlZ29yaWNreSBlbHZlbA0KDQo=</div>
 
 
 

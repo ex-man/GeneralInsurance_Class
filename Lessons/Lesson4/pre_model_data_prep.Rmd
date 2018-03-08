@@ -4,16 +4,22 @@ output: html_notebook
 ---
 
 # Policy and Claims data exploration
-Ze ideme z portfolio dat do granularnejsich na poistkovej urovni a chceme urobit basic data exploration, co tam vlastne je.
+As mentioned in previous lessons, we identified good and bad performers in term of portfolios. To identify, which group of people/companies are guilty for that performance we need **more granular data**. And so we received *Claims* and *Policy* data from out IT department.
 
-ze nech urobia podobne checks ako v lesson 2.
+Let's look at them.
 
-### Exercise 1
-> go to `loss_analysis.R` and make a few data checks
+## Exercise 1
+Please make a few data checks (fields info, some summary stats, quality checks about missings, ...) as you learned in previous lessons.
+
+You can follow up auxiliary questions in `loss_analysis.R` at Exercise 1.
+
+Write a few sentences about what have you found and commit your notes.
 
 # Policy vs. Claims data
-> What data do we need for modelling? What are we going to model actually?
-> This is crucial question for the business problem you are trying to solve.
+#### Now the crucial questions: What are you gonna model and what data will you need for that purpose?
+
+Write a few sentences about what do you think and commit your notes.
+
 
 ### Exercise 2
 > Go to Exercise 2 and try to think about what could be a good 'target'/ event 
@@ -27,16 +33,16 @@ ze nech urobia podobne checks ako v lesson 2.
 
 Claims data are at *claims* level.
 ```{r}
+library(dplyr)
 dt_Claims <- read.csv("../../data/claims.csv")
 dt_Claims %>% nrow()
 dt_Claims %>% distinct(NrClaim) %>% nrow()
-dt_Claims %>% distinct(NrPolicy) %>% nrow() 
+#dt_Claims %>% distinct(NrPolicy) %>% nrow() 
 ```
 Policy data are at *policy* level.
 ```{r}
 dt_Policy <- read.csv("../../data/policy_history.csv")
 dt_Policy %>% nrow()
-dt_Policy %>% distinct(NrClaim) %>% nrow()
 dt_Policy %>% distinct(NrPolicy) %>% nrow() 
 ```
 
