@@ -1,4 +1,4 @@
-### Exercise - ggplot2
+## Exercise - ggplot2
 > We will work with the local repository you have cloned in the first (Git) exercise.  
 > Open R project for this class in R Studio  
 > Run following command in R console to link to `ggplot2` library:
