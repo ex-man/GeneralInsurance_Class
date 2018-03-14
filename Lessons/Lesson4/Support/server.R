@@ -28,7 +28,6 @@ shinyServer(function(input, output,session) {
                   emblem_graph(caf_analyse,input$var_input,target,modelweight)
               } else {
                       if(input$binning_choose!='no_bin') {
-                        browser()
                           caf_analyse<-mutate(caf_analyse,
                                                  binned=switch(input$binning_choose,
                                                                "weight_equal"=
@@ -52,7 +51,7 @@ shinyServer(function(input, output,session) {
                                        modelweight)
                       } else {
                               if (input$category_noBin=='No Category') {
-                                    ggplot(caf_analyse,aes_string(x=input$var_input,y='LR'),size=3) + 
+                                    ggplot(caf_analyse,aes_string(x=input$var_input,y=target),size=3) + 
                                       geom_point(alpha=I(1/10)) + 
                                       theme_classic() +
                                       theme(legend.position=c(0.3,0.8)) +
@@ -60,8 +59,8 @@ shinyServer(function(input, output,session) {
                                       ylim(input$zoom_y[1],input$zoom_y[2]) +
                                       geom_smooth() 
                               } else {
-                                ggplot(caf_analyse,aes_string(x=input$var_input,y='LR')) + 
-                                  geom_point(aes_string(size=input$category_noBin),alpha=I(1/2)) + 
+                                ggplot(caf_analyse,aes_string(x=input$var_input,y=target)) + 
+                                  geom_point(aes_string(color=input$category_noBin),alpha=I(1/2)) + 
                                   theme_classic() +
                                   theme(legend.position=c(0.8,0.3)) +
                                   xlim(input$zoom_x[1],input$zoom_x[2]) +

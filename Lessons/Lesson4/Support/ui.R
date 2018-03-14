@@ -30,10 +30,10 @@ shinyUI(fluidPage(
                   condition= "output.binning_test",
                         radioButtons("binning_choose","Choose the binning methodology:",
                                      c('Distribution Equal'='dist_equal',
-                                       'Weight Equal'='weight_equal',
+                                       #'Weight Equal'='weight_equal',
                                        'Own Binning'= 'own_bin',
                                        'No Binning'='no_bin'),
-                                     selected = 'weight_equal'
+                                     selected = 'dist_equal'
                         )
                 )),
                 column(4,

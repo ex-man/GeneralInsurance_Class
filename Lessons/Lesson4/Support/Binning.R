@@ -116,17 +116,16 @@ bin_dist_equal<-function(var,n){
   
   #breaking down the variable into intervals
   points<-cut2(var,breaks,oneval=TRUE)  
-  
   #some adjustment to see intervals in appropriate form
-  points<-as.character(points)
-  points[whr_big]<-as.character(var[whr_big]) #splitting the interval if contain also big single value bin
+  # points<-as.character(points)
+  # points[whr_big]<-as.character(var[whr_big]) #splitting the interval if contain also big single value bin
+  # 
+  # points[!whr_big]<-gsub('\\)','',points[!whr_big]) #removing the 'bracket'
+  # points[!whr_big]<-gsub('\\(','',points[!whr_big]) #removing the 'bracket'
+  # points[!whr_big]<-gsub('\\]','',points[!whr_big]) #removing the 'bracket'
+  # points[!whr_big]<-gsub('\\[','',points[!whr_big]) #removing the 'bracket'
   
-  points[!whr_big]<-gsub('\\)','',points[!whr_big]) #removing the 'bracket'
-  points[!whr_big]<-gsub('\\(','',points[!whr_big]) #removing the 'bracket'
-  points[!whr_big]<-gsub('\\]','',points[!whr_big]) #removing the 'bracket'
-  points[!whr_big]<-gsub('\\[','',points[!whr_big]) #removing the 'bracket'
-  
-  return(list(i_inter=factor(points,exclude=NULL)))
+  return(list(i_inter=points))
 }
 
 #interval equal or specify, default is 0.5-2 by 0.1
@@ -135,12 +134,12 @@ bin_inter_equal<-function(var, breaks=seq(0.5,2,0.1)){
   points<-cut2(var, breaks, oneval=TRUE, digits = 2)  
   
   #some adjustment to see intervals in appropriate form
-  points<-as.character(points)
-  points<-gsub('\\)','',points) #removing the 'bracket'
-  points<-gsub('\\(','',points) #removing the 'bracket'
-  points<-gsub('\\]','',points) #removing the 'bracket'
-  points<-gsub('\\[','',points) #removing the 'bracket'
-  points<-gsub(',',',\n',points) # ',' become new line 
+  # points<-as.character(points)
+  # points<-gsub('\\)','',points) #removing the 'bracket'
+  # points<-gsub('\\(','',points) #removing the 'bracket'
+  # points<-gsub('\\]','',points) #removing the 'bracket'
+  # points<-gsub('\\[','',points) #removing the 'bracket'
+  # points<-gsub(',',',\n',points) # ',' become new line 
   
   return(list(i_inter=factor(points,exclude=NULL)))
 }
