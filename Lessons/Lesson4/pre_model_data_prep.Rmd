@@ -50,8 +50,7 @@ vyrob exposuire, mergni claimy
 
 ## Target creation
 
-urob tgarget viacere a vyspvetli preco tieto davaju zmysel (severita~ gamma, frequencia~ poison)
-histogramy targetov, mozno test ze ci fituje na gammu.
+urob tgarget viacere a vysvetli preco tieto davaju zmysel (severita~ gamma, frequencia~ poison) 
 
 ### One-Way
 pouzitim targetu urob onw-way v ggplote a na DU moznost shiny?
