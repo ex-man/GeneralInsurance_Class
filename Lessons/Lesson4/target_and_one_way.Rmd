@@ -1,0 +1,100 @@
+---
+title: "Target Creation"
+output: html_notebook
+---
+[Back](pre_model_data_prep.Rmd) *** [Next]() *** [Up](README.md) *** 
+
+Great, now when you wrote about your ideas about the target, lets think about it together.
+
+> What is a good measure of risky client?
+
+Hmm. `Paid` losses might be a good start.
+
+```{r}
+dt_pol_w_claims %>% 
+  filter(!is.na(Paid)) %>% 
+  select(Paid) %>% 
+  arrange(desc(Paid)) %>% 
+  head()
+```
+
+### Exposure
+> Is it enough? Can we say, those first three client have similar risk?
+
+Well...it might be not enough. Lets look to the same example, but we will add some more information. 
+Specifically, we will show when the policy started and when it was ended.
+
+```{r}
+dt_pol_w_claims %>% 
+  filter(!is.na(Paid)) %>% 
+  select(Paid, Dt_Exp_Start, Dt_Exp_End) %>% 
+  arrange(desc(Paid)) %>% 
+  head()
+```
+
+
+> What's different on those first three clients?
+
+Ou yes, the third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) risker than first two clients from the table above.
+
+What we described here is term `exposure`. The exposure can be different for portfolio we are analysing. e.g. it can be square root for property business or mileage for trucks insurance. We often talks about exposure as unit of for insurance cover. There is many definitions. 
+
+So let's create our exposure based on time client was covered.
+```{r}
+# tip: there is great package for date manipulation called lubridate
+library(lubridate)
+dt_pol_w_claims <- 
+  dt_pol_w_claims %>% mutate(Time_Exposure = lubridate::dmy(Dt_Exp_End) - lubridate::dmy(Dt_Exp_Start))
+
+# same example as above with Time Exposure
+dt_pol_w_claims %>% 
+  filter(!is.na(Paid)) %>% 
+  select(Paid, Dt_Exp_Start, Dt_Exp_End, Time_Exposure)  %>% 
+  arrange(desc(Paid)) %>% head()
+```
+
+Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is leap year.
+
+### Ultimate Losses
+
+
+### Ultimate Frequency
+**Do we have such thing? I havent found NO of Climas in Claims db**
+
+
+```{r}
+dt_pol_w_claims <- 
+  dt_pol_w_claims %>% 
+  mutate(Ult_Loss = Paid + Reserves,
+         Burning_Cost = Ult_Loss / as.integer(Time_Exposure)
+  )
+
+dt_pol_w_claims %>% 
+  filter(!is.na(Paid)) %>% 
+  select(Paid, Reserves, Ult_Loss, Burning_Cost) %>% head()
+```
+
+
+## One-Way Analysis
+pokec
+
+```{r}
+dt_pol_w_claims %>% 
+  group_by(Veh_type1) %>% 
+  summarise(BC_avg = mean(Burning_Cost, na.rm  = TRUE), cnt = n()) %>% 
+  arrange(desc(BC_avg))
+```
+
+> Whats 
+
+pouzitim targetu urob onw-way v ggplote a na DU moznost shiny?
+urob jeden example ktory dava zmysel, a druhy nech najdu oni.
+
+
+
+## First Model
+
+ups 30% dat vyhodenych, preco?
+
+lebo missiny v tvojich features, musis nakodit na "Unknown" categoricky elvel
+

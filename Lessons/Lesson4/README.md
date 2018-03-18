@@ -3,8 +3,8 @@
   
 # Content
   1. Intro to models
-      - Data Preparation for Modelling
-      - Target purpose
+      - [Data Preparation for Modelling](pre_model_data_prep.Rmd)
+      - [Target purpose](target_and_one_way.Rmd)
   2. Intro to GLM
 
 
