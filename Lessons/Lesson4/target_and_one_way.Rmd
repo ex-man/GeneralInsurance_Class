@@ -39,9 +39,9 @@ Ou yes, the third client asked for insurance cover only for three months! And du
 
 What we described here is term `exposure`. The exposure can be different for portfolio we are analysing. e.g. it can be square root for property business or mileage for trucks insurance. We often talks about exposure as unit of for insurance cover. There is many definitions. 
 
-So let's create our exposure based on time client was covered.
+So let's create our exposure based on time, client was covered.
 ```{r}
-# tip: there is great package for date manipulation called lubridate
+# tip: there is a great package for date manipulation called lubridate
 library(lubridate)
 dt_pol_w_claims <- 
   dt_pol_w_claims %>% mutate(Time_Exposure = lubridate::dmy(Dt_Exp_End) - lubridate::dmy(Dt_Exp_Start))
@@ -56,10 +56,11 @@ dt_pol_w_claims %>%
 Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is leap year.
 
 ### Ultimate Losses
-
+# dopln
 
 ### Ultimate Frequency
-**Do we have such thing? I havent found NO of Climas in Claims db**
+# dopln
+**Do we have such thing? I havent found No. of Claims in Claims db**
 
 
 ```{r}
@@ -76,14 +77,59 @@ dt_pol_w_claims %>%
 
 
 ## One-Way Analysis
-pokec
+Perfect! It looks like we have found a good target, which might be a good measure for risky clients.
+
+Now, lets finally try to think about the reasons of client being more risky than others.
+
+#### Exercise
+Do you have any idea which type of client is definitelly riskier than other? 
+Write a few sentences to your notes and commit.
+
+
+--------------------------------------------------------------------------------
+
+One-Way analysis means we always look for one explanatory variable and one which we try to explain, in our case it's our target we identified. So first of all it make sense to look into them as basic scatterplot.
+
+For the first one-way analysis we will try to explore feature about vehicle type of client: `Veh_type2`
+
+```{r}
+library(ggplot2)
+dt_pol_w_claims %>% 
+  ggplot(aes(y = Burning_Cost, x = Veh_type2)) + 
+  geom_jitter()
+```
+
+
+Does it helps you to identify any trend? Hmm...looks like outliers screwing it up. Lets go for numbers then.
 
 ```{r}
 dt_pol_w_claims %>% 
-  group_by(Veh_type1) %>% 
-  summarise(BC_avg = mean(Burning_Cost, na.rm  = TRUE), cnt = n()) %>% 
+  group_by(Veh_type2) %>% 
+  summarise(BC_avg = mean(Burning_Cost, na.rm  = TRUE),
+            BC_median = median(Burning_Cost, na.rm = TRUE),
+            cnt = n()) %>% 
   arrange(desc(BC_avg))
 ```
+
+Why we choose those three metrics? And do you see the story behind them?
+
+```{r}
+dt_pol_w_claims %>% 
+  ggplot(aes(y = Burning_Cost, x = Veh_type2)) + 
+  geom_boxplot() +
+  ylim(0, 100)
+```
+
+
+Two things happend here:
+    - outliers screw it up so much, that this feature is definitelly not good predictor alone, we are not able to explain those outliers using only one feature describing vehicle type.
+    - but...there is definitelly some trend, which might be usefull in next stages of modelling. (saying that there is definitelly some trend might be too strong and we should use also other methods to confirm this. e.g. ANOVA)
+
+#### Exercise
+Choose another feature and try to find out the story behind data, using similar approach as above.
+
+### Weighting the Target
+skus weightovat premiou, len pre ukazku ak mame cas
 
 > Whats 
 
