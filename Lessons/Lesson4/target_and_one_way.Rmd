@@ -2,9 +2,28 @@
 title: "Target Creation"
 output: html_notebook
 ---
-[Back](pre_model_data_prep.Rmd) *** [Next]() *** [Up](README.md) *** 
+< [Back](pre_model_data_prep.Rmd)  [Next]() > [Up](README.md) ^ 
 
-Great, now when you wrote about your ideas about the target, lets think about it together.
+Great, now you wrote about your ideas about the target, lets think about it together.
+
+- _What is the event, object or idea you would like to predict?_
+
+    We definitely want to find out the risk of the specific client and predict it for potential clients.
+   
+- _Is it measurable?_
+
+    How can we measure risk? Which information identify risky client? 
+   
+    This is something we need to discuss more and have whole section about it. Example of good indicator for risk can be Ultimate Losses, Ultimate Loss Ratio, Ultimate Frequency and depend pretty much on which kind of risk you are interested in. 
+   
+     Lets take an example. If you are really interested in risk described in dollar values, you will probably end up using Ultimate Loss as good measurable variable indicating risk of the client.
+   
+    But, some of the insurance coverages pay only fixed amount of dollars when claims occurs. In such case there is not so much importance on dollar value paid, but much more important thing is how much claims such client had. We usually choose Ultimate Frequency as a good target or combination of Loss amount and Frequency unit.
+   
+    So the answer here depends pretty much on the definition of the insurance product and it's specific risk you are trying to predict.
+
+
+So once again...
 
 > What is a good measure of risky client?
 
@@ -53,7 +72,7 @@ dt_pol_w_claims %>%
   arrange(desc(Paid)) %>% head()
 ```
 
-Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is leap year.
+Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is a leap year.
 
 ### Ultimate Losses
 # dopln
@@ -75,11 +94,20 @@ dt_pol_w_claims %>%
   select(Paid, Reserves, Ult_Loss, Burning_Cost) %>% head()
 ```
 
+Let's continue with the questions which help us to identify a good target.
+
+- _Let's say you finished your model, how did the prediction help you to solve your insurance issue?_
+
+    When we will have a good model, which could predict Ultimate Time weighted Loss accuratelly, it will help us to build suitable price we should offer to potential client. The price should ensure it is not too high for less risky client, so we are competitive on the market, but also high enough to cover for potential claims. Btw we might call such a price as _Technical Price_.
+
+- _Are there any potential independent variables, they might have relationship to your target you propose?_
+
+    This is something we can solve using _One-Way Analysis_
 
 ## One-Way Analysis
 Perfect! It looks like we have found a good target, which might be a good measure for risky clients.
 
-Now, lets finally try to think about the reasons of client being more risky than others.
+Now, lets finally try to think about the __reasons__ of client being more risky than others.
 
 #### Exercise
 Do you have any idea which type of client is definitelly riskier than other? 
@@ -88,7 +116,7 @@ Write a few sentences to your notes and commit.
 
 --------------------------------------------------------------------------------
 
-One-Way analysis means we always look for one explanatory variable and one which we try to explain, in our case it's our target we identified. So first of all it make sense to look into them as basic scatterplot.
+One-Way analysis means we always look for one explanatory variable and one which we try to explain, in our case it's our target we identified. So first of all it make sense to look into them as basic _scatterplot_.
 
 For the first one-way analysis we will try to explore feature about vehicle type of client: `Veh_type2`
 
@@ -122,6 +150,7 @@ dt_pol_w_claims %>%
 
 
 Two things happend here:
+
     - outliers screw it up so much, that this feature is definitelly not good predictor alone, we are not able to explain those outliers using only one feature describing vehicle type.
     - but...there is definitelly some trend, which might be usefull in next stages of modelling. (saying that there is definitelly some trend might be too strong and we should use also other methods to confirm this. e.g. ANOVA)
 
