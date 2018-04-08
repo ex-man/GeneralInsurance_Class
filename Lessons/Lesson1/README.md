@@ -11,6 +11,9 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 6) [Shiny](Support/About_shiny.md) intro - what is it and why is it + hello world shiny app (25 min)
 
 ----------------------------------------------
+#### Feedback (3 min)
+
+Go to `Lessons/Lesson1/Feedback/Feedback-Lesson1`, answer the questions, which help us to improve this course and commit to your forked repository.
 
 #### Homework (20 min)
 ##### Implement tidyverse example into shiny and commit into your forked repository
