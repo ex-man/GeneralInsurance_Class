@@ -1,4 +1,11 @@
-####### Data preparation for lesson 2 (KPI's, searching for bad looking portfolios) #####
+---
+title: "Data preparation for lesson 2 (KPI's, searching for bad looking portfolios)"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 # libraries
 library(dplyr)
