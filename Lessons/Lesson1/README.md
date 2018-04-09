@@ -10,8 +10,13 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 5) [Tidyverse](Support/About_tidyverse.md) - collection of useful tools in R for data scientist (actuary as well) (20 min)
 6) [Shiny](Support/About_shiny.md) intro - what is it and why is it + hello world shiny app (25 min)
 
-### Homework (10 min)
-#### Implement tidyverse example into shiny and commit into your forked repository
+----------------------------------------------
+#### Feedback (3 min)
+
+Go to `Lessons/Lesson1/Feedback/Feedback-Lesson1`, answer the questions, which help us to improve this course and commit to your forked repository.
+
+#### Homework (20 min)
+##### Implement tidyverse example into shiny and commit into your forked repository
 
 * Prepare interactive scatterplot (Premium vs. Expenses) we have seen in [`ggplot2` example](Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png) and make __colouring__ of the scatter points dynamic based on not only `Region`, but for all categorical variable available in data set `dt_KPI`. Use `shiny` framework
 * Save your application into `Lessons/Lesson1/Homework` and `commit` it to your forked repository
