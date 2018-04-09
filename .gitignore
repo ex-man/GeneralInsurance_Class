@@ -3,5 +3,4 @@ packrat/src/*
 .Rproj.user
 .RData
 .DS_Store
-data/*
 .Rhistory
