@@ -4,7 +4,7 @@ To learn what is a Loss Ratio and what are different forms of projections of los
 # Content
 1) [Start from absolute numbers](Support/L2_losses_and_expenses.md) (losses and expenses) (10min)
 2) [Introduction to loss and expense ratios](Support/L2_loss_and_expense_ratios.md) (20 min)
-3) [Have a look at data](Support/L2_visualisation.md) (Look for underperformers) (40 min)
+3) [Have a look at data](Support/data_prep_exercise_KPI.md) (Look for underperformers) (60 min)
 
 #### Feedback (3 min)
 
