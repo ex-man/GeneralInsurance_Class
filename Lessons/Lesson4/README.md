@@ -45,4 +45,10 @@ The standard linear model requires the response variable to have a normal distri
 
 **napis formulku s vysvetlenim, co je co (features, target, sum)**
  
+
  
+ #### Feedback (3 min)
+
+Go to ` https://www.surveymonkey.co.uk/r/89GWWK2` and please answer the questions as they really help us to improve the course.
+
+#### Homework (~30 min) [2b / 4b]
