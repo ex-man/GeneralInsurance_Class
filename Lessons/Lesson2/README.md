@@ -2,24 +2,18 @@
 To learn what is a Loss Ratio and what are different forms of projections of losses (average, chain ladder/bf, loss ratio walk)
 
 # Content
-1) start from absolute number => losses and expense (10min)
-2) introduce loss ratio (losses / nep) and expense ratio (expenses / nep) - start by writing business and handling claims (20min)
-3) look for underperformers in in terms of loss ratio => visulize data using shiny dashboard (20min) => look for more at home (history, ...)
-4) look for underperformers in in terms of underwriting result => visulize data using shiny dashboard (20min) => look for more at 
-home (history, ...) 
+1) There was some new content published. You need to "Update" your repository. [Use pull request in Step6](../../Lessons/Lesson1/Exercises/Ex03_CompareForks.md#step6) (10min)
+2) [Start from absolute numbers](Support/L2_losses_and_expenses.md) (losses and expenses) (10min)
+3) [Have a look at data](Support/data_prep_exercise_KPI.md) (Look for underperformers) (45 min)
+4) [Introduction to loss and expense ratios](Support/L2_loss_and_expense_ratios.md). This will help you finish excercise above (15 min)
+5) Look back at Shiny, as you will need it for Homework (10 min)
 
-### Lesson Flow:
-1) Data Exploration and simple Visualization: `data_prep_exercise_KPI.R`
-2) Integration to Class Shiny: ui=`shiny_tab2_content.r`, server=`shiny_tab2_server.R`
-3) Repository update
+#### Feedback (3 min)
 
-### Homework
-1) Find out, which __year__ was the __most terrific__ for portfolio you have identified as __most profitable__ during the lesson and show it on the chart using `ggplot2` package. Write an explanation about your findings into the code as comment. __Commit__ it to your repository into `Lessons/Lesson2/Homework`.
+Go to `https://www.surveymonkey.co.uk/r/KS3SD7M` and please answer the questions as they really help us to improve the course.
 
-2) Implement UWR chart into Class Shiny app. 
-Edit file shiny_tab2_server.R (as server.R for lesson2) at `output$lesson2_KPI_multidim_table` with predefined input data and implement UWR chart we learned during lesson2 as dynamic view not only for `Unit`. Do not forget to commit your changes.
+#### Homework (~30 min) [2b / 4b]
+1) Find out, which __year__ was the __worst__ for portfolio you have identified as __most profitable__ during the lesson and show it on the chart using `ggplot2` package. Write an explanation about your findings into the code as comment. __Commit__ it to your repository into `Lessons/Lesson2/Homework`.
 
-# NOT DOING	
-	3) how to calculate ultimate losses? Come up with something based on history of quarterly development data for one of the portfolios from part 2) (20 min)
-	4) introduce chain ladder, bf and loss ratio walk (optional) (30min) => practice using https://github.com/mages/ChainLadder
-	
+2) Implement UWR chart into Class Shiny app (`Lessons/Lesson2/Shiny`). 
+Edit file server.R at `output$lesson2_KPI_multidim_UWR_graph` with predefined input data and implement UWR chart we learned during lesson2 as dynamic view not only for `Unit`. Do not forget to commit your changes.

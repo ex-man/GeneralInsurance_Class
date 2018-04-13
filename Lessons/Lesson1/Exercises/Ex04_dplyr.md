@@ -1,4 +1,4 @@
-### Exercise - dplyr
+## Exercise - dplyr
 > We will work with the local repository you have cloned in the first (Git) exercise.  
 > Open R project for this class in R Studio  
 > Run following command in R console to link to `dplyr` library:
@@ -6,7 +6,7 @@
 library(dplyr)
 ```
 
-#### Piping
+### Piping
 > Now let's try to calculate simple thing using multiple encapsulated functions.
 ``` r
 abs(min(c(1, 4, 2, 8, -5)))
@@ -25,7 +25,7 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
   ## [1] 5
 ```    
 
-#### 6 basic `dplyr` verbs
+### 6 basic `dplyr` verbs
 > In this exercise let's practice `dplyr` and **piping** on simple dataset.  
 >  
 > Firstly let's `read` some data in:  

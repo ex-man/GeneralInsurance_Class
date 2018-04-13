@@ -1,0 +1,343 @@
+Region,Unit,Segment,Business,Year,CIR,MPT
+Alandia,Unit1,Big,Doctors,2016,0.468233613,3.001999
+Alandia,Unit1,Big,Criminals,2016,0,0
+Alandia,Unit1,Big,Third Party,2016,0.333165235,5.078111
+Alandia,Unit1,Big,Packaging,2016,0.267730723,1.413391
+Alandia,Unit1,Big,Travel,2016,0.21846488,1.650067
+Alandia,Unit1,Big,NA,2016,0.399059095,3.001999
+Alandia,Unit1,Big,Combined,2016,0,0
+Alandia,Unit1,Big,Housing,2016,0.254268113,1.624819
+Alandia,Unit1,Big,Accidents,2016,0,0
+Alandia,Unit1,Small,Doctors,2016,0.149321541,1.91445
+Alandia,Unit1,Small,Criminals,2016,0,0
+Alandia,Unit1,Small,Third Party,2016,0.23800135,3.953479
+Alandia,Unit1,Small,Packaging,2016,0.264084178,1.193624
+Alandia,Unit1,Small,Travel,2016,0.142346018,1.357486
+Alandia,Unit1,Small,NA,2016,0.234408515,3.37131
+Alandia,Unit1,Small,Combined,2016,0,0
+Alandia,Unit1,Small,Housing,2016,0.192785443,0.958634
+Alandia,Unit1,Small,Accidents,2016,0,0
+Alandia,Unit2,Big,Doctors,2016,0.134830245,1.261635
+Alandia,Unit2,Big,Criminals,2016,0.62495972,4.534285
+Alandia,Unit2,Big,Third Party,2016,0.413358668,5.002965
+Alandia,Unit2,Big,Packaging,2016,0.384596966,1.410348
+Alandia,Unit2,Big,Travel,2016,0.225376867,1.622511
+Alandia,Unit2,Big,NA,2016,0,0
+Alandia,Unit2,Big,Combined,2016,0,0
+Alandia,Unit2,Big,Housing,2016,0.572323989,1.566469
+Alandia,Unit2,Big,Accidents,2016,0.147609803,3.121894
+Alandia,Unit2,Small,Doctors,2016,0.133172127,2.156259
+Alandia,Unit2,Small,Criminals,2016,0.693698072,1.915942
+Alandia,Unit2,Small,Third Party,2016,0.161934911,2.673188
+Alandia,Unit2,Small,Packaging,2016,0.292461946,1.419347
+Alandia,Unit2,Small,Travel,2016,0.152790502,1.300412
+Alandia,Unit2,Small,NA,2016,0.177921647,2.218875
+Alandia,Unit2,Small,Combined,2016,0,0
+Alandia,Unit2,Small,Housing,2016,0.256075418,0.926759
+Alandia,Unit2,Small,Accidents,2016,0,0
+Belandia,Unit3,Big,Doctors,2016,0,0
+Belandia,Unit3,Big,Criminals,2016,0,0
+Belandia,Unit3,Big,Third Party,2016,0.507147853,10.245727
+Belandia,Unit3,Big,Packaging,2016,0.253904381,3.14466
+Belandia,Unit3,Big,Travel,2016,0.310788852,6.829655
+Belandia,Unit3,Big,NA,2016,543.5979645,7.444719
+Belandia,Unit3,Big,Combined,2016,0.375106047,6.009527
+Belandia,Unit3,Big,Housing,2016,0.315872968,3.558065
+Belandia,Unit3,Big,Accidents,2016,0.374859396,10.597169
+Belandia,Unit3,Small,Doctors,2016,0,0
+Belandia,Unit3,Small,Criminals,2016,0,0
+Belandia,Unit3,Small,Third Party,2016,0,0
+Belandia,Unit3,Small,Packaging,2016,0,0
+Belandia,Unit3,Small,Travel,2016,0.293272465,2.97489
+Belandia,Unit3,Small,NA,2016,0.170533034,1.233356
+Belandia,Unit3,Small,Combined,2016,0,0
+Belandia,Unit3,Small,Housing,2016,0.350745718,1.202117
+Belandia,Unit3,Small,Accidents,2016,0,0
+Cergo,Unit4,Big,Doctors,2016,0.125842284,1.362462
+Cergo,Unit4,Big,Criminals,2016,0.744792103,2.279418
+Cergo,Unit4,Big,Third Party,2016,0.410094681,5.487648
+Cergo,Unit4,Big,Packaging,2016,0.428576229,1.910649
+Cergo,Unit4,Big,Travel,2016,0.202248528,1.511275
+Cergo,Unit4,Big,NA,2016,0.185014585,3.052123
+Cergo,Unit4,Big,Combined,2016,0,0
+Cergo,Unit4,Big,Housing,2016,0.465047943,2.014805
+Cergo,Unit4,Big,Accidents,2016,0.148563904,0
+Cergo,Unit4,Small,Doctors,2016,0.167853823,1.334747
+Cergo,Unit4,Small,Criminals,2016,0.410059155,1.463381
+Cergo,Unit4,Small,Third Party,2016,0.39082555,7.080084
+Cergo,Unit4,Small,Packaging,2016,0.288520008,1.841833
+Cergo,Unit4,Small,Travel,2016,0.207454118,2.176375
+Cergo,Unit4,Small,NA,2016,0.145777585,2.064592
+Cergo,Unit4,Small,Combined,2016,0,0
+Cergo,Unit4,Small,Housing,2016,0.254272906,1.347477
+Cergo,Unit4,Small,Accidents,2016,0,0
+Cergo,Unit5,Big,Doctors,2016,0,0
+Cergo,Unit5,Big,Criminals,2016,0,0
+Cergo,Unit5,Big,Third Party,2016,0,0
+Cergo,Unit5,Big,Packaging,2016,0,0
+Cergo,Unit5,Big,Travel,2016,0,0
+Cergo,Unit5,Big,NA,2016,0,0
+Cergo,Unit5,Big,Combined,2016,0,0
+Cergo,Unit5,Big,Housing,2016,0,0
+Cergo,Unit5,Big,Accidents,2016,0,0
+Cergo,Unit5,Small,Doctors,2016,0.125010943,1.023294
+Cergo,Unit5,Small,Criminals,2016,0.441494784,2.48216
+Cergo,Unit5,Small,Third Party,2016,0.301070073,2.621008
+Cergo,Unit5,Small,Packaging,2016,0.364464817,0.973155
+Cergo,Unit5,Small,Travel,2016,0.207648178,2.017858
+Cergo,Unit5,Small,NA,2016,0.19305429,1.976932
+Cergo,Unit5,Small,Combined,2016,0.52539519,0.971764
+Cergo,Unit5,Small,Housing,2016,-0.070609229,-21.708772
+Cergo,Unit5,Small,Accidents,2016,0.255479874,1.936728
+Cergo,Unit6,Big,Doctors,2016,0.160093648,1.938435
+Cergo,Unit6,Big,Criminals,2016,1.040334613,5.656758
+Cergo,Unit6,Big,Third Party,2016,0.446529054,5.696396
+Cergo,Unit6,Big,Packaging,2016,0.287242539,1.211915
+Cergo,Unit6,Big,Travel,2016,0.23759011,1.581266
+Cergo,Unit6,Big,NA,2016,0.287452072,3.696366
+Cergo,Unit6,Big,Combined,2016,0,0
+Cergo,Unit6,Big,Housing,2016,0.314979594,1.476629
+Cergo,Unit6,Big,Accidents,2016,0.154604586,3.696363
+Cergo,Unit6,Small,Doctors,2016,0.140531624,1.662734
+Cergo,Unit6,Small,Criminals,2016,2.169884452,1.540839
+Cergo,Unit6,Small,Third Party,2016,0.33240585,3.549867
+Cergo,Unit6,Small,Packaging,2016,0.23586765,1.144381
+Cergo,Unit6,Small,Travel,2016,0.147710062,1.078832
+Cergo,Unit6,Small,NA,2016,0.121366505,1.227364
+Cergo,Unit6,Small,Combined,2016,0,0
+Cergo,Unit6,Small,Housing,2016,0.154189501,0.937504
+Cergo,Unit6,Small,Accidents,2016,0,0
+Alandia,Unit7,Big,Doctors,2016,0.13740827,1.350665
+Alandia,Unit7,Big,Criminals,2016,0.935153549,5.656758
+Alandia,Unit7,Big,Third Party,2016,0.357617691,3.227271
+Alandia,Unit7,Big,Packaging,2016,0.490671555,1.209343
+Alandia,Unit7,Big,Travel,2016,0.208763049,1.35775
+Alandia,Unit7,Big,NA,2016,0.236684499,1.350665
+Alandia,Unit7,Big,Combined,2016,0,0
+Alandia,Unit7,Big,Housing,2016,0.696171905,0.726089
+Alandia,Unit7,Big,Accidents,2016,0,0
+Alandia,Unit7,Small,Doctors,2016,0.159427796,2.079197
+Alandia,Unit7,Small,Criminals,2016,0.832838616,1.283797
+Alandia,Unit7,Small,Third Party,2016,0.325044371,3.55208
+Alandia,Unit7,Small,Packaging,2016,0.237101475,1.008505
+Alandia,Unit7,Small,Travel,2016,0.150489465,1.931613
+Alandia,Unit7,Small,NA,2016,0.210361325,1.895963
+Alandia,Unit7,Small,Combined,2016,0,0
+Alandia,Unit7,Small,Housing,2016,0.238599609,1.049956
+Alandia,Unit7,Small,Accidents,2016,0,0
+Belandia,Unit8,Big,Doctors,2016,0.129901076,1.326988
+Belandia,Unit8,Big,Criminals,2016,0.642000114,2.710316
+Belandia,Unit8,Big,Third Party,2016,0.565928533,3.879687
+Belandia,Unit8,Big,Packaging,2016,0.541598467,2.010518
+Belandia,Unit8,Big,Travel,2016,0.26501904,1.840631
+Belandia,Unit8,Big,NA,2016,0,0.912666
+Belandia,Unit8,Big,Combined,2016,0,0
+Belandia,Unit8,Big,Housing,2016,0.924683846,2.175746
+Belandia,Unit8,Big,Accidents,2016,0.374055529,3.869448
+Belandia,Unit8,Small,Doctors,2016,0.153173301,1.533751
+Belandia,Unit8,Small,Criminals,2016,0.317923969,1.226584
+Belandia,Unit8,Small,Third Party,2016,0.312914446,4.391915
+Belandia,Unit8,Small,Packaging,2016,0.31670649,1.400678
+Belandia,Unit8,Small,Travel,2016,0.20135201,1.737005
+Belandia,Unit8,Small,NA,2016,0.311748186,1.843213
+Belandia,Unit8,Small,Combined,2016,0.350796332,1.75767
+Belandia,Unit8,Small,Housing,2016,0.40025245,1.448877
+Belandia,Unit8,Small,Accidents,2016,0.232083803,3.88608
+Alandia,Unit1,Big,Doctors,2016,0.102028319,3.001999
+Alandia,Unit1,Big,Criminals,2016,0,0
+Alandia,Unit1,Big,Third Party,2016,0.335792399,5.06396
+Alandia,Unit1,Big,Packaging,2016,0.257298748,1.413391
+Alandia,Unit1,Big,Travel,2016,0,0
+Alandia,Unit1,Big,NA,2016,0.189156637,3.001999
+Alandia,Unit1,Big,Combined,2016,0,0
+Alandia,Unit1,Big,Housing,2016,0.294685161,1.606201
+Alandia,Unit1,Big,Accidents,2016,0,0
+Alandia,Unit1,Big,Doctors,2016,0.140609542,1.798844
+Alandia,Unit1,Big,Criminals,2016,0,0
+Alandia,Unit1,Big,Third Party,2016,0.27400935,4.263572
+Alandia,Unit1,Big,Packaging,2016,0.262493571,1.236086
+Alandia,Unit1,Big,Travel,2016,0.152849561,1.557057
+Alandia,Unit1,Big,NA,2016,0.278367522,4.408011
+Alandia,Unit1,Big,Combined,2016,0,0
+Alandia,Unit1,Big,Housing,2016,0.220424043,1.087551
+Alandia,Unit1,Big,Accidents,2016,0.151340732,0
+Alandia,Unit1,Small,Doctors,2016,0.145979869,1.924425
+Alandia,Unit1,Small,Criminals,2016,0,0
+Alandia,Unit1,Small,Third Party,2016,0.191078702,1.409796
+Alandia,Unit1,Small,Packaging,2016,0.203954806,0.67534
+Alandia,Unit1,Small,Travel,2016,0.134796983,1.270428
+Alandia,Unit1,Small,NA,2016,0.239456406,3.207866
+Alandia,Unit1,Small,Combined,2016,0,0
+Alandia,Unit1,Small,Housing,2016,0.173342076,0.864125
+Alandia,Unit1,Small,Accidents,2016,0.147593729,0
+Alandia,Unit2,Big,Doctors,2016,0.116738355,1.261635
+Alandia,Unit2,Big,Criminals,2016,0.628367042,4.534285
+Alandia,Unit2,Big,Third Party,2016,0.370052474,5.010478
+Alandia,Unit2,Big,Packaging,2016,0.371061,1.410348
+Alandia,Unit2,Big,Travel,2016,0.220617067,1.624694
+Alandia,Unit2,Big,NA,2016,0,0
+Alandia,Unit2,Big,Combined,2016,0,0
+Alandia,Unit2,Big,Housing,2016,0.555885261,1.568711
+Alandia,Unit2,Big,Accidents,2016,0,0
+Alandia,Unit2,Big,Doctors,2016,0.199603905,2.265598
+Alandia,Unit2,Big,Criminals,2016,0.712704049,1.830674
+Alandia,Unit2,Big,Third Party,2016,0.171674158,3.172795
+Alandia,Unit2,Big,Packaging,2016,0.279138965,1.440124
+Alandia,Unit2,Big,Travel,2016,0.146846851,1.219488
+Alandia,Unit2,Big,NA,2016,0.167014252,1.300702
+Alandia,Unit2,Big,Combined,2016,0,0
+Alandia,Unit2,Big,Housing,2016,0.28668876,1.006329
+Alandia,Unit2,Big,Accidents,2016,0.164644994,0
+Alandia,Unit2,Small,Doctors,2016,0.140812471,2.146038
+Alandia,Unit2,Small,Criminals,2016,0.445097642,1.869682
+Alandia,Unit2,Small,Third Party,2016,0.140305618,1.204748
+Alandia,Unit2,Small,Packaging,2016,0.328076014,0.812849
+Alandia,Unit2,Small,Travel,2016,0.147285947,1.301959
+Alandia,Unit2,Small,NA,2016,0.19805387,2.974192
+Alandia,Unit2,Small,Combined,2016,0,0
+Alandia,Unit2,Small,Housing,2016,0.222579156,0.812849
+Alandia,Unit2,Small,Accidents,2016,0.161763165,0
+Belandia,Unit3,Big,Doctors,2016,0,0
+Belandia,Unit3,Big,Criminals,2016,0,0
+Belandia,Unit3,Big,Third Party,2016,0.515557321,4.882882
+Belandia,Unit3,Big,Packaging,2016,0.255854697,1.32233
+Belandia,Unit3,Big,Travel,2016,0.296243807,3.164827
+Belandia,Unit3,Big,NA,2016,0,3.472359
+Belandia,Unit3,Big,Combined,2016,0.401571181,2.754763
+Belandia,Unit3,Big,Housing,2016,0.308210447,1.552799
+Belandia,Unit3,Big,Accidents,2016,0.357878788,5.048584
+Belandia,Unit3,Small,Doctors,2016,0.097819975,0
+Belandia,Unit3,Small,Criminals,2016,0,0
+Belandia,Unit3,Small,Third Party,2016,0,0
+Belandia,Unit3,Small,Packaging,2016,0.254151981,0
+Belandia,Unit3,Small,Travel,2016,0.287064989,2.97489
+Belandia,Unit3,Small,NA,2016,0.177897418,1.233356
+Belandia,Unit3,Small,Combined,2016,0,0
+Belandia,Unit3,Small,Housing,2016,0.357265784,1.202117
+Belandia,Unit3,Small,Accidents,2016,0.154298386,0
+Cergo,Unit4,Big,Doctors,2016,0.128327539,1.3731
+Cergo,Unit4,Big,Criminals,2016,0.837990809,2.279418
+Cergo,Unit4,Big,Third Party,2016,0.446839244,5.485601
+Cergo,Unit4,Big,Packaging,2016,0.466113625,1.910649
+Cergo,Unit4,Big,Travel,2016,0.200098249,1.497617
+Cergo,Unit4,Big,NA,2016,0.218399163,3.052123
+Cergo,Unit4,Big,Combined,2016,0,0
+Cergo,Unit4,Big,Housing,2016,0.533775535,1.988532
+Cergo,Unit4,Big,Accidents,2016,0,0
+Cergo,Unit4,Big,Doctors,2016,0.150925563,1.34826
+Cergo,Unit4,Big,Criminals,2016,0.458956477,1.448322
+Cergo,Unit4,Big,Third Party,2016,0.383961102,7.060775
+Cergo,Unit4,Big,Packaging,2016,0.312625013,1.838611
+Cergo,Unit4,Big,Travel,2016,0.237887211,2.149461
+Cergo,Unit4,Big,NA,2016,0.354962891,3.902412
+Cergo,Unit4,Big,Combined,2016,0,0
+Cergo,Unit4,Big,Housing,2016,0.354298766,1.601995
+Cergo,Unit4,Big,Accidents,2016,0,0
+Cergo,Unit4,Small,Doctors,2016,0.166767743,1.315082
+Cergo,Unit4,Small,Criminals,2016,0.474320615,2.795372
+Cergo,Unit4,Small,Third Party,2016,0.421154875,6.926118
+Cergo,Unit4,Small,Packaging,2016,0,0
+Cergo,Unit4,Small,Travel,2016,0.215654877,2.166703
+Cergo,Unit4,Small,NA,2016,0.139566731,1.858477
+Cergo,Unit4,Small,Combined,2016,0,0
+Cergo,Unit4,Small,Housing,2016,0.15100279,1.053953
+Cergo,Unit4,Small,Accidents,2016,0,0
+Cergo,Unit5,Big,Doctors,2016,0.137851722,1.127427
+Cergo,Unit5,Big,Criminals,2016,0.394893477,2.48216
+Cergo,Unit5,Big,Third Party,2016,0.304443686,2.880125
+Cergo,Unit5,Big,Packaging,2016,0.380035389,0.980553
+Cergo,Unit5,Big,Travel,2016,0.235548299,1.610495
+Cergo,Unit5,Big,NA,2016,0,1.799758
+Cergo,Unit5,Big,Combined,2016,0.637867482,1.310353
+Cergo,Unit5,Big,Housing,2016,0.816796706,1.310353
+Cergo,Unit5,Big,Accidents,2016,0.268664859,2.028061
+Cergo,Unit5,Small,Doctors,2016,0.139043986,0.930132
+Cergo,Unit5,Small,Criminals,2016,0.557337286,2.48216
+Cergo,Unit5,Small,Third Party,2016,0.25487042,2.107208
+Cergo,Unit5,Small,Packaging,2016,0.458967344,0.963594
+Cergo,Unit5,Small,Travel,2016,0.260240217,2.168286
+Cergo,Unit5,Small,NA,2016,0,2.078814
+Cergo,Unit5,Small,Combined,2016,0.515583098,0.819639
+Cergo,Unit5,Small,Housing,2016,0.571928139,0.819639
+Cergo,Unit5,Small,Accidents,2016,0.193364956,1.27867
+Cergo,Unit6,Big,Doctors,2016,0.143747243,1.938435
+Cergo,Unit6,Big,Criminals,2016,0.971397781,5.656758
+Cergo,Unit6,Big,Third Party,2016,0.38621921,5.695613
+Cergo,Unit6,Big,Packaging,2016,0.262080096,1.211915
+Cergo,Unit6,Big,Travel,2016,0.222020602,1.581266
+Cergo,Unit6,Big,NA,2016,0,0
+Cergo,Unit6,Big,Combined,2016,0,0
+Cergo,Unit6,Big,Housing,2016,0.294411658,1.489749
+Cergo,Unit6,Big,Accidents,2016,0.320835294,3.696366
+Cergo,Unit6,Big,Doctors,2016,0.15399369,1.72342
+Cergo,Unit6,Big,Criminals,2016,0.715453214,1.540839
+Cergo,Unit6,Big,Third Party,2016,0.309256993,3.548682
+Cergo,Unit6,Big,Packaging,2016,0.240884067,1.138789
+Cergo,Unit6,Big,Travel,2016,0.167529794,1.084902
+Cergo,Unit6,Big,NA,2016,0.290121519,1.540839
+Cergo,Unit6,Big,Combined,2016,0,0
+Cergo,Unit6,Big,Housing,2016,0.144928709,0.924263
+Cergo,Unit6,Big,Accidents,2016,0,0
+Cergo,Unit6,Small,Doctors,2016,0.155198752,1.623585
+Cergo,Unit6,Small,Criminals,2016,0,0
+Cergo,Unit6,Small,Third Party,2016,0.253134771,1.954018
+Cergo,Unit6,Small,Packaging,2016,0.278003256,1.196243
+Cergo,Unit6,Small,Travel,2016,0.148650163,1.082185
+Cergo,Unit6,Small,NA,2016,0.129231219,1.076011
+Cergo,Unit6,Small,Combined,2016,0,0
+Cergo,Unit6,Small,Housing,2016,0.165851783,0.936506
+Cergo,Unit6,Small,Accidents,2016,0,0
+Alandia,Unit7,Big,Doctors,2016,0.127667629,1.350665
+Alandia,Unit7,Big,Criminals,2016,0.916524913,5.656758
+Alandia,Unit7,Big,Third Party,2016,0.358803466,3.365307
+Alandia,Unit7,Big,Packaging,2016,0.497322895,1.209343
+Alandia,Unit7,Big,Travel,2016,0.221222569,1.3585
+Alandia,Unit7,Big,NA,2016,0.164938279,1.350665
+Alandia,Unit7,Big,Combined,2016,0,0
+Alandia,Unit7,Big,Housing,2016,0.736951091,0.726516
+Alandia,Unit7,Big,Accidents,2016,0,0
+Alandia,Unit7,Big,Doctors,2016,0.149590598,2.108429
+Alandia,Unit7,Big,Criminals,2016,0.827293781,1.276264
+Alandia,Unit7,Big,Third Party,2016,0.358251531,4.005039
+Alandia,Unit7,Big,Packaging,2016,0.213674813,0.912891
+Alandia,Unit7,Big,Travel,2016,0.150822824,1.878272
+Alandia,Unit7,Big,NA,2016,0,0
+Alandia,Unit7,Big,Combined,2016,0,0
+Alandia,Unit7,Big,Housing,2016,0.290204655,1.16729
+Alandia,Unit7,Big,Accidents,2016,0.143046317,0
+Alandia,Unit7,Small,Doctors,2016,0.136976623,1.440954
+Alandia,Unit7,Small,Criminals,2016,0,0
+Alandia,Unit7,Small,Third Party,2016,0.177694077,1.433781
+Alandia,Unit7,Small,Packaging,2016,0.329111704,1.215098
+Alandia,Unit7,Small,Travel,2016,0.158896914,1.968299
+Alandia,Unit7,Small,NA,2016,0.210582124,1.953815
+Alandia,Unit7,Small,Combined,2016,0,0
+Alandia,Unit7,Small,Housing,2016,0.185882409,0.901331
+Alandia,Unit7,Small,Accidents,2016,0.143687467,0
+Belandia,Unit8,Big,Doctors,2016,0.136732916,1.326988
+Belandia,Unit8,Big,Criminals,2016,0.716836371,2.799549
+Belandia,Unit8,Big,Third Party,2016,0.533972525,3.906245
+Belandia,Unit8,Big,Packaging,2016,0.511099452,2.010518
+Belandia,Unit8,Big,Travel,2016,0.173236562,1.840631
+Belandia,Unit8,Big,NA,2016,0,0
+Belandia,Unit8,Big,Combined,2016,0,0
+Belandia,Unit8,Big,Housing,2016,0.719971691,2.209219
+Belandia,Unit8,Big,Accidents,2016,0.378909328,3.869448
+Belandia,Unit8,Big,Doctors,2016,0.128941629,1.5209
+Belandia,Unit8,Big,Criminals,2016,0.331932839,1.225509
+Belandia,Unit8,Big,Third Party,2016,0.295894937,4.378541
+Belandia,Unit8,Big,Packaging,2016,0.344968261,1.034423
+Belandia,Unit8,Big,Travel,2016,0.168863689,1.635365
+Belandia,Unit8,Big,NA,2016,0.320099225,2.026747
+Belandia,Unit8,Big,Combined,2016,0.351470534,1.75767
+Belandia,Unit8,Big,Housing,2016,0.401605397,1.502804
+Belandia,Unit8,Big,Accidents,2016,0.236342476,3.88608
+Belandia,Unit8,Small,Doctors,2016,0.153951339,2.078286
+Belandia,Unit8,Small,Criminals,2016,0.393052857,2.078287
+Belandia,Unit8,Small,Third Party,2016,0,0
+Belandia,Unit8,Small,Packaging,2016,0.291714692,1.482628
+Belandia,Unit8,Small,Travel,2016,0.224060108,1.903221
+Belandia,Unit8,Small,NA,2016,0.26107651,1.789013
+Belandia,Unit8,Small,Combined,2016,0,0
+Belandia,Unit8,Small,Housing,2016,0.305907295,1.265299
+Belandia,Unit8,Small,Accidents,2016,0,0
