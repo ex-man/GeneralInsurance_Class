@@ -2,9 +2,11 @@
 To learn what is a Loss Ratio and what are different forms of projections of losses (average, chain ladder/bf, loss ratio walk)
 
 # Content
-1) [Start from absolute numbers](Support/L2_losses_and_expenses.md) (losses and expenses) (10min)
-2) [Introduction to loss and expense ratios](Support/L2_loss_and_expense_ratios.md) (20 min)
-3) [Have a look at data](Support/data_prep_exercise_KPI.md) (Look for underperformers) (60 min)
+1) There was some new content published. You need to "Update" your repository. [Use pull request in Step6](../../Lessons/Lesson1/Exercises/Ex03_CompareForks.md#step6) (10min)
+2) [Start from absolute numbers](Support/L2_losses_and_expenses.md) (losses and expenses) (10min)
+3) [Have a look at data](Support/data_prep_exercise_KPI.md) (Look for underperformers) (45 min)
+4) [Introduction to loss and expense ratios](Support/L2_loss_and_expense_ratios.md). This will help you finish excercise above (15 min)
+5) Look back at Shiny, as you will need it for Homework (10 min)
 
 #### Feedback (3 min)
 
