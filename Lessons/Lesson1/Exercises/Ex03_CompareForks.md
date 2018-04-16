@@ -10,15 +10,15 @@
 #### Step 1 Make a commit describing you homework
 > Go to command line or terminal from RStudio and **add** files you want to commit (submit) by
 
-`$ git add Homework/blabla.R Homework/blabla2.R`  
+`git add Homework/blabla.R Homework/blabla2.R`  
 > and **commit** by typing
 
-`$ git commit -m "My new file for Lesson1/Ex3"`  
+`git commit -m "My new file for Lesson1/Ex3"`  
 
 #### Step 2 Make sure you are updated with your fork
 > it can happen, wen you are working from different places (PCs), you forget to update your current work from the Github you worked on different PC. Make sure you do this step every time you know you updated something on the Github.
 
-`git pull origin master -s recursive -X ours # this will update automatically all changes from your Github, but leaves differences you created locally by previous commit`
+`git pull origin master -s recursive -X ours`
 
 #### Step 3 Push commits to your Github
 > Now you are ready to push your commited homewrok to Github
@@ -36,7 +36,7 @@
 #### Step 1 Add link to our original class
 > Use following command in GitBash or command line being navigated to your local repository:  
 
-`$ git remote add original_class https://github.com/ex-man/GeneralInsurance_Class.git`
+`git remote add original_class https://github.com/ex-man/GeneralInsurance_Class.git`
 
 #### Step 2 Make sure you do not have local changes
 > If you have some local not commited cahnges you can save them temporarily by `git stash`. Using `git stash apply` you can approach them again
@@ -44,7 +44,7 @@
 #### Step 3 Update from original class
 > Now you area ready to update you local repository eith our latest changes.
 
-`git pull original_class master -s recursive -X ours # this will update automatically all changes from our class Github, but leaves differences you created locally by some previous commit`
+`git pull original_class master -s recursive -X ours`
 
 #### Step 4 Confirm merged commit
 > Now you should see message suggested by git describing you are merging changes from our original class. Probably you are using `vim` editor and can confirm message by `Esc` then `:` then `wq`
