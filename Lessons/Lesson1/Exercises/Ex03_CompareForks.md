@@ -36,7 +36,7 @@
 #### Step 1 Add link to our original class
 > Use following command in GitBash or command line being navigated to your local repository:  
 
-`$ git remote add original_class git@github.com:ex-man/GeneralInsurance_Class.git`
+`$ git remote add original_class https://github.com/ex-man/GeneralInsurance_Class.git`
 
 #### Step 2 Make sure you do not have local changes
 > If you have some local not commited cahnges you can save them temporarily by `git stash`. Using `git stash apply` you can approach them again
