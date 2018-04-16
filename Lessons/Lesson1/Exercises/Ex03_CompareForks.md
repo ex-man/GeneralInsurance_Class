@@ -47,7 +47,7 @@
 `git pull original_class master -s recursive -X ours # this will update automatically all changes from our class Github, but leaves differences you created locally by some previous commit`
 
 #### Step 4 Confirm merged commit
-> Now you should see message suggested by git describing you are merging changes from our original class. Probably you are using `vim` editor and can confirm message by `Esc + : + wq`
+> Now you should see message suggested by git describing you are merging changes from our original class. Probably you are using `vim` editor and can confirm message by `Esc` then `:` then `wq`
 
 #### Step 5 Do not forget to push you changes to your fork
 > Now you are completely setup, but still only locally. To push your locally merged changes push it by using: 
@@ -62,6 +62,7 @@
 > Set *base fork* to our class repository 
 > Set *base* to **master** 
 > Set *head fork* to your fork
+
 > Set *base* to **master** (unless you have renamed or branched something)  
 > And **Create pull request**
 
