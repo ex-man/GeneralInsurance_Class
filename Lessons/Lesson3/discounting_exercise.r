@@ -43,9 +43,8 @@ plot(GenIns_d)
 #  Hint2: There are 2 types of data - paid and case. Start using Paid...
 
 #SOLUTION
-#--------
 # understand the data
-summary(dt_PaidCase)
+
 # create a variable => filter data and covert to triangle. then convert to cummulative to use chainladder
 
 ## Take paid data for House business and Small claim size
@@ -54,28 +53,14 @@ summary(dt_PaidCase)
 ## Now convert the standard table into a triangle
 # %>% as.triangle(...)
 
-## SOLUTION:
-## ------------------------------------
-Paid_HH_sml <- dt_PaidCase %>% 
-  filter(Business == "House" & ClaimSize == "Small" & dataset_type == "PAID")  %>% 
-  as.triangle(origin="ay", dev="dy", value="SumOfamount")
-## ------------------------------------
-
-
 ## Now start plotting things to see more information
 ## SOLUTION:
-## ------------------------------------
-plot(Paid_HH_sml)
-plot(predict(chainladder(Paid_HH_sml)))
-## ------------------------------------
+
 
 ## And get the aging factors and some other stat's out to see more details
 # ata(...)
 
 ## SOLUTION:
-## ------------------------------------
-ata(Paid_HH_sml)
-## ------------------------------------
 
 
 ## Now repeat for all types of buiness and sizes of claims. Compare the findings...
@@ -85,18 +70,6 @@ ata(Paid_HH_sml)
 ## Hint: Sum Paid and Case together to come up with the final claims estimates (the Incurred claims)
 
 ## SOLUTION:
-## ------------------------------------
-Incur_HH_sml <- dt_PaidCase %>% 
-  filter(Business == "House" & ClaimSize == "Small") %>%
-  group_by(Business,ClaimSize,ay,dy) %>%
-  summarise(SumOfamount=sum(SumOfamount)) %>%
-  select(ay:SumOfamount) %>% as.triangle(origin="ay", dev="dy", value="SumOfamount") ## %>% incr2cum(na.rm = TRUE)
-
-plot(Incur_HH_sml)
-plot(predict(chainladder(Incur_HH_sml)))
-
-ata(Incur_HH_sml)
-## ------------------------------------
 
 #--------
 
@@ -115,16 +88,10 @@ ata(Incur_HH_sml)
 ##  get the weights of incremental paid triangle => this is what we are intrested in because individual payments matter
 
 ## SOLUTION:
-## ------------------------------------
-Incr_Paid_HH_sml <- Paid_HH_sml %>% cum2incr() %>% ata() %>% attr("vwtd")
-## ------------------------------------
 
 ## average duration (calculate a weighted sum, where the weight is the number of year/total cummulative paid sum)
 
 ## SOLUTION:
-## ------------------------------------
-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9))
-## ------------------------------------
 
 # Does the value calculated correspond to your assumed value for the given business in Exercise 2? Comment on the findings in your notes...
 
@@ -136,16 +103,12 @@ sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9))
 
 # Let's start simply: What would the average idsocunt factor be? Use the average duration from Exercise 4
 ## SOLUTION:
-## ------------------------------------
-1.05^(-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9)))
-## ------------------------------------
+
 
 # Now let's be more precise and use the appropriate weights and individual discount factors one by one
 # Hint: Discount every term of the sum in Exercise 3 by appropriate discount factor (1+i)^(-year)
 ## SOLUTION:
-## ------------------------------------
-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] * (1/1.05^c(1:9)))
-## ------------------------------------
+
 
 # Recall what is UWR from Lesson 2. Assume premium and expenses are calculated on day 1.
 # Can you calculate a sigle number, that could be used to discount the claims to arrive to Net present value of UWR?
@@ -181,5 +144,5 @@ NPV_data <- read.csv("data/NPV.csv")
 
 CIR_data <- read.csv("data/lesson3_CIR.csv")
 
-# What is the total value of capital required to run the whole business from lesson 2? How has it changed ovr the years?
+# What is the total value of capital required to run the whole business from lesson 2? How has it changed over the years?
 
