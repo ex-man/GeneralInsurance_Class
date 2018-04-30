@@ -134,7 +134,7 @@ You have collected some reasonable premium, that is probably less then the value
  
  How does this additional challenge change the porfitabilty of the buiness? (Exercise10)
  > Using the same data we have discounted, try to allow for additional 10% (on top of risk free rate)
- of the capital needed for that portfolio. What is the Economic profit before tax (NPV UWR net of Capital costs) for each
+ of the capital needed for that portfolio. What is the Economic profit before tax (NPV UWR - Capital costs) for each
  portfolio? Which one of them is the most profitable? Is the worst one from previous investigation still the worst?
 
 --------------------------------
