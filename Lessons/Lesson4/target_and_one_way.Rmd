@@ -74,19 +74,16 @@ dt_pol_w_claims %>%
 
 Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is a leap year.
 
-### Ultimate Losses
-# dopln
+#### Ultimate Losses and Burning Cost
+Ultimate Losses is something we end up paying overall for the individual claim. It can include various parts of the claim e.g. (Losses, Reserver, Inflation, Expenses to arrange the claim, ...).
 
-### Ultimate Frequency
-# dopln
-**Do we have such thing? I havent found No. of Claims in Claims db**
-
+Burning Cost we call overall cost per some metric of exposure, in our case we are talking about _dollar loss per day insured_.
 
 ```{r}
 dt_pol_w_claims <- 
   dt_pol_w_claims %>% 
   mutate(Ult_Loss = Paid + Reserves,
-         Burning_Cost = Ult_Loss / as.integer(Time_Exposure)
+         Burning_Cost = ifelse(is.na(Ult_Loss), 0,  Ult_Loss / as.integer(Time_Exposure))
   )
 
 dt_pol_w_claims %>% 
@@ -156,20 +153,3 @@ Two things happend here:
 
 #### Exercise
 Choose another feature and try to find out the story behind data, using similar approach as above.
-
-### Weighting the Target
-skus weightovat premiou, len pre ukazku ak mame cas
-
-> Whats 
-
-pouzitim targetu urob onw-way v ggplote a na DU moznost shiny?
-urob jeden example ktory dava zmysel, a druhy nech najdu oni.
-
-
-
-## First Model
-
-ups 30% dat vyhodenych, preco?
-
-lebo missiny v tvojich features, musis nakodit na "Unknown" categoricky elvel
-

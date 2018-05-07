@@ -42,13 +42,11 @@ Why generalized model?
 
 The standard linear model requires the response variable to have a normal distribution. However, in insurance data this is not the case. The response variables in insurance mostly have Poisson distribution (for discrete variable, e.g model for the no. of claims) and the Gamma distribution (e.g. modeling amount of the losses).
 
-
-**napis formulku s vysvetlenim, co je co (features, target, sum)**
- 
+ Let's make a simple model. Open [`basic_glm.Rmd`](basic_glm.Rmd)
 
  
  #### Feedback (3 min)
 
-Go to ` https://www.surveymonkey.co.uk/r/89GWWK2` and please answer the questions as they really help us to improve the course.
+Go to `https://www.surveymonkey.co.uk/r/89GWWK2` and please answer the questions as they really help us to improve the course.
 
 #### Homework (~30 min) [2b / 4b]
