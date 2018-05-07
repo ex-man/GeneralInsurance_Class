@@ -45,8 +45,16 @@ The standard linear model requires the response variable to have a normal distri
  Let's make a simple model. Open [`basic_glm.Rmd`](basic_glm.Rmd)
 
  
- #### Feedback (3 min)
+#### Feedback (3 min)
 
 Go to `https://www.surveymonkey.co.uk/r/89GWWK2` and please answer the questions as they really help us to improve the course.
 
 #### Homework (~30 min) [2b / 4b]
+
+1. Use One-way analysis to find out 2 more features like `Veh_type2`, which can be usefull in the GLM model and might have potiantial influence on our target.
+
+2. Create simple GLM model with features you have found in previous exercise. 
+Is the model predictive? Are you satisfied with your model? 
+Use your knowledge about GLM theory to __evaluate model__, __make a suggestion__ what could be improved and what __would be your next steps__. 
+We will focus on your comments rather than code here.
+
