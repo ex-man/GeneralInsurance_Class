@@ -4,7 +4,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
 # libraries
@@ -12,7 +12,7 @@ library(dplyr)
 library(ggplot2)
 
 # load data
-dt_KPI_raw <- read.csv("../../../data/lesson2_KPI.csv")
+dt_KPI_raw <- read.csv("../../data/lesson2_KPI.csv")
 ```
 
 #### What type of information do we have?
@@ -29,31 +29,19 @@ For now let's assume we know what our columns mean.
 ##### What do the columns contain?
 > Hint: The function summary() might help you to answer this question
 
-```{r}
-summary(dt_KPI_raw)
-```
-See if there are completely blank rows or if it is there any valueable info.
-```{r}
-dt_KPI_raw[is.na(dt_KPI_raw$Premium) & is.na(dt_KPI_raw$Losses), ] # using not dplyr approach
-```
-Completely blank, so lets remove them.
-```{r}
-dt_KPI_raw <- dt_KPI_raw %>% filter(!is.na(Premium))
-```
-
 
 #### Looking for defects in data 
 ##### Are there any missing values?
 As a first task, try to find missings for a specific column only
 ```{r}
-dt_KPI_raw$Business %>% is.na %>% table
+# your code
 ```
 
 Can you generalize this process for the whole dataset? 
 > Hint: Can you use any kind of loop here?
 
 ```{r}
-dt_KPI_raw %>% lapply(function(x) {is.na(x) %>% table}) 
+# your code
 ```
 
 
@@ -69,11 +57,11 @@ Which vaules are not allowed for specific columns? Let's have a look at individu
 
 
 #### Correction of defects 
-##### What is the feasible way to repair missing values? (e.g we can use mean for continuous vars, what about categorical?)
+##### What is the feasible way to repair missing values? 
 ```{r}
 # your code
 ```
-##### What is the feasible way to repair values that don't make sense? (e.g Can we see negative Premium?)
+##### What is the feasible way to repair values that don't make sense?
 ```{r}
 # your code
 ```
@@ -115,6 +103,7 @@ dt_KPI_raw %>%
   ) %>% 
   ggplot(aes(x = reorder(Unit, -Premium), y = Premium)) + 
   geom_col()
+
 ```
 
 ##### Which Unit has the lowest Expenses? 
