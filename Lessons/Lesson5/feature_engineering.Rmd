@@ -7,6 +7,30 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, include=FALSE}
+library(dplyr)
+# load data, this are data from Lesson 4 where we prepared Claims with Policies into one dataset
+dt_pol_w_claims <- readRDS("../../data/dt_pol_w_claims.rds")
+set.seed(58742) # to fix randomizer
+ind <- sample(2, nrow(dt_pol_w_claims), replace=TRUE, prob=c(0.80, 0.20)) # generate random indicator to split by
+
+dt_pol_w_claims <- mutate(dt_pol_w_claims,
+                data_status = ifelse(ind == 1, 
+                                     "Training",
+                                     ifelse(ind == 2, 
+                                            "Validation", 
+                                            "Unseen")
+                )
+)
+
+train <- dt_pol_w_claims %>% filter(data_status == "Training")
+val <- dt_pol_w_claims %>% filter(data_status == "Validation")
+
+mse <- function(prediction, actual){
+  return(sum((prediction-actual)^2, na.rm = TRUE)/length(prediction))
+}
+```
+
 Great! Now we have setup methodology for checking the performance of the model so we are completely ready to start improving it.
 
 This was the very basic glm model we fit in the last lesson.
@@ -152,7 +176,7 @@ summary(model5)
 mse(predict(model5, train, type = "response"), train$Burning_Cost)
 mse(predict(model5, val %>% mutate(
 Veh_type2 = ifelse(
-as.character(Veh_type2) == 'PICKUP',
+as.character(Veh_type2) == 'PICKUP' | as.character(Veh_type2) == 'CAR',
 'CAR & PICKUP',
 as.character(Veh_type2)
 )
