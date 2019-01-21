@@ -13,7 +13,7 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 ----------------------------------------------
 #### Feedback (3 min)
 
-Go to `https://www.surveymonkey.co.uk/r/635ZB8J`, and please answer the questions as they really help us to improve the course.
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOFM1VFFNOE5OTzFWVlNaT1NDTzVNWlZOUy4u) about this lesson to help us to improve the course.
 
 #### Homework (~20 min) [6b]
 ##### Implement changes and commit into your forked repository
