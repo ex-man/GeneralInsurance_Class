@@ -1,6 +1,9 @@
 # Objective
-#### To learn how to use Git, Tidyverse and Shiny ####
-In this class we will use [**Git**](Support/About_GIT.md) to colaborate and share contents. And we will use some very usefull **R** packages. [**Tidyverse**](Support/About_tidyverse.md) is used for working with data applying database principles and [**Shiny**](Support/About_shiny.md) will help us to visualise results of analysis in graphical way. 
+#### Insurance in 20mins ####
+Is it even possible to learn something about insurance in just a few minutes? It will be tough, but let's see...
+
+#### To learn how to use Git####
+In this class we will use [**Git**](Support/About_GIT.md) to colaborate and share contents. And we will use some very usefull **R** packages. --to be moved[**Tidyverse**](Support/About_tidyverse.md) is used for working with data applying database principles and --to be moved [**Shiny**](Support/About_shiny.md) will help us to visualise results of analysis in graphical way. 
 
 ## Content
 1) [Git](Support/About_GIT.md) - what is Git and why we use it (15 min)
