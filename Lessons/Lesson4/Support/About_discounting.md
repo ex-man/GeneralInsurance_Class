@@ -1,3 +1,11 @@
+# Understanding the losses
+We now know that Premium = Losses + Expenses. Let's go one step further in understanding what each component consists of and how it is derived. While expenses are a rather accounting and marketing topic, both Premium and Losses involve Actuaries, as they relate to **uncertain** money.
+What is uncertain? Simply the fact, that it takes a long time to learn how much the claims are (this may take years), and finding a reasonable price for this if we do not even know what we will be selling is even more difficult.
+## Objective of actuarial work
+We, as the actuaries, are trying to us past experience to predict future cash flows = money out (claim payments) and money in (fair price). To do this we are looking at statistical methods that learn from the stable segments of the past and assume similar behavior in the future.
+
+The methods differ slightly between reserving (looking for final claim amount to be paid) and pricing (finding the right price for a selected group of customers), but they rely on and complement each other. A good projection is the one that brings similar results using 2 different points of view.
+
 # Triangles in insurance
 Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous
 class were produced. It is a very simple way to get many answers like:
