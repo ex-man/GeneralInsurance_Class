@@ -26,4 +26,4 @@ Variable expenses are those that change when the volume of the business changes.
 
 So we want to start by looking at our portfolio and try to figure out if it is doing well in terms of profitability. In the ideal situation we could jump right into the data. However, actuaries often have to first prepare their data to get them into a form where they can be used for an analysis.
 
-So we will start with it in `data_prep_exercise_KPI.R`
+So we will start with it in [Data preparation exercise](Support/data_prep_exercise_KPI.md) (please open a file named "data_prep_exercise.Rmd" to follow our exercise)
