@@ -9,10 +9,10 @@ library(ggplot2)
 ``` r
 dt_KPI <- read.csv("data/lesson2_KPI.csv")
 ```
-> ggplot2 is based on the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), the idea that you can build every graph from the same components:
-* a **data** or source to visualize,
-* a **aesthetics** or graphical representation of data,
-* and **geoms** or how to visualize it — visual layers that represent specific aspects of data.
+> every plot created with ggplot2 has 3 base layers:
+**data** or source to visualize,
+**aesthetics** - graphical representation of data (axes specification, colors / filling, ...),
+**geoms**  — visual layers that represent specific aspects of data (points, lines, ...).
 
 ### First Plot - Scatter
 > Now let's try to show our data on simple scatter plot  
