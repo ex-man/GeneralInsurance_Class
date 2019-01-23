@@ -28,3 +28,4 @@ So we want to start by looking at our portfolio and try to figure out if it is d
 
 So we will start with it in [Data preparation exercise](data_prep_exercise_KPI.md) (please open a file named "data_prep_exercise.Rmd" to follow our exercise
 )
+

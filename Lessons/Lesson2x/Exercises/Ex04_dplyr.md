@@ -141,4 +141,5 @@ dt_KPI %>%
 ```
 
 [Return to previous section](../Support/About_tidyverse.md)
+
 [Proceed to ggplot2 exercise](Ex05_ggplot2.md)

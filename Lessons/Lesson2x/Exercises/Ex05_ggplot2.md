@@ -59,3 +59,7 @@ geom_smooth()
 ![](../Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 > You can find out more about `ggplot` features on [ggplot2 cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf).
+
+[Return to previous section](../Support/About_tidyverse.md)
+
+[Proceed to 'Losses and Expenses' section](../Support/L2_losses_and_expenses.md)
