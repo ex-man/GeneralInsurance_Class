@@ -239,13 +239,3 @@ Reflection again - write a short comment to your notes in repository on what you
 Reflection again - write a short comment to your notes in repository on what do you think is the best and the worst Unit performer based on what you have learned recently. Feel free to do more data exploration.
 
 ------------------------------------------------------------------------
-
-### shiny visualization
-
-##### Where does it make sense to use dynamic range / create interactivity?
-
-> Run command `shiny::shinyAppDir("Lessons/Lesson2/Shiny")` to see pre-defined application.
-
-Edit files ui.R and server.R in folder `Lessons/Lesson2/Shiny` to adjust application for KPI metrics you have learnt today.
-
-> Have you found something interesting we have not discuss during the lesson?
