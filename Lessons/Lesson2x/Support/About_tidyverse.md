@@ -11,7 +11,7 @@ Tidyverse
 dplyr - data transformation package
 -----------------------------------
 
-> `dplyr` is well known package for data tranformation especially in recent R community.  
+> `dplyr` is well known package for data transformation especially in recent R community.  
 > It's using concept [grammar of data transformation](https://rstudio-pubs-static.s3.amazonaws.com/153547_3a8e24d4ceeb4868a5f22e70641e8165.html#/) providing consistent set of verbs that help you solve the most common data manipulation challenges.  
 > You can solve ~85% of data manipulation issues using 6 verbs:
 -   `mutate()` adds new variables that are functions of existing variables
