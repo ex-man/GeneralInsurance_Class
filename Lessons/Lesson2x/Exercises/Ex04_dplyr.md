@@ -139,3 +139,6 @@ dt_KPI %>%
     ## 2 Belandia 41959316
     ## 3    Cegro  8317821
 ```
+
+[Return to previous section](../Support/About_tidyverse.md)
+[Proceed to ggplot2 exercise](Ex05_ggplot2.md)
