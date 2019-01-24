@@ -18,14 +18,12 @@ From the point of view of the insurance company, we want to make some profit on 
 
 ## Expenses
 
-Just like every company, insurance companies have their **expe
-nses**, as well. Expenses can be fixed or variable. Fixed expenses are not directly connected to the size of the insurance business and therefore they are the same over a midrange time horizon.
+Just like every company, insurance companies have their **expenses**, as well. Expenses can be fixed or variable. Fixed expenses are not directly connected to the size of the insurance business and therefore they are the same over a midrange time horizon.
 Variable expenses are those that change when the volume of the business changes. In insurance those can be for example provisions that are paid to agents.
 
 ## Data preparation
 
 So we want to start by looking at our portfolio and try to figure out if it is doing well in terms of profitability. In the ideal situation we could jump right into the data. However, actuaries often have to first prepare their data to get them into a form where they can be used for an analysis.
 
-So we will start with it in [Data preparation exercise](data_prep_exercise_KPI.md) (please open a file named "data_prep_exercise.Rmd" to follow our exercise
-)
+So we will start with it in [Data preparation exercise](data_prep_exercise_KPI.md) (please open a file named "data_prep_exercise.Rmd" to follow our exercise)
 
