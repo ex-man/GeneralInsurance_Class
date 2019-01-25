@@ -1,3 +1,15 @@
+# Understanding the losses
+We now know that *Premium = Losses + Expenses*. Let's go one step further in understanding what each component consists of and how it is derived. 
+
+While expenses are a rather accounting and marketing topic, both Premium and Losses involve Actuaries, as they relate to **uncertain** money.
+
+What is uncertain? Simply the fact, that it **takes a long time** to learn how much the claims are (this may take years), and finding a reasonable price for this if we do not even know what we will be selling is even more difficult.
+
+## Objective of actuarial work
+We, as the actuaries, are trying to **use past experience to predict future** cash flows = money out (*claim payments*) and money in (*fair price*). To do this we are looking at statistical methods that learn from the stable segments of the past and assume similar behavior in the future.
+
+The methods differ slightly between reserving (*looking for final claim amount to be paid*) and pricing (*finding the right price for a selected group of customers*), but they rely on and complement each other. A good projection is the one that brings similar results using 2 different points of view.
+
 # Triangles in insurance
 Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous
 class were produced. It is a very simple way to get many answers like:
@@ -10,25 +22,25 @@ There are far more questions and answers available, and there are many methods t
 at least the basics.
 
 ## What is a triangle
-As losses take sometimes a number of years to be reported and then some more years to be paid, it is very hard
-to say at the end of the year whether we have "saved" enough money. For this reason, it makes sense to keep history
-of all claims related to 1 period.
+As losses take sometimes a number of **years to be reported** and then some more years to be paid, it is very hard
+to say at the end of a calendar (31st December) year whether we have "saved" enough money for all claim payments in that year. For this reason, it makes sense to keep history
+of all claims **related to 1 period**.
 
 Imagine this simple situation that shows a history of a single policy:
-1) 1st December 2016 - insurance contract was signed to protect against car crash injury
-2) 20th November 2017 - there was an accident. The person goes to hospital and does not care about calling insurance company
-3) 1st January 2018 - person is finally home, but he will not be able to work for unknown time
-4) 5th January 2018 - claim is reported. Doctors say, the person may require anoteher surgery in 6 months
-5) 1st February 2018 - new symptoms are found (they seem to be coming from the accident) ...
-6) a few years later - the person finally starts working, but is partially disabled
+1) 1st December 2016 - insurance *contract was signed* to protect against car crash injury
+2) 20th November 2017 - there was *an accident*. The person goes to hospital and does not care about calling insurance company
+3) 1st January 2018 - person is *finally home*, but he will not be able to work for unknown time
+4) 5th January 2018 - claim is **reported**. Doctors say, the person may require anoteher surgery in 6 months
+5) 1st February 2018 - **new symptoms are found** (they seem to be coming from the accident) ...
+6) a few years later - the person **finally starts working**, but is partially disabled => is paid for the rest of their lives some money by insurance company
 
 Think about which year each information relates to (Exercise0)
-> Write down into your notes, what you think... In which year(s) of data can we find the above situation. Then let's discuss.
+> Write down into your notes, what you think... To which year(s) can we relate the above situation. Then let's discuss.
 
-It make sense to keep a chronological history of how much was paid for each of the items above. If you have many policies and
-not just the one as above, it makes sense to group them together and form a chronological payment history for every year.
-This is then usually displayed as a "triangle", where the rows represent the years of origin (policy, accident, reporting date)
-and the columns represent how long it took until the information was recognized.
+It make sense to keep a **chronological history** of how much was paid for each of the items above. If you have many policies and
+not just the one as above, it makes sense to **group them together** and form a chronological payment history for every year.
+This is then usually displayed as a "triangle", where the **rows** represent the *years of origin* like in the exercise (policy, accident, reporting date)
+and the **columns** represent *how long it took* until the information was fully known (e.g. amount will not change any more)
 
 ## What do we do with this?
 Well, we want to take the advantage of the history that we have collected and predict what is likely to happen with the latest
