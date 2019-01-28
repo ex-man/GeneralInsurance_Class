@@ -12,5 +12,5 @@ Go to `https://www.surveymonkey.co.uk/r/KS3SD7M` and please answer the questions
 
 #### Homework (~20 min) [4b]
 
-1) Implement UWR chart into Class Shiny app (`Lessons/Lesson2/Shiny`). 
+1) Implement UWR chart into Class Shiny app (`Lessons/Lesson3/Homework/Shiny`). 
 Edit file server.R at `output$lesson2_KPI_multidim_UWR_graph` with predefined input data and implement UWR chart we learned during lesson2 as dynamic view not only for `Unit`. Do not forget to commit your changes.
