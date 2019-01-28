@@ -1,7 +1,7 @@
 ## Exercise - Shiny App  
 
 #### Basic Setup
-> Open RStudio and create two new R files in `../Lessons/Lesson1/Exercises/Ex06_Shiny` in your local repository.  
+> Open RStudio and create two new R files in `../Lessons/Lesson3/Exercises/` in your local repository.  
 
 > The minimum code for a working `shiny` app are the following lines saved in **`server.R`**
 ``` r
