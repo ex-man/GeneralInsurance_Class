@@ -1,7 +1,19 @@
 # Objective
-	To learn about predicting future based on past data and hence setting up pricing structure that will drive to profitability.
+	To understand what is behind the losses. How do they get calculated and even more impotantly - projected.
+	
 # Content
-	1) Intro to models? (One way vs. Multi-way?)
-	2) Intro to GLM
-	3) Fitting model to data and finding good predictors (via Shiny)
-	4) Time consistency, factor grouping/clasification, model validation?
+	1) How to project losses using "triangles"
+	2) understanding development over time
+	3) Using development pattern in discounting future flows of money
+	4) going one step further towards capital
+
+### Lesson Flow:
+1) [Discounting](Support/About_discounting.md): `discounting.exercise.R`
+2) Repository update
+
+#### Feedback (3 min)
+
+Go to `https://www.surveymonkey.co.uk/r/8KQGGL9` and please answer the questions as they really help us to improve the course.
+
+#### Homework (~30 min) [2b / 4b]
+

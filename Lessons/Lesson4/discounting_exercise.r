@@ -28,10 +28,11 @@ plot(GenIns, lattice=TRUE)
 
 # now try to predict what happens with the linse using the chain ladder technique (hint: search for predict)
 
-#SOLUTION
+#YOUR SOLUTION
 #--------
-GenIns_d <- predict(chainladder(GenIns))
-plot(GenIns_d)
+
+
+
 #--------
 
 
@@ -42,61 +43,32 @@ plot(GenIns_d)
 #  Hint: Consider the length of tail, volatility, average sizes...
 #  Hint2: There are 2 types of data - paid and case. Start using Paid...
 
-#SOLUTION
-#--------
-# understand the data
-summary(dt_PaidCase)
+#YOUR SOLUTION
+# understand the data => run some simple overviews
+
 # create a variable => filter data and covert to triangle. then convert to cummulative to use chainladder
 
-## Take paid data for House business and Small claim size
+## STEP1: Take paid data for House business and Small claim size
 # Paid_HH_sml <- dt_PaidCase %>% filter(...) 
 
-## Now convert the standard table into a triangle
+
+## STEP2: Now convert the standard table into a triangle
 # %>% as.triangle(...)
 
-## SOLUTION:
-## ------------------------------------
-Paid_HH_sml <- dt_PaidCase %>% 
-  filter(Business == "House" & ClaimSize == "Small" & dataset_type == "PAID")  %>% 
-  as.triangle(origin="ay", dev="dy", value="SumOfamount")
-## ------------------------------------
+
+## STEP3: Now start plotting things to see more information
 
 
-## Now start plotting things to see more information
-## SOLUTION:
-## ------------------------------------
-plot(Paid_HH_sml)
-plot(predict(chainladder(Paid_HH_sml)))
-## ------------------------------------
-
-## And get the aging factors and some other stat's out to see more details
-# ata(...)
-
-## SOLUTION:
-## ------------------------------------
-ata(Paid_HH_sml)
-## ------------------------------------
+## STEP4: And get the aging factors and some other stat's out to see more details
+# Hint: ata(...)
 
 
 ## Now repeat for all types of buiness and sizes of claims. Compare the findings...
 
 
-## If you are now comforatble with what this does, try doing the same, but using additional information: Case!
+## If you are now comforatble with what this does, try doing the same, but using additional information: The Case data!
 ## Hint: Sum Paid and Case together to come up with the final claims estimates (the Incurred claims)
 
-## SOLUTION:
-## ------------------------------------
-Incur_HH_sml <- dt_PaidCase %>% 
-  filter(Business == "House" & ClaimSize == "Small") %>%
-  group_by(Business,ClaimSize,ay,dy) %>%
-  summarise(SumOfamount=sum(SumOfamount)) %>%
-  select(ay:SumOfamount) %>% as.triangle(origin="ay", dev="dy", value="SumOfamount") ## %>% incr2cum(na.rm = TRUE)
-
-plot(Incur_HH_sml)
-plot(predict(chainladder(Incur_HH_sml)))
-
-ata(Incur_HH_sml)
-## ------------------------------------
 
 #--------
 
@@ -112,19 +84,13 @@ ata(Incur_HH_sml)
 # How does it work? Well, discounting apart, in what year does the average payment happen? 
 # HINT: (Here you definitely use paid claims, and it is enough to calculate weighted average of incremental payment)
 
-##  get the weights of incremental paid triangle => this is what we are intrested in because individual payments matter
+## STEP1: get the weights of incremental paid triangle => this is what we are intrested in because individual payments matter
 
-## SOLUTION:
-## ------------------------------------
-Incr_Paid_HH_sml <- Paid_HH_sml %>% cum2incr() %>% ata() %>% attr("vwtd")
-## ------------------------------------
 
-## average duration (calculate a weighted sum, where the weight is the number of year/total cummulative paid sum)
 
-## SOLUTION:
-## ------------------------------------
-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9))
-## ------------------------------------
+## STEP2: average duration (calculate a weighted sum, where the weight is the number of year/total cummulative paid sum)
+
+
 
 # Does the value calculated correspond to your assumed value for the given business in Exercise 2? Comment on the findings in your notes...
 
@@ -134,18 +100,14 @@ sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9))
 # Now, assume an interest rate of 5%. How will the discounting change this?
 # Calculate a factor to be applied to the final incurred claims, to make discout it to present value.
 
-# Let's start simply: What would the average idsocunt factor be? Use the average duration from Exercise 4
-## SOLUTION:
-## ------------------------------------
-1.05^(-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] *c(1:9)))
-## ------------------------------------
+# Let's start simply: What would the average disocunt factor be? Use the average duration from Exercise 4
+
+
 
 # Now let's be more precise and use the appropriate weights and individual discount factors one by one
 # Hint: Discount every term of the sum in Exercise 3 by appropriate discount factor (1+i)^(-year)
-## SOLUTION:
-## ------------------------------------
-sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] * (1/1.05^c(1:9)))
-## ------------------------------------
+
+
 
 # Recall what is UWR from Lesson 2. Assume premium and expenses are calculated on day 1.
 # Can you calculate a sigle number, that could be used to discount the claims to arrive to Net present value of UWR?
@@ -154,11 +116,14 @@ sum(Incr_Paid_HH_sml / cumsum(Incr_Paid_HH_sml)[9] * (1/1.05^c(1:9)))
 ## Exercise 6
 # Now, let’s have a look at it from the other way around. 
 # The following dataset includes the same data you were analysing in class 2, but it is all discounted...
-NPV_data <- read.csv("data/NPV.csv")
+NPV_data <- read.csv("data/lesson3_NPV.csv")
 
-# What is the average duration in all of these cases assuming a discount rate of XXX?
+# What is the average duration in all of these cases assuming a discount rate of 5%?
 
-# What is the worst performing portfolio now?
+
+# What is the worst performing portfolio now? 
+# (Hint: Create additional shiny graphs, but using the discounted values)
+
 
 ########################################
 ## Exercise 7
@@ -181,5 +146,16 @@ NPV_data <- read.csv("data/NPV.csv")
 
 CIR_data <- read.csv("data/lesson3_CIR.csv")
 
-# What is the total value of capital required to run the whole business from lesson 2? How has it changed ovr the years?
+# What is the total value of capital required to run the whole business from lesson 2?
+# Use the data provided that refers to the same portfolios, you were looking at in lesson2. 
+# How has it changed over the years?
 
+########################################
+## Exercise 10 - put it all together (HOMEWORK)
+# You know what the Mean term is of the data, as you know what the discount factors are 
+# and you assumed 5% discount rate (Exercies 6).
+# You also know what the capital intensity ratios are (Exercise 9).
+# You also know the Net Earned Premium (Lesson2 data)
+# How much does it cost to hold the Capital amount in terms of interest paid
+# for that for the average (Mean Term) period?
+# Hint: Using 'dplyr' package and function left_join requires column names to be the same to join...
