@@ -16,7 +16,5 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOFM1VFFNOE5OTzFWVlNaT1NDTzVNWlZOUy4u) about this lesson to help us to improve the course.
 
 #### Homework (~20 min) [6b]
-##### Implement changes and commit into your forked repository
-
 * Answer questions in [`Lessons/Lesson1/Homework/Homework.md`](Homework/Homework.md)
 * Save your changes and `commit` to your forked repository
