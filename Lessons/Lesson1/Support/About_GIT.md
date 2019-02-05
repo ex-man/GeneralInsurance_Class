@@ -15,21 +15,21 @@
 > Then you need to **Clone** your web directory to your local machine. The best way of doing this is directly via **R Studio** by opening a project from Git repository. Just follow instructions on **page 4** of [GitHub R Studio Cheat Sheet](http://www.audhalbritter.com/wp-content/uploads/2016/12/Github-%E2%80%93-R-studio-Cheat-Sheet.pdf). Last step with Shell may not be needed.
 > Remember to use your own **Fork** of this class. Otherwise you will not be allowed to update any content.
 
-* Why is there add, commit and push?
+* Why is there `add`, `commit` and `push`?
 > Git is a great tool, because it has multiple stages of your saved work. 
 > There is your current folder visible on your computer or as a R project, 
-> Then there is your local staging area, where you move files using *git add*.
-> Then there is also your public folder, where you move stuff from your staging using *git commit*. Git is creating log of your progress in the background.
-> Once you are happy with everything, you *git push* your changes and make them visible to everyone.
+> Then there is your local *staging* area, where you move files using `git add`.
+> Then there is also your public repository, where you move stuff from your staging using `git commit`. Git is creating log of your progress in the background.
+> Once you are happy with everything, you `git push` your changes and make them visible to everyone.
 
 > Why is it so complicated? Well, there are always short-cuts you can make. Using R you skip many of these steps, but in reality, there are many situations, when you want to do partial saves, as you are not sure what will work best. These "complicated" steps will help you achieve it.
 
-* How to publish content (git push)
-> Once you are happy with the changes, you need to save them to your (master) repository. This is achieved via *git push* command. This will only push the changes you have committed earlier, and raise any conflicts with your co-workers' work. We are not expecting to have any conflicts in this class, but if they arise, we will look at resolving them. 
-> Remember to commit often and push reasonably frequently as well. There is no "auto-commit" and "auto-push" that you may be familiar from editors like MS Word (auto-save).
+* How to publish content (`git push`)
+> Once you are happy with the changes, you need to save them to your master repository on GitHub. This is achieved via `git push` command. This will only push the changes you have committed earlier, and raise any conflicts with your co-workers' work. We are not expecting to have any conflicts in this class, but if they arise, we will look at resolving them. 
+> Remember to `commit` often and `push` reasonably frequently as well. There is no "auto-commit" and "auto-push" that you may be familiar from editors like MS Word (auto-save).
 
-* How to synchronise content (git pull or git checkout)
-> There will frequently be new content available, that is produced by others. You may want to download this content to make your local copy of the directory up to date. **Pull** takes the "new" things from master directory, but you may sometimes want to **Checkout** everything to have a fresh copy of all data (this will overwrite all changes you have made and pick the latest version of all files).
+* How to synchronise content (`git pull` or `git checkout`)
+> There will frequently be new content available, that is produced by others. You may want to download this content and add it to your repository to make your local copy of the directory up to date. `git pull` takes the "new" things from master directory and apply them to your folder. But you may sometimes want to `checkout` everything to have a fresh copy of all data (**Note:** this will overwrite all changes you have made and pick the latest version of all files).
 
 * Branches
 > **Branches** allow you to do a parallel development. They are very powerful, but we are  not planning to using them. What to know more about branches? Go [here](https://blog.thoughtram.io/git/rebase-book/2015/02/10/understanding-branches-in-git.html)
@@ -43,6 +43,6 @@ Hopefully you got some insight above about what git is. We decided to use it for
 ## Homework checking using pull requests
 We want to make sure you practice what we do in the class also at home and do not loose contact with the class. On the other hand, we work full time, so we need your help with checking what you have done. You should be sending **Pull Requests** to our git project and then comment on other requests saying why they are better or worse then yours.
 
-If you are using GitHub UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to *git merge* it with your current code.
+If you are using GitHub UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to `git merge` it with your current code.
 
 For more information on [Pull Requests](https://help.github.com/articles/checking-out-pull-requests-locally/) click on the link.
