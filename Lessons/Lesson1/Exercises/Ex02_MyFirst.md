@@ -16,9 +16,9 @@
 > Navigate to the folder containing files for this subject. Being in folder use *Right-Click -> GitBash Here* to open git console.
 
 > You will be using the following commands, try to resolve the correct order (this [page](https://www.quora.com/How-many-git-commands-are-there-Do-I-need-to-know-them-all-to-have-good-knowledge-of-git) may help):  
-*git commit -m "Committing my second change"*  
-*git status*  
-*git add .*  
-*git push*  
+`git commit -m "Committing my second change"`  
+`git status`  
+`git add .*`  
+`git push`  
 
 
