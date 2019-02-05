@@ -11,9 +11,8 @@
 1) [Discounting](Support/About_discounting.md): `discounting.exercise.R`
 2) Repository update
 
-#### Feedback (3 min)
-
-Go to `https://www.surveymonkey.co.uk/r/8KQGGL9` and please answer the questions as they really help us to improve the course.
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUQlFNREZXWTIxMEdNMDhQMDFaWkI3SkNLSC4u) about this lesson to help us to improve the course.
 
 #### Homework (~30 min) [2b / 4b]
 

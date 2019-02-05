@@ -10,7 +10,7 @@ To learn what is a Loss Ratio and what are different forms of projections of los
 
 #### Feedback (3 min)
 
-Go to `https://www.surveymonkey.co.uk/r/KS3SD7M` and please answer the questions as they really help us to improve the course.
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUQjJMUFFZWERNNVlaOFI1RTRLWjZSTzlPUy4u) about this lesson to help us to improve the course.
 
 #### Homework (~30 min) [2b / 4b]
 1) Find out, which __year__ was the __worst__ for portfolio you have identified as __most profitable__ during the lesson and show it on the chart using `ggplot2` package. Write an explanation about your findings into the code as comment. __Commit__ it to your repository into `Lessons/Lesson2/Homework`.
