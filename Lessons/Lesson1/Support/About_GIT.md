@@ -1,4 +1,4 @@
-#### Key Words: [Git](https://juristr.com/blog/2013/04/git-explained/), [Fork](https://help.github.com/articles/fork-a-repo/), [GitHub R Studio Cheat Sheet](http://www.audhalbritter.com/wp-content/uploads/2016/12/Github-%E2%80%93-R-studio-Cheat-Sheet.pdf), [Git Commands](https://education.github.com/git-cheat-sheet-education.pdf), [Branches](https://blog.thoughtram.io/git/rebase-book/2015/02/10/understanding-branches-in-git.html), [Pull Requests](https://help.github.com/articles/checking-out-pull-requests-locally/) 
+#### Key Words: [Git](https://juristr.com/blog/2013/04/git-explained/), [Fork](https://help.github.com/articles/fork-a-repo/), [GitHub R Studio Cheat Sheet](http://www.audhalbritter.com/wp-content/uploads/2016/12/Github-%E2%80%93-R-studio-Cheat-Sheet.pdf), [Git Commands](https://education.github.com/git-cheat-sheet-education.pdf), [Branches](https://blog.thoughtram.io/git/rebase-book/2015/02/10/understanding-branches-in-git.html), [Pull Requests](https://help.github.com/articles/about-pull-requests/)  
 ### This section will try to answer the following questions:
 * What is GIT
 > This is the way we make sure we can all collaborate on the same class, that is publicly available, we all have up to date information, but we never destroy the original content (called master). If you want to know more visit [git wiki](https://en.wikipedia.org/wiki/Git) for more details.
@@ -45,4 +45,4 @@ We want to make sure you practice what we do in the class also at home and do no
 
 If you are using GitHub UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to `git merge` it with your current code.
 
-For more information on [Pull Requests](https://help.github.com/articles/checking-out-pull-requests-locally/) click on the link.
+For more information on [Pull Requests](https://help.github.com/articles/about-pull-requests/) click on the link.
