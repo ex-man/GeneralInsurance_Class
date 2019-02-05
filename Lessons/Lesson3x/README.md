@@ -6,9 +6,8 @@ To learn what is a loss ratio
 2) [Introduction to loss and expense ratios](Support/L3_loss_and_expense_ratios.md). This will help you finish excercise above (15 min)  *the last sentence needs fixing*
 3) [Introduction to shiny](Support/L3_intro_to_shiny.md) (45 min)
 
-#### Feedback (3 min)
-
-Go to `https://www.surveymonkey.co.uk/r/KS3SD7M` and please answer the questions as they really help us to improve the course.
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOTlQSjZGT0s1SFBCSzU2UFRMRVpINU9LQy4u) about this lesson to help us to improve the course.  
 
 #### Homework (~20 min) [4b]
 
