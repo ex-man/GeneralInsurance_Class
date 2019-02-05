@@ -45,4 +45,4 @@ We want to make sure you practice what we do in the class also at home and do no
 
 If you are using GitHub UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to `git merge` it with your current code.
 
-For more information on [Pull Requests](https://help.github.com/articles/checking-out-pull-requests-locally/) click on the link.
+For more information on [Pull Requests](https://help.github.com/articles/about-pull-requests/) click on the link.
