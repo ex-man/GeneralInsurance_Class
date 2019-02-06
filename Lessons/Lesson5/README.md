@@ -45,9 +45,8 @@ The standard linear model requires the response variable to have a normal distri
  Let's make a simple model. Open [`basic_glm.Rmd`](basic_glm.Rmd)
 
  
-#### Feedback (3 min)
-
-Go to `https://www.surveymonkey.co.uk/r/89GWWK2` and please answer the questions as they really help us to improve the course.
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUMFAyOE5UM1FUSlVXSFQ3NzJMWldERktTRC4u) about this lesson to help us to improve the course.
 
 #### Homework (~30 min) [2b / 4b]
 

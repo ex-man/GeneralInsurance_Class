@@ -1,3 +1,5 @@
+#### Key Words: [Basic Git Commands](https://www.quora.com/How-many-git-commands-are-there-Do-I-need-to-know-them-all-to-have-good-knowledge-of-git), [Networks](https://help.github.com/articles/viewing-a-repository-s-network/), [Forks](https://help.github.com/articles/listing-the-forks-of-a-repository/), [Pull Requests](https://help.github.com/articles/checking-out-pull-requests-locally/), [GitHub Commit](https://guides.github.com/activities/hello-world/#commit)
+
 ## Exercise - Commit and Push
 ### Compare Forks
 > On GitHub page navigate to your **Fork**.  
@@ -26,9 +28,8 @@
 `git push origin`
 
 ### Submitting homework using web
-> Previous way to submit homework is safest, but you see there is a lot of steps. Sometimes when you do not have any conflicts with your original code hosted on Github you can submit homework laso using the web interface.
-
-> It is very nice described at Github manuals: `https://guides.github.com/activities/hello-world/#commit`
+> Previous way to submit homework is safest, but you see there is a lot of steps. Sometimes when you do not have any conflicts with your original code hosted on Github you can submit homework also using the web interface. 
+> It is described nicelly in Github [manuals](https://guides.github.com/activities/hello-world/#commit)
 
 ### Synchronize with our class
 > Sometimes we upgrade our class during semester and probably you would like to stay updated as well. So to update your __forked__ repository to the latest code in __our class__ follow this steps:

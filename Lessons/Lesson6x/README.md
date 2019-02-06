@@ -9,4 +9,7 @@
 	5) final project: build a dashboard/tool that allows to price the risk
 * option 2 *
 	3) TO BE FINISHED
+	
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtURFRKOEZNNlFSSENCM0w0M000Wk1YTkpTRi4u) about this lesson to help us to improve the course.
 
