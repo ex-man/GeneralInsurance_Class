@@ -4,13 +4,13 @@ server <- function(input, output, session){
   
   
   # Data for lesson 2 load
-  data_lesson2_react <- reactive({
-    read.csv("data/lesson2_KPI.csv")
+  data_lesson3_react <- reactive({
+    read.csv("data/lesson3_KPI.csv")
   })
   
   # Definition of basic KPIs
-  data_lesson2_KPI_prep_react <- reactive({
-    dt <- data_lesson2_react()
+  data_lesson3_KPI_prep_react <- reactive({
+    dt <- data_lesson3_react()
     # 
     # prepared <- 
     #   dt %>% # copy all data manipulation we have done in data preparation for KPIs definition
@@ -28,13 +28,13 @@ server <- function(input, output, session){
          local = TRUE)$value
   
   ######################################
-  output$lesson2_KPI_multidim_table <- renderDataTable({
+  output$lesson3_KPI_multidim_table <- renderDataTable({
     
-    # dt_prep <- data_lesson2_KPI_multidim_prep_filter_react()
+    # dt_prep <- data_lesson3_KPI_multidim_prep_filter_react()
     # 
     # dt_prep <- 
     #   dt_prep %>%
-    #   group_by_at(vars(input$lesson2_kpi_multidim_select_axis)) %>% 
+    #   group_by_at(vars(input$lesson3_kpi_multidim_select_axis)) %>% 
     #   # summarize(LR = , 
     #   #           ER = ,
     #   #           CoR = ,
@@ -50,10 +50,10 @@ server <- function(input, output, session){
     #   DT::formatCurrency(c("UWR", "Premium"), digits = 0) 
   })
   
-  output$lesson2_KPI_multidim_ratio_graph <- renderPlot({
+  output$lesson3_KPI_multidim_ratio_graph <- renderPlot({
     
-    # data_lesson2_KPI_multidim_prep_filter_react() %>% 
-    #   group_by_at(vars(input$lesson2_kpi_multidim_select_axis)) %>% 
+    # data_lesson3_KPI_multidim_prep_filter_react() %>% 
+    #   group_by_at(vars(input$lesson3_kpi_multidim_select_axis)) %>% 
     #   # summarize(LR = , 
     #   #           ER = ,
     #   #           CoR = ,
@@ -76,9 +76,9 @@ server <- function(input, output, session){
     
   })
   
-  output$lesson2_KPI_multidim_UWR_graph <- renderPlot({
+  output$lesson3_KPI_multidim_UWR_graph <- renderPlot({
     # # Homework
-    # data_lesson2_KPI_multidim_prep_filter_react() %>%
+    # data_lesson3_KPI_multidim_prep_filter_react() %>%
       
       
   })

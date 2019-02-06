@@ -8,7 +8,7 @@ ui <- fluidPage(theme = shinytheme("paper"),
                     img(src = "logo_zurich.png", height = 30),
                     "General Insurance Class"
                   ),
-                  tabPanel("Lesson2",
+                  tabPanel("lesson3",
                            tagList(
                              fluidRow(div(
                                style = "text-align:center", h3("This is second class about KPIs")
@@ -19,16 +19,16 @@ ui <- fluidPage(theme = shinytheme("paper"),
                                             fluidRow(column(
                                               width = 3,
                                               offset = 9,
-                                              uiOutput("lesson2_KPI_multidim_select_axis_render")
+                                              uiOutput("lesson3_KPI_multidim_select_axis_render")
                                             )),
                                             fluidRow(
                                               column(width = 9,
-                                                     DT::dataTableOutput("lesson2_KPI_multidim_table")),
+                                                     DT::dataTableOutput("lesson3_KPI_multidim_table")),
                                               column(
                                                 width = 3,
-                                                plotOutput("lesson2_KPI_multidim_ratio_graph",
+                                                plotOutput("lesson3_KPI_multidim_ratio_graph",
                                                            width = 400),
-                                                plotOutput("lesson2_KPI_multidim_UWR_graph",
+                                                plotOutput("lesson3_KPI_multidim_UWR_graph",
                                                            width = 400)
                                               )
                                             )
