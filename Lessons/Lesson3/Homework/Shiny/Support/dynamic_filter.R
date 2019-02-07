@@ -1,7 +1,7 @@
 ### dynamically generate filter widgets if columns are categorical (character or factor)
 columns_for_choice <- reactive({
   # find all columns they are category (character or factor)
-  dt <- data_lesson2_KPI_prep_react()
+  dt <- data_lesson3_KPI_prep_react()
   
   sapply(dt, function(x) {
     is.character(x) || is.factor(x)
@@ -14,12 +14,12 @@ columns_for_choice <- reactive({
 observe({
   lapply(columns_for_choice(), FUN = function(x){
     insertUI(
-      selector = "#lesson2_KPI_multidim_table",
+      selector = "#lesson3_KPI_multidim_table",
       where = "beforeBegin",
-      ui = selectizeInput(inputId = paste0("lesson2_KPI_multidim_selectize_filter_", x),
+      ui = selectizeInput(inputId = paste0("lesson3_KPI_multidim_selectize_filter_", x),
                           label = paste0("Filter by ", x),
                           multiple = TRUE, 
-                          choices = unique(data_lesson2_KPI_prep_react()[ , x])
+                          choices = unique(data_lesson3_KPI_prep_react()[ , x])
       )
       
     )
@@ -27,13 +27,13 @@ observe({
 })
 
 # data prep based on filtering
-data_lesson2_KPI_multidim_prep_filter_react <- reactive({
-  dt <- data_lesson2_KPI_prep_react() 
+data_lesson3_KPI_multidim_prep_filter_react <- reactive({
+  dt <- data_lesson3_KPI_prep_react() 
   
   # setup filter
   one_up_env <- environment()
   lapply(columns_for_choice(), FUN = function(x){
-    col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", x)]]
+    col_val <- input[[paste0("lesson3_KPI_multidim_selectize_filter_", x)]]
     
     if(!is.null(col_val)) {
       assign("dt", 
@@ -46,10 +46,10 @@ data_lesson2_KPI_multidim_prep_filter_react <- reactive({
   
   # update selections based on selected filtering
   sapply(columns_for_choice(), function(y){
-    col_val <- input[[paste0("lesson2_KPI_multidim_selectize_filter_", y)]]
+    col_val <- input[[paste0("lesson3_KPI_multidim_selectize_filter_", y)]]
     if(is.null(col_val)) {
       updateSelectizeInput(session = session,
-                           inputId = paste0("lesson2_KPI_multidim_selectize_filter_", y),
+                           inputId = paste0("lesson3_KPI_multidim_selectize_filter_", y),
                            choices = unique(dt[ , y])
       )
     }
@@ -59,8 +59,8 @@ data_lesson2_KPI_multidim_prep_filter_react <- reactive({
   
 })
 
-output$lesson2_KPI_multidim_select_axis_render <- renderUI({
-  selectInput(inputId = "lesson2_kpi_multidim_select_axis",
+output$lesson3_KPI_multidim_select_axis_render <- renderUI({
+  selectInput(inputId = "lesson3_kpi_multidim_select_axis",
               label = "Select Dimension:",
               choices = columns_for_choice()
   )
