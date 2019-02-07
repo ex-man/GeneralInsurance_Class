@@ -6,7 +6,7 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 ## Content
 1) [Intro to Insurance](Support/About_Insurance.md) - inroduction to Life Insurance and General Insurance
 2) [Git](Support/About_GIT.md) - what is Git and why we use it (15 min)
-3) [GitHub](Exercises/Ex01_Fork.md) - set account, fork directory (15 min)
+3) [GitHub](Exercises/Ex01_Fork.md) - set up your own **GitHub account** and **fork** directory (15 min)
 4) [My first commit/push](Exercises/Ex02_MyFirst.md) - create notes for the class to *Lesson 1* folder (10 min)
 5) [Compare different forks](Exercises/Ex03_CompareForks.md) - understand how forks work and how to review them (10 min)
 
@@ -16,7 +16,5 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOFM1VFFNOE5OTzFWVlNaT1NDTzVNWlZOUy4u) about this lesson to help us to improve the course.
 
 #### Homework (~20 min) [6b]
-##### Implement changes and commit into your forked repository
-
-* CHANGE
-* Save your changes into `Lessons/Lesson1/Homework` and `commit` it to your forked repository
+* Answer questions in [`Lessons/Lesson1/Homework/Homework.md`](Homework/Homework.md)
+* Save your changes and `commit` to your forked repository

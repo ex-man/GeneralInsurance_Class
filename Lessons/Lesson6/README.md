@@ -7,5 +7,6 @@ To learn the techniques to improve basic GLM model
 - Technical Price 
 - Final thoughts
 
-__Feedback (3 min)__
-Go to https://www.surveymonkey.com/r/JGMXKMW and please answer the questions as they really help us to improve the course.
+
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtURFRKOEZNNlFSSENCM0w0M000Wk1YTkpTRi4u) about this lesson to help us to improve the course.
