@@ -7,7 +7,7 @@ library(ggplot2)
 ```
 > Load data if you have not done so yet:
 ``` r
-dt_KPI <- read.csv("data/lesson2_KPI.csv")
+dt_KPI <- read.csv("Data/lesson2_KPI.csv")
 ```
 > every plot created with ggplot2 has 3 base layers:
 **data** or source to visualize,

@@ -4,8 +4,8 @@ library(dplyr)
 library(ggplot2)
 
 # data about KPIs
-dt_Policy <- read.csv("data/policy_history.csv")
-dt_Claims <- read.csv("data/claims.csv")
+dt_Policy <- read.csv("./Data/lesson5_PolicyHistory.csv")
+dt_Claims <- read.csv("./Data/lesson5_Claims.csv")
 
 ########################################
 ## Exercise 1

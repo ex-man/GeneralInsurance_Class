@@ -9,7 +9,7 @@ library(dplyr)
 library(ggplot2)
 
 # load data
-dt_KPI_raw <- read.csv("../../data/lesson3_KPI.csv")
+dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
 ```
 
 ------------------------------------------------------------------------

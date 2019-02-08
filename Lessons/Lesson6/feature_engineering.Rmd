@@ -9,8 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include=FALSE}
 library(dplyr)
-# load data, this are data from Lesson 4 where we prepared Claims with Policies into one dataset
-dt_pol_w_claims <- readRDS("../../data/dt_pol_w_claims.rds")
+# load data, this are data from Lesson 5 where we prepared Claims with Policies into one dataset
+dt_pol_w_claims <- readRDS("./Data/lesson6_dt_pol_w_claims.rds")
 set.seed(58742) # to fix randomizer
 ind <- sample(2, nrow(dt_pol_w_claims), replace=TRUE, prob=c(0.80, 0.20)) # generate random indicator to split by
 

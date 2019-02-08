@@ -30,7 +30,7 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
 >  
 > Firstly let's `read` some data in:  
 ``` r
-dt_KPI <- read.csv("data/lesson2_KPI.csv")
+dt_KPI <- read.csv("Data/lesson2_KPI.csv")
 ```
 > We can select top 6 rows using `head` function. 
 ``` r

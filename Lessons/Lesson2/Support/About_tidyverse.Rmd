@@ -45,7 +45,7 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
 ```
 #### 6 basic dplyr verbs
 ```{r}
-dt_KPI <- read.csv("../../data/lesson2_KPI.csv")
+dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
 
 dt_KPI %>% head
 ```
