@@ -1,20 +1,15 @@
 # Objective
-	To learn about more granular approach of understanding the performance
-	
+To learn what is a loss ratio
+
 # Content
-	1) there are other items to take into account (capital, cashflow - delay and investment, expenses - fixed/variable/commission, reinsurance)
-	2) understand whether the portfolio is better or worse if the new information is used (possibly include chain ladder?)
-	3) TP formula at point of underwriting
-	4) think about finding who is the driver of the underperformance => use decision trees
-	5) consider how much more the critical segment should be charged to be more profitable => SLIDER IN SHINY?
+1) There was some new content published. You need to "Update" your repository. [Use pull request or command line](https://github.com/ex-man/GeneralInsurance_Class/blob/master/Lessons/Lesson1/Exercises/Ex03_CompareForks.md#synchronize-with-our-class) (10min)
+2) [Introduction to loss and expense ratios](Support/L3_loss_and_expense_ratios.md). This will help you finish excercise above (15 min)  *the last sentence needs fixing*
+3) [Introduction to shiny](Support/L3_intro_to_shiny.md) (45 min)
 
-### Lesson Flow:
-1) [Discounting](Support/About_discounting.md): `discounting.exercise.R`
-2) Repository update
+#### Feedback (3 min)  
+Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOTlQSjZGT0s1SFBCSzU2UFRMRVpINU9LQy4u) about this lesson to help us to improve the course.  
 
-#### Feedback (3 min)
+#### Homework (~20 min) [4b]
 
-Go to `https://www.surveymonkey.co.uk/r/8KQGGL9` and please answer the questions as they really help us to improve the course.
-
-#### Homework (~30 min) [2b / 4b]
-
+1) Implement UWR chart into Class Shiny app (`Lessons/Lesson3/Homework/Shiny`). 
+Edit file server.R at `output$lesson2_KPI_multidim_UWR_graph` with predefined input data and implement UWR chart we learned during lesson2 as dynamic view not only for `Unit`. Do not forget to commit your changes.
