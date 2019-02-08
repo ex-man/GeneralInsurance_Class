@@ -9,10 +9,10 @@ library(ggplot2)
 ``` r
 dt_KPI <- read.csv("data/lesson2_KPI.csv")
 ```
-> ggplot2 is based on the [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html), the idea that you can build every graph from the same components:
-* a **data** or source to visualize,
-* a **aesthetics** or graphical representation of data,
-* and **geoms** or how to visualize it — visual layers that represent specific aspects of data.
+> every plot created with ggplot2 has 3 base layers:
+**data** or source to visualize,
+**aesthetics** - graphical representation of data (axes specification, colors / filling, ...),
+**geoms**  — visual layers that represent specific aspects of data (points, lines, ...).
 
 ### First Plot - Scatter
 > Now let's try to show our data on simple scatter plot  
@@ -59,3 +59,7 @@ geom_smooth()
 ![](../Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 > You can find out more about `ggplot` features on [ggplot2 cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf).
+
+[Return to previous section](../Support/About_tidyverse.md)
+
+[Proceed to 'Losses and Expenses' section](../Support/L2_losses_and_expenses.md)
