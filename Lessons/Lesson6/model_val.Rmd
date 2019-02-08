@@ -26,8 +26,8 @@ Once you split your data into modeling and validation part you start creating GL
 
 ```{r}
 library(dplyr)
-# load data, this are data from Lesson 4 where we prepared Claims with Policies into one dataset
-dt_pol_w_claims <- readRDS("../../data/dt_pol_w_claims.rds")
+# load data, this are data from Lesson 5 where we prepared Claims with Policies into one dataset
+dt_pol_w_claims <- readRDS("./Data/lesson6_dt_pol_w_claims.rds")
 ```
 
 

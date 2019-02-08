@@ -5,9 +5,9 @@ library(ggplot2)
 library(ChainLadder)
 
 # data about KPIs
-dt_KPI <- read.csv("data/lesson2_KPI.csv")
-dt_LatestView <- read.csv("data/lesson3_latestView.csv")
-dt_PaidCase <- read.csv("data/lesson3_PaidCase.csv")
+dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
+dt_LatestView <- read.csv("./Data/lesson4_latestView.csv")
+dt_PaidCase <- read.csv("./Data/lesson4_PaidCase.csv")
 
 ########################################
 ## Exercise 1
@@ -116,7 +116,7 @@ plot(GenIns, lattice=TRUE)
 ## Exercise 6
 # Now, let’s have a look at it from the other way around. 
 # The following dataset includes the same data you were analysing in class 2, but it is all discounted...
-NPV_data <- read.csv("data/lesson3_NPV.csv")
+NPV_data <- read.csv("./Data/lesson4_NPV.csv")
 
 # What is the average duration in all of these cases assuming a discount rate of 5%?
 
@@ -144,7 +144,7 @@ NPV_data <- read.csv("data/lesson3_NPV.csv")
 
 # Look at the data provided. Identify examples, where 2 portfolios are similar (1 dimension is different), and the CIR is bigger or smaller. Be creative and find any dependencies...
 
-CIR_data <- read.csv("data/lesson3_CIR.csv")
+CIR_data <- read.csv("./Data/lesson4_CIR.csv")
 
 # What is the total value of capital required to run the whole business from lesson 2?
 # Use the data provided that refers to the same portfolios, you were looking at in lesson2. 
