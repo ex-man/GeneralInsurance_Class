@@ -30,7 +30,7 @@ c(1, 4, 2, 8, -5) %>% min %>% abs
 >  
 > Firstly let's `read` some data in:  
 ``` r
-dt_KPI <- read.csv("data/lesson2_KPI.csv")
+dt_KPI <- read.csv("Data/lesson2_KPI.csv")
 ```
 > We can select top 6 rows using `head` function. 
 ``` r
@@ -139,3 +139,7 @@ dt_KPI %>%
     ## 2 Belandia 41959316
     ## 3    Cegro  8317821
 ```
+
+[Return to previous section](../Support/About_tidyverse.md)
+
+[Proceed to ggplot2 exercise](Ex05_ggplot2.md)
