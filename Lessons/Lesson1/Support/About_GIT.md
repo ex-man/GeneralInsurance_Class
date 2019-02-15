@@ -13,6 +13,9 @@
 > Then you need to ![Fork](About_git_files/Fork.png) our repository. This will create a replica of our class under your account and you can make changes there directly such as writing notes without messing around with anyone. 
 
 > Then you need to **Clone** your web directory to your local machine. The best way of doing this is directly via **R Studio** by opening a project from Git repository. Just follow instructions on **page 4** of [GitHub R Studio Cheat Sheet](http://www.audhalbritter.com/wp-content/uploads/2016/12/Github-%E2%80%93-R-studio-Cheat-Sheet.pdf). Last step with Shell may not be needed.
+
+> *Note: depending on your netwroks set up, using SSH may not be allowed, and you will need to use HTTPS option (which will require your password to be entered every time, when you push*
+
 > Remember to use your own **Fork** of this class. Otherwise you will not be allowed to update any content.
 
 * Why is there `add`, `commit` and `push`?
