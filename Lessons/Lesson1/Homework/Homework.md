@@ -2,7 +2,7 @@
 To complete the task answer following questions save your changes and commit to your fork. Create Pull request to main repository (one you forked from) to send this for check. You will earn one point for each meaningful answer plus one for sucessfull pull request.
 
 1. **Question:** What's the main difference between Life and General Insurance?  
-   **Answer:** ...
+   **Answer:** ..
 
 2. **Question:** What's your GitHub ID?  
    **Answer:** ...
