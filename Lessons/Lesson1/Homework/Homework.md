@@ -2,19 +2,19 @@
 To complete the task answer following questions save your changes and commit to your fork. Create Pull request to main repository (one you forked from) to send this for check. You will earn one point for each meaningful answer plus one for sucessfull pull request.
 
 1. **Question:** What's the main difference between Life and General Insurance?  
-   **Answer:** ...
+   **Answer:** Životné poistenie sa uzatvára na dlhé časové obdobie (desiatky rokov), pričom poistná udalosť nastane len raz (smrť/ dožitie). Neživotné poistenie sa uzatvára na krátke časové obdobie (maximálne 1 rok), ktoré sa opakovane obnovuje a poistná udalosť môže nastať aj viackrát za krátke obdobie (napr. viac dopravných nehôd).
 
 2. **Question:** What's your GitHub ID?  
-   **Answer:** ...
+   **Answer:** 47779309
 
 3. **Question:** Why do we use forks (besides eating)?  
-   **Answer:** ...
+   **Answer:** Fork je kópia úložiska. Vytvorená kópia úložiska umožňuje voľne experimentovať so zmenami bez toho, aby sme ovplyvnili pôvodný projekt.
 
 4. **Question:** What command is used for sending selected changes to local repository?  
-   **Answer:** ...
+   **Answer:** Commit.
 
 5. **Question:** What command is used for publishing changes for others?  
-   **Answer:** ...
+   **Answer:** Push.
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
-   **Answer:** ...
+   **Answer:** Pull request.
