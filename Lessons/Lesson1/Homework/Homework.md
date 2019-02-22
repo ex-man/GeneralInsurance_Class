@@ -2,7 +2,7 @@
 To complete the task answer following questions save your changes and commit to your fork. Create Pull request to main repository (one you forked from) to send this for check. You will earn one point for each meaningful answer plus one for sucessfull pull request.
 
 1. **Question:** What's the main difference between Life and General Insurance?  
-   **Answer:**Životné poistenie sa uzatvára na dlhšie obdobie (viac ako jeden rok) a poistná udalosť sa uskutoční jeden krát (napr poistenie na úmrtie - osoba môže zomrieť iba jeden krát). Zatiaľ čo neživotné poistenie sa uzatvára na kratšie obdobie (max. jeden rok), opakovane sa obnovuje a poistné udalosti sa môžu uskutočniť viac krát za poistné obdobie (napr. havarijné poistenie - môžem mať za poistné obdobie aj viac ako jednu dopravnú nehodu). 
+   **Answer:** Životné poistenie sa uzatvára na dlhšie obdobie (viac ako jeden rok) a poistná udalosť sa uskutoční jeden krát (napr poistenie na úmrtie - osoba môže zomrieť iba jeden krát). Zatiaľ čo neživotné poistenie sa uzatvára na kratšie obdobie (max. jeden rok), opakovane sa obnovuje a poistné udalosti sa môžu uskutočniť viac krát za poistné obdobie (napr. havarijné poistenie - môžem mať za poistné obdobie aj viac ako jednu dopravnú nehodu). 
 
 2. **Question:** What's your GitHub ID?  
    **Answer:** 47779593
