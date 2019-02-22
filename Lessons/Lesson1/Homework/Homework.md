@@ -11,7 +11,7 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** Pomocou fork sa vytvorí na mojom účte v repositories kópia projektu. Akékoľvek zmeny vykonané na projekte, ktorý je uložený na našom účte neovplyvnia priamo pôvodný projekt.
 
 4. **Question:** What command is used for sending selected changes to local repository?  
-   **Answer:** Commit.
+   **Answer:** Pull.
 
 5. **Question:** What command is used for publishing changes for others?  
    **Answer:** Push.
