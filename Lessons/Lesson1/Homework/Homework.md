@@ -14,7 +14,7 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** Commit changes
 
 5. **Question:** What command is used for publishing changes for others?  
-   **Answer:** Pull request
+   **Answer:** git push
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
-   **Answer:** ?
+   **Answer:** pull request
