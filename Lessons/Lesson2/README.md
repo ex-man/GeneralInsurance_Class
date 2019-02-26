@@ -1,5 +1,5 @@
 # Objective
-To learn what is a Loss Ratio and what are different forms of projections of losses (average, chain ladder/bf, loss ratio walk)
+To learn some basics of data manipulation and visualisation, basics of general insurance losses and expenses
 
 # Content
 1) [Introduction to tidyverse and ggplot2](Support/About_tidyverse.md) (get to know the basics) (30min)
