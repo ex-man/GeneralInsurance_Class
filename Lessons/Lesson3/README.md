@@ -9,7 +9,14 @@ To learn what is a loss ratio
 #### Feedback (3 min)  
 Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOTlQSjZGT0s1SFBCSzU2UFRMRVpINU9LQy4u) about this lesson to help us to improve the course.  
 
-#### Homework (~20 min) [4b]
+#### Homework (~20 min) [6b]
+##### Implement tidyverse example into shiny and commit into your forked repository
 
-1) Implement UWR chart into Class Shiny app (`Lessons/Lesson3/Homework/Shiny`). 
-Edit file server.R at `output$lesson2_KPI_multidim_UWR_graph` with predefined input data and implement UWR chart we learned during lesson2 as dynamic view not only for `Unit`. Do not forget to commit your changes.
+* Prepare interactive scatterplot (Premium vs. Expenses) we have seen in [`ggplot2` example](Support/About_tidyverse_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png) and make __colouring__ of the scatter points dynamic based on not only `Region`, but for all categorical variable available in data set `dt_KPI`. Use `shiny` framework
+* Save your application into `Lessons/Lesson3/Homework` and `commit` it to your forked repository
+
+> Hint: instead of `aes` you might need `aes_string` 
+
+It might look something like this:  
+
+![](Support/About_shiny_files/Lesson1_Homework.png)`
