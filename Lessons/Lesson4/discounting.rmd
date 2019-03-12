@@ -293,28 +293,29 @@ As in the example above, there is no way for a starting insurance company to col
 How does this additional challenge change the porfitabilty of the buiness?
 
 
-#### Exercise 10
+#### Exercise 10  => Homeworks (group everything together)
 _Using the same data we have discounted, try to allow for additional 10% (on top of risk free rate) of the capital needed for that portfolio._
 What is the Economic profit before tax (NPV UWR - Capital costs) for each
 portfolio? Which one of them is the most profitable? Is the worst one from previous investigation still the worst?
 
-You know what the Mean term is of the data, as you know what the discount factors are 
-and you assumed 5% discount rate (Exercies 6).
+STEPS:
+You know what the Mean term is of the data (also part of CIR_data as the last column), as you know what the discount factors are 
+and you assumed 5% discount rate (Exercies 6) - chose whichevery you find more reasonable.
 You also know what the capital intensity ratios are (Exercise 9).
-You also know the Net Earned Premium (Lesson2 data)
-How much does it cost to hold the Capital amount in terms of interest paid
-for that for the average (Mean Term) period?
-Hint: Using 'dplyr' package and function left_join requires column names to be the same to join...
+You also know the Net Earned Premium from earlier lessons (dt_KPI)
+How much does it cost to hold the Capital amount in terms of interest paid for that for the average (Mean Term) period?
+Now you can combine everything and calculate teh Economic Profit :)
+Hint1: Using 'dplyr' package and function left_join requires column names to be the same to join...
 
 
-### Latest view of the loss development
+### Latest view of the loss development - EXTRA
 Ok, so now you should know something about triangles and discounting and capital and how it all links together. 
 There is another use of the triangles though and the very last adjustment to our profitability.
 As the external capital is usually quite expensive, insurers need to sometimes strengthen the reserves to have more money saved for adverse claims (like the flood in the capital section). There are also claims, that have happened and we are not aware of yet, which is another reason for having extra money saved. Over the years, the reserves are released, as claims are paid and the money is not needed. So can we somehow project what the future losses will be after all reserve releases?
 There is an additional dataset provided, that shows historical view of the losses for a given year, and it is updated year on year.
 
 
-#### HOMEWORK CANDIDATE
+#### BONUS HOMEWORK CANDIDATE - EXTRA BONUS
 Use this final triangle to come up with your view on what the ultimate loss for 2016 will look like for every portfolio.
 Calculate the extra money, that will be released in a couple of years.
 Present the latest view NPV UWR for all portfolios and show that as a diagnostic in your dashboard from lesson 2.
