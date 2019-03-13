@@ -14,5 +14,8 @@
 #### Feedback (3 min)  
 Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUQlFNREZXWTIxMEdNMDhQMDFaWkI3SkNLSC4u) about this lesson to help us to improve the course.
 
-#### Homework (~30 min) [2b / 4b]
+#### Homework (~30 min) [4b / 2b]
+Finish exercises 2 and 3 in [Discounting](discounting.rmd). 
+1) It means you need to find Age-to-age factors for all combinations in the data and comment on what differences you are finding (unusual data points in triangles, differences in Age-to-age factors, volatility, ...)
+2) Once done, comment also on the "length of tail" (how long it usually takes for losses in triangle to not change any massively any further). Why do you think there are differences between Household (building) and 3rd party (cars)? What is the difference between small and large claims?
 
