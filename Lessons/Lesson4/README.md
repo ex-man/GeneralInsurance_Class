@@ -22,10 +22,10 @@ Finish exercises 2 and 3 in [Discounting](discounting.rmd).
 Hint:
 For those that have the chainladder package installed with an error and the development periods 1 and 2 are at the end of the triangle, please reorder them using the following R code template:
 
-# create a triangle as you would in the first place
+\# create a triangle as you would in the first place
 dTest <- as.triangle(paid_hh_sml, origin = "ay", dev = "dy", "SumOfamount")
 
-# force the correct order of columns and store the matrix as a triangle
+\# force the correct order of columns and store the matrix as a triangle
 dTriang <- triangle(
     dTest[,10],
     dTest[,9],
