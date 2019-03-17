@@ -137,20 +137,20 @@ Paid_HH_Large<-dt_PaidCase %>% filter( Business == "House" & ClaimSize == "Large
 head(Paid_HH_Large)
 Paid_HH_Large_triangle <- Paid_HH_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
 Paid_HH_Large_triangle
-plot(Paid_HH_Large_triangle)  
-plot(predict(chainladder(Paid_HH_Large_triangle)))
+plot(Paid_HH_Large_triangle) #v roku 2008 (2) nam vyslo o 2 roky (a o viac rokov) viac Sumofamount ako vyslo v roku 2007 (1) o 3 roky (a viac rokov). Najvacsie zmeny v Sumofamount nastavaju o rok a o 2 roky pre vsetky origin (tie su 2007-2016), potom sa Sumofamount zacina ustalovat. Najviac ma Sumofamount pre rok pre 2011 (5) a najmenej pre rok 2014 (8)   
+plot(predict(chainladder(Paid_HH_Large_triangle))) # tento uz obsahuje aj ocakavane hodnoty 
 ata(Paid_HH_Large_triangle)
 
-Paid_3rd_Large<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Large" & dataset_type == "PAID")  
+Paid_3rd_Large<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Large" & dataset_type == "PAID")
 head(Paid_3rd_Large)
 Paid_3rd_Large_triangle <- Paid_3rd_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
 Paid_3rd_Large_triangle
-predict(chainladder(Paid_3rd_Large_triangle))
 plot(Paid_3rd_Large_triangle) 
 plot(predict(chainladder(Paid_3rd_Large_triangle)))
+predict(chainladder(Paid_3rd_Large_triangle))#chcela som vidiet hodnoty ake ocakava v roku 2016 (teda aku hodnotu ocakava napr o rok, to je v roku 2017), lebo dost ovplivnili graf "predict(chainladder(Paid_3rd_Large_triangle))" a je vidno ze odhaduju dost vysoke hodnoty Sumofamount
 ata(Paid_3rd_Large_triangle)
 
-Paid_3rd_Small<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Small" & dataset_type == "PAID")  
+Paid_3rd_Small<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Small" & dataset_type == "PAID")
 head(Paid_3rd_Small)
 Paid_3rd_Small_triangle<- Paid_3rd_Small %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
 Paid_3rd_Small_triangle
