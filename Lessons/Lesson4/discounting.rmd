@@ -51,9 +51,9 @@ library(ChainLadder)
 ```
 Load data about KPIs
 ```{r}
-dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
-dt_LatestView <- read.csv("./Data/lesson4_latestView.csv")
-dt_PaidCase <- read.csv("./Data/lesson4_PaidCase.csv")
+dt_KPI <- read.csv("C:/Users/Lucia_Sebestova/Documents/Matfyz(4)/VTvAktuarstve/GeneralInsurance_Class/Data/lesson2_KPI.csv")
+dt_LatestView <- read.csv("C:/Users/Lucia_Sebestova/Documents/Matfyz(4)/VTvAktuarstve/GeneralInsurance_Class/Data/lesson4_latestView.csv")
+dt_PaidCase <- read.csv("C:/Users/Lucia_Sebestova/Documents/Matfyz(4)/VTvAktuarstve/GeneralInsurance_Class/Data/lesson4_PaidCase.csv")
 ```
 
 #### Exercise 1
@@ -71,6 +71,7 @@ To explore a bit of math, look at the exmaples from help section on "chainladder
 
 ```{r}
 ?chainladder
+chainladder(GenIns)
 ```
 
 The thing that is actually predicting the future is the age-to-age factors.
@@ -80,10 +81,8 @@ _Now try to predict what happens with the linse using the chain ladder technique
 
 Your solution
 ```{r}
-
-
-
-
+?predict
+predict(chainladder(GenIns))
 ```
 
 At the end this is all about age-to-age factors. There are many methods that calculate them, but at the end once you get them you know, how much more the claim will be in x years.
@@ -97,46 +96,82 @@ Hint2: There are 2 types of data - paid and case. Start using Paid...
 
 _YOUR SOLUTION_
 understand the data => run some simple overviews
-
+```{r}
+summary(dt_PaidCase)
+```
 create a variable => filter data and covert to triangle. then convert to cummulative to use chainladder
 
 _STEP 1: Take paid data for House business and Small claim size_
 
 ```{r}
-Paid_HH_sml <- dt_PaidCase %>% filter(...) 
+Paid_HH_sml <- dt_PaidCase %>% filter( Business == "House" & ClaimSize == "Small" & dataset_type == "PAID") 
+head(Paid_HH_sml)
 ```
 
 _STEP 2: Now convert the standard table into a triangle_
 Hint: %>% as.triangle(...)
 
 ```{r}
-
+Paid_HH_sml_triangle<-Paid_HH_sml %>% as.triangle(origin = "ay", dev ="dy", value = "SumOfamount")
+Paid_HH_sml_triangle
 ```
 
 _STEP 3: Now start plotting things to see more information_
 
 ```{r}
-
+plot(Paid_HH_sml_triangle)  
+plot(predict(chainladder(Paid_HH_sml_triangle)))
 ```
 
 _STEP 4: And get the aging factors and some other stat's out to see more details_
 Hint: ata(...)
 
 ```{r}
-
+ata(Paid_HH_sml_triangle)
 ```
 
 _Now repeat for all types of buiness and sizes of claims. Compare the findings..._
 
 ```{r}
+Paid_HH_Large<-dt_PaidCase %>% filter( Business == "House" & ClaimSize == "Large" & dataset_type == "PAID")  
+head(Paid_HH_Large)
+Paid_HH_Large_triangle <- Paid_HH_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+Paid_HH_Large_triangle
+plot(Paid_HH_Large_triangle)  
+plot(predict(chainladder(Paid_HH_Large_triangle)))
+ata(Paid_HH_Large_triangle)
 
+Paid_3rd_Large<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Large" & dataset_type == "PAID")  
+head(Paid_3rd_Large)
+Paid_3rd_Large_triangle <- Paid_3rd_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+Paid_3rd_Large_triangle
+predict(chainladder(Paid_3rd_Large_triangle))
+plot(Paid_3rd_Large_triangle) 
+plot(predict(chainladder(Paid_3rd_Large_triangle)))
+ata(Paid_3rd_Large_triangle)
+
+Paid_3rd_Small<-dt_PaidCase %>% filter( Business == "3rd Party" & ClaimSize == "Small" & dataset_type == "PAID")  
+head(Paid_3rd_Small)
+Paid_3rd_Small_triangle<- Paid_3rd_Small %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+Paid_3rd_Small_triangle
+plot(Paid_3rd_Small_triangle) 
+plot(predict(chainladder(Paid_3rd_Small_triangle)))
+ata(Paid_3rd_Small_triangle)
 ```
 
 _If you are now comforatble with what this does, try doing the same, but using additional information: The Case data!_
 Hint: Sum Paid and Case together to come up with the final claims estimates (the Incurred claims)
 
 ```{r}
-
+dt_PC<-dt_PaidCase%>% mutate(dataset_type="PC")
+head(dt_PC)
+PC_HH_Large<-dt_PC %>% filter( Business == "House" & ClaimSize == "Large" )  
+head(PC_HH_Large)
+PC_HH_Large_triangle <- PC_HH_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+PC_HH_Large_triangle
+plot(PC_HH_Large_triangle) 
+plot(predict(chainladder(PC_HH_Large_triangle)))
+ata(PC_HH_Large_triangle)
 ```
 
 
