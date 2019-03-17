@@ -172,6 +172,32 @@ PC_HH_Large_triangle
 plot(PC_HH_Large_triangle) 
 plot(predict(chainladder(PC_HH_Large_triangle)))
 ata(PC_HH_Large_triangle)
+
+PC_HH_Small<-dt_PC %>% filter( Business == "House" & ClaimSize == "Small" )  
+head(PC_HH_Small)
+PC_HH_Small_triangle <- PC_HH_Small %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+PC_HH_Small_triangle
+plot(PC_HH_Small_triangle) 
+plot(predict(chainladder(PC_HH_Small_triangle)))
+ata(PC_HH_Small_triangle)
+
+PC_3rd_Large<-dt_PC %>% filter( Business == "3rd Party" & ClaimSize == "Large" )  
+head(PC_3rd_Large)
+PC_3rd_Large_triangle <- PC_3rd_Large %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+PC_3rd_Large_triangle
+plot(PC_3rd_Large_triangle) 
+plot(predict(chainladder(PC_3rd_Large_triangle)))
+ata(PC_3rd_Large_triangle)
+
+PC_3rd_Small<-dt_PC %>% filter( Business == "3rd Party" & ClaimSize == "Small" )  
+head(PC_3rd_Small)
+PC_3rd_Small_triangle <- PC_3rd_Small %>% as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+PC_3rd_Small_triangle
+plot(PC_3rd_Small_triangle) 
+plot(predict(chainladder(PC_3rd_Small_triangle)))
+ata(PC_3rd_Small_triangle)
+
+
 ```
 
 
