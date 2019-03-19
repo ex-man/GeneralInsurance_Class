@@ -20,7 +20,7 @@ Basically it means we don't quite know what price we should charge to make our p
 
 Until now we relied on underwriter's (the one who that underwrites an insurance risk) **feeling** about a particular risk. But now we would like to take the expert judgment we gained from our **past experience** and put it into a statistical model which could **help us predict** how policies in our portfolios will perform.
 
-Let's go to data again. Open [`pre_model_data_prep.Rmd`](pre_model_data_prep.Rmd)
+Let's go to data again. Open [`pre_model_data_prep.Rmd`](pre_model_data_prep.md)
 
 ## Intro to GLM
 
