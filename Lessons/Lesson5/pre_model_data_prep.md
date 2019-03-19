@@ -98,4 +98,4 @@ Go to Exercise 2 and try to think about what could be a good 'target'/ event you
 
 
 
-[Next](target_and_one_way.Rmd) > [Up](README.md) ^
+[Next](target_and_one_way.md) > [Up](README.md) ^
