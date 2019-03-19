@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-We created Target and analysed it with One-Way approach. Now, lets have look to how it perfomrs with very basic glm.
+We created Target and analysed it with One-Way approach. Now, lets have look to how it perfomers with very basic glm.
 
 ### Distribution of the Target
 Before we jump directly to modelling, need to decide on which type of GLM model we can actually use.
