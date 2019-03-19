@@ -1,8 +1,3 @@
----
-title: "Pre-Model Analysis and data preparation"
-output: html_notebook
----
-
 # Policy and Claims data exploration
 As mentioned in previous lessons, we identified good and bad performers in term of portfolios. To identify, which group of people/companies are guilty for that performance we need **more granular data**. And so we received *Claims* and *Policy* data from out IT department.
 
