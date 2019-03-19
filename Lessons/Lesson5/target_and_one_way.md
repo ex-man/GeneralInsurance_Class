@@ -2,7 +2,7 @@
 title: "Target Creation"
 output: html_notebook
 ---
-< [Back](pre_model_data_prep.Rmd)  [Next]() > [Up](README.md) ^ 
+< [Back](pre_model_data_prep.md)  [Next]() > [Up](README.md) ^ 
 
 Great, now you wrote about your ideas about the target, lets think about it together.
 
