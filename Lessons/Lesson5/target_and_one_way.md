@@ -54,7 +54,7 @@ dt_pol_w_claims %>%
 
 > What's different on those first three clients?
 
-The third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) risker than first two clients from the table above.
+The third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) riskier than first two clients from the table above.
 
 What we described here is term `exposure`. The exposure can be different for portfolio we are analysing. e.g. it can be square root for property business or mileage for trucks insurance. We often talks about exposure as unit of for insurance cover. There is many definitions. 
 
