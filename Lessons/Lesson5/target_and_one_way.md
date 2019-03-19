@@ -72,7 +72,7 @@ dt_pol_w_claims %>%
   arrange(desc(Paid)) %>% head()
 ```
 
-Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is a leap year.
+Did you realize for some years there is 365 and for some 366 days? Cool, right? `lubridate` does know which year is a leap year.
 
 #### Ultimate Losses and Burning Cost
 Ultimate Losses is something we end up paying overall for the individual claim. It can include various parts of the claim e.g. (Losses, Reserver, Inflation, Expenses to arrange the claim, ...).
