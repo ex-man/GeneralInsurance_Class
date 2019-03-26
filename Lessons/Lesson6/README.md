@@ -2,8 +2,8 @@
 To learn the techniques to improve basic GLM model
 
 # Content
-- Validation / Metrics to optimize [model_val.Rmd](model_val.Rmd)
-- Feature Engineering alias techniques to improve GLM model [feature_engineering.Rmd](feature_engineering.Rmd)
+- Validation / Metrics to optimize [model_val.md](model_val.md)
+- Feature Engineering alias techniques to improve GLM model [feature_engineering.md](feature_engineering.md)
 - Technical Price 
 - Final thoughts
 
