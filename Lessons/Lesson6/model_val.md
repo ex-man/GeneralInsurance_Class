@@ -2,19 +2,19 @@
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-In the previous Lesson you have learnt on how to create very simple design for GLM model to improve insurance portfolio. The model is truly simple on almost not usable for real life application. We need to improve it to its best using the best data we have available. So we will try to iterate using many combination of features and theirs mutation to improve the model
+In the previous Lesson you learnt about how to create a very simple design for GLM model to improve an insurance portfolio. The model is truly simple but not usable for real life application. We need to improve it to its best using the best data we have available. So we will try to iterate using many combination of features and their mutations to improve the model.
 
 `But how do we know model is performing well?`
 
-There are several method on how to asses the model performance, but we will focus on a few only.
-Using these methods you split your data on __modeling__ and __validation__ part to ensure model is robust and not overfitted on current data, but prepared to work on future data we have not seen yet.
+There are several methods on how to assess the model performance, but we will focus on a few of them only.
+Using these methods you split your data on __modeling__ and __validation__ part to ensure the model is robust and not overfitted on current data, but prepared to work on future data that we have not seen yet.
 
 ### Validation Methods
 A few methods on how to split data:
 
-1.  Out of samle Validation (randomly split into two pieces, e.g. 80% vs. 20% of data)
-2.  Out of time Validation (split into two pieces, using some time variable, e.g. Years 2012-2016 vs. Year 2017)
-3.  Cross Validation (randomly split into k piecies and combination of k-1 folds define one part vs. remaining part)
+1.  Out of sample Validation (randomly split into two parts, e.g. 80% vs. 20% of data)
+2.  Out of time Validation (split into two parts, using a time variable, e.g. Years 2012-2016 vs. Year 2017)
+3.  Cross Validation (randomly split into k parts and combinations of k-1 parts define one sample vs. remaining part defining the second sample)
 
 Once you split your data into modeling and validation part you start creating GLM model on modeling part and making prediction on validation part.
 
@@ -48,11 +48,11 @@ nrow(val)
 ```
 
 ### Validation Metric
-When you have predictions, now you can compare actual values with prediction and asses on how to model performs.
+When you have predictions, you can compare actual values with prediction and assess how the model performs.
 
-And once again there are couple of __metric__ to use and its usage depends on type of the model you are trying to create.
+And once again there are couple of __metrics__ to use and their usage depends on the type of the model you are trying to create.
 
-A few metric to evaluate performance of the regression model:
+A few metrics to evaluate performance of the regression model:
 
 1.  Mean Squared Error
 2.  Mean Absolute Error
@@ -63,7 +63,7 @@ Btw, for inspiration here is a nice summary of the [metric functions](http://sci
 
 All of those methods and metrics can be implemented very easily in R and we will create a simple methodology to do that. 
 
-For the future I would like to mention package `caret`, which automatize some of the actions we need to do manualy here.
+For the future I would like to mention package `caret`, which automatizes some of the actions we need to do manualy here.
 
 ```{r}
 # definition of the MSE metric
