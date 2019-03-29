@@ -1,4 +1,4 @@
-#### Discounting ####
+#### Discounting - only exercises, consider using .rmd version####
 # Libraries
 library(dplyr)
 library(ggplot2)

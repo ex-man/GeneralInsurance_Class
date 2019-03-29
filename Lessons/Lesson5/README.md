@@ -3,8 +3,8 @@
   
 # Content
   1. Intro to models
-      - [Data Preparation for Modelling](pre_model_data_prep.Rmd)
-      - [Target purpose](target_and_one_way.Rmd)
+      - [Data Preparation for Modelling](pre_model_data_prep.md)
+      - [Target purpose](target_and_one_way.md)
   2. Intro to GLM
 
 
@@ -20,7 +20,7 @@ Basically it means we don't quite know what price we should charge to make our p
 
 Until now we relied on underwriter's (the one who that underwrites an insurance risk) **feeling** about a particular risk. But now we would like to take the expert judgment we gained from our **past experience** and put it into a statistical model which could **help us predict** how policies in our portfolios will perform.
 
-Let's go to data again. Open [`pre_model_data_prep.Rmd`](pre_model_data_prep.Rmd)
+Let's go to data again. Open [`pre_model_data_prep.md`](pre_model_data_prep.md)
 
 ## Intro to GLM
 
@@ -42,7 +42,7 @@ Why generalized model?
 
 The standard linear model requires the response variable to have a normal distribution. However, in insurance data this is not the case. The response variables in insurance mostly have Poisson distribution (for discrete variable, e.g model for the no. of claims) and the Gamma distribution (e.g. modeling amount of the losses).
 
- Let's make a simple model. Open [`basic_glm.Rmd`](basic_glm.Rmd)
+ Let's make a simple model. Open [`basic_glm.md`](basic_glm.md)
 
  
 #### Feedback (3 min)  

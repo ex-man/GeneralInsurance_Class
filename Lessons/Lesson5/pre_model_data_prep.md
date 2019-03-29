@@ -1,8 +1,3 @@
----
-title: "Pre-Model Analysis and data preparation"
-output: html_notebook
----
-
 # Policy and Claims data exploration
 As mentioned in previous lessons, we identified good and bad performers in term of portfolios. To identify, which group of people/companies are guilty for that performance we need **more granular data**. And so we received *Claims* and *Policy* data from out IT department.
 
@@ -20,7 +15,7 @@ Write a few sentences about what have you found and commit your notes.
 ### Join Claims with Policy info
 It is obvious we need to join both dataset together as __claims data__ contains info about __how much__ is the individual client risky. __Policy data__ contains info about individual's feature and other identifiers, which might help us to find reasons for __why__ client __is riskier__.
 
-So let's to find out the way how to join them together.
+So let's find out the way how to join them together.
 
 Policy data are at *policy + object* level.
 ```{r}
@@ -98,4 +93,4 @@ Go to Exercise 2 and try to think about what could be a good 'target'/ event you
 
 
 
-[Next](target_and_one_way.Rmd) > [Up](README.md) ^
+[Next](target_and_one_way.md) > [Up](README.md) ^

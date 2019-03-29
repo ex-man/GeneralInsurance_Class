@@ -7,7 +7,7 @@ This repository forms a backbone to the class we teach at Universities. It is re
   3) [Loss Ratio](/Lessons/Lesson3/README.md) Introduction to Loss Ratio (Ratios, Shiny)
   4) [A closer look at the losses](/Lessons/Lesson4/README.md) (Triangles, discounting, capital requirements)
   5) [Which loss is most signifficant](/Lessons/Lesson5/README.md) (Dataprep, One Way analysis / Decision trees)
-  6) [Use past data to predict future experience](/Lessons/Lesson6x/README.md) (introduction to GLM modelling)
+  6) [Use past data to predict future experience](/Lessons/Lesson6/README.md) (introduction to GLM modelling)
 
 # Pre-requisites for the class
 Computers must have installed the following software

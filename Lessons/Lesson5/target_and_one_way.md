@@ -1,8 +1,4 @@
----
-title: "Target Creation"
-output: html_notebook
----
-< [Back](pre_model_data_prep.Rmd)  [Next]() > [Up](README.md) ^ 
+< [Back](pre_model_data_prep.md)  [Next]() > [Up](README.md) ^ 
 
 Great, now you wrote about your ideas about the target, lets think about it together.
 
@@ -54,7 +50,7 @@ dt_pol_w_claims %>%
 
 > What's different on those first three clients?
 
-Ou yes, the third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) risker than first two clients from the table above.
+The third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) riskier than first two clients from the table above.
 
 What we described here is term `exposure`. The exposure can be different for portfolio we are analysing. e.g. it can be square root for property business or mileage for trucks insurance. We often talks about exposure as unit of for insurance cover. There is many definitions. 
 
@@ -72,7 +68,7 @@ dt_pol_w_claims %>%
   arrange(desc(Paid)) %>% head()
 ```
 
-Did you realize for some years there is 364 and for some 365 days? Cool, right? `lubridate` does know which year is a leap year.
+Did you realize for some years there is 365 and for some 366 days? Cool, right? `lubridate` does know which year is a leap year.
 
 #### Ultimate Losses and Burning Cost
 Ultimate Losses is something we end up paying overall for the individual claim. It can include various parts of the claim e.g. (Losses, Reserver, Inflation, Expenses to arrange the claim, ...).
