@@ -8,7 +8,7 @@
 	4) going one step further towards capital
 
 ### Lesson Flow:
-1) [Discounting](discounting.rmd): `discounting.exercise.R`
+1) [Discounting](discounting.md): `discounting.exercise.R`
 2) Repository update ([using pull request](https://www.sitepoint.com/quick-tip-sync-your-fork-with-the-original-without-the-cli/))
 
 #### Feedback (3 min)  
