@@ -7,7 +7,9 @@ It was created by Linus Torvalds for development of Linux. To learn more about t
 
 
 ### What is GitHub
-GitHub is a web service that enables users to have an online version control system using Git. On GitHub you can create an account where you can have your own repositories (=Git projects) and take advantage of Git integration.
+GitHub is a web service that integrates Git as a version control system. On GitHub you can create an account where you can have your own repositories (=Git projects) and take advantage of Git features. Basically it is a web page where you can use Git directly from menus, dropdowns and buttons without having to understand in depth what it actually does in the background.
+
+These repositories can be then synchronized to your computer.
 
 
 ### How we will use GitHub
