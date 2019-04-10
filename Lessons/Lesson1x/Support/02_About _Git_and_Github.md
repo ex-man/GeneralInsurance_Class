@@ -15,7 +15,7 @@ These repositories can be then synchronized to your computer.
 ### How we will use GitHub
 As you can see, the whole class is stored on GitHub as a repository. This enables the creators of the class to collaborate on development of the class contents.
 
-That is, however, not the only advantage. It will enable you, as a student, to keep your repopsitory always up-to-date with the latest changes made in the original course material. It will enable you to synchronize your works throughout all the devices on which you work. You will also be able to access the full history of changes you will make. And in the end you will learn how you can use the GitHub for cooperation with others.
+That is, however, not the only advantage. You will use it, as a student, to keep your repository always up-to-date with the latest changes made in the original course material. It will enable you to synchronize your works throughout all the devices on which you work. You will also be able to access the full history of changes you will make. And in the end you will learn how you can use the GitHub for cooperation with others.
 
 Also, you will be required to use GitHub to submit all of your homework and receive your evaluation here.
 
@@ -23,4 +23,8 @@ Also, you will be required to use GitHub to submit all of your homework and rece
 ### Will we use Git?
 Yes and no. The usage of Git is integrated in the GitHub itself. So you will be able to use some of the basic features of Git directly from GitHub web user interface.
 
-On the other hand, the usage of Git from your local machine will not be required. This part will be left as an option nfor you to use with a simple tutorial provided at the end of this lesson.
+On the other hand, the usage of Git from your local machine will not be required. This part will be left as an option for you to use with a simple tutorial provided at the end of this lesson.
+
+
+### Setting up an account
+To create a new account, go to the GitHub signup page and follow the instructions. Note that your GitHub account name will be visible to all participants of the course and we will use it for direct communication with you throughout the class.
