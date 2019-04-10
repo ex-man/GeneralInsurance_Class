@@ -18,5 +18,3 @@ Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2
 #### Homework (~20 min) [6b]
 * Answer questions in [`Lessons/Lesson1/Homework/Homework.md`](Homework/Homework.md)
 * Save your changes and `commit` to your forked repository
-
-making a test change
