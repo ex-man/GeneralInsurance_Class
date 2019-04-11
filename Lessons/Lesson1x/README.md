@@ -6,7 +6,7 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 ## Content
 1) [Intro to Insurance](Support/01_About_Insurance.md) - inroduction to Life Insurance and General Insurance
 2) [About Git and GitHub](Support/02_About_Git_and_Github.md) - what is Git, GitHub and how we will use it, setting up an account (15 min)
-3) [How Git Works](Support/xxxx.md) - how git works - repositories, forks and branches (15 min)
+3) [How Git Works](Support/03_How_Git_Works.md) - how git works - repositories, forks and branches (15 min)
 4) [Basic GitHub Actions](Support/xxxx.md) - forking, commiting, branching, pull requests (30 min)
 5) [How to Use Git from Your Computer](Support/xxxx.md) - basic tutorial on how to set up Git to use it from your computer (optional)
 
