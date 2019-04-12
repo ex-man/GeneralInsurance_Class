@@ -38,7 +38,7 @@ As described in previous section, pull requests can be used to notify the main d
 
 On the other hand, you can also create a pull request going the other way - pulling updates from the original repository to your own. Since you are basically requesting yourself to pull the changes from the original repository into your own, you can approve it any time.
 
-So to do it you'll need to follow these stpes. First, go to your own repository and click on the "New pull request" button.
+So to do it you'll need to follow these steps. First, go to your own repository and click on the "New pull request" button.
 
 <p align = "center">
 ![](Lesson pictures/New_pull_request.png)
