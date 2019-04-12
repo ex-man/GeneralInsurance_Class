@@ -82,3 +82,5 @@ For more information on [Pull Requests](https://help.github.com/articles/about-p
 > Now you are completely setup, but still only locally. To push your locally merged changes push it by using: 
 
 `git push origin`
+
+[Back](./README.md)
