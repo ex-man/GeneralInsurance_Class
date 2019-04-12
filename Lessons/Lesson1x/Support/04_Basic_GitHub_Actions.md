@@ -7,7 +7,7 @@ In this section we will provide a brief description of how to do some of the bas
 We will start with the fork, since this will be the first thing you will need to do to get all the course material to your repository. To fork someone else's repository, you need to find the original repository first. So in this case you want to find our GeneralInsurance_Class repository. Then you need to click on the fork button
 
 <p align = "center">
-![Fork](Lessons/Lesson1x/Lesson pictures/Fork.png)
+![Fork](Lessons/Lesson1x/Lesson_pictures/Fork.png)
 </p>
 
 ### Commit
