@@ -29,4 +29,4 @@ On the other hand, the usage of Git from your local machine will not be required
 ### Setting up an account
 To create a new account, go to the GitHub signup page and follow the instructions. Note that your GitHub account name will be visible to all participants of the course and we will use it for direct communication with you throughout the class.
 
-[Back](./README.md)
+[Back](/Lessons/Lesson1x/README.md)
