@@ -5,8 +5,8 @@ In this section we will provide a brief description of how to do some of the bas
 ### Fork
 
 We will start with the fork, since this will be the first thing you will need to do to get all the course material to your repository. To fork someone else's repository, you need to find the original repository first. So in this case you want to find our GeneralInsurance_Class repository. Then you need to click on the fork button
- 
-![Fork](Lesson_pictures/Fork.png) 
+
+![Fork](Lesson_pictures/Fork.png)
 
 
 ### Commit
@@ -14,14 +14,14 @@ We will start with the fork, since this will be the first thing you will need to
 In previous section we described how the committing works. Now we will have a look at how to do it in GitHub.
 
 To make a change in a file on GitHub go to the file, open it and start editing it. 
-
-![Edit_file](Lesson_pictures/Edit_file.png)
+ 
+![Edit_file](Lesson_pictures/Edit_file.png) 
 
 When you're done, scroll down and click on "Commit Changes" button. To be able to submit the commit a commit header will have to be edited. Then, if you think the changes you made need longer description, you can add additional comments in the commit message box.
 
 You can submit your commit either directly to your master branch (this option is the one you should do in this course) or you can choose to create a new branch with the new commit
 
-![Commit](Lesson_pictures/Commit.png)
+![Commit](Lesson_pictures/Commit.png) 
 
 Commits are the way you will submit your solutions to homework assignments.
 
@@ -35,15 +35,15 @@ On the other hand, you can also create a pull request going the other way - pull
 
 So to do it you'll need to follow these steps. First, go to your own repository and click on the "New pull request" button.
 
-![New_pull_request](Lesson_pictures/New_pull_request.png)
+![New_pull_request](Lesson_pictures/New_pull_request.png) 
 
 Now there you choose the way you want to create the pull request. The direction of the pull request is indicated by a small arrow symbol. You have to select repositories from the dropdown lists so that your repository and the branch where you want to store the data from the pull request are on the side to which the arrow is pointing. On the other side of the arrow must be the repository and branch from which you want to pull the changes. In this case it is [ex-man/GeneralInsurance_class](https://github.com/ex-man/GeneralInsurance_Class).
 
-![Comparing_changes](/Lesson_pictures/Comparing_changes.png)
+![Comparing_changes](/Lesson_pictures/Comparing_changes.png) 
 
 Then you click on the "Create pull request" button. Since this will also create a commit that will contain updates to one or more files, you will have to provide message and in case you want to describe more in detail what is happening in the pull request, you can add a longer comment in the comment block. At the end you will create the pull request by clicking on the "Create pull request" button.
 
-![Create_pull_request](/Lesson_pictures/Create_pull_request.png)
+![Create_pull_request](/Lesson_pictures/Create_pull_request.png) 
 
 Now the last step is to merge the pulled data into your repository. You just confirm the merge by clicking on the button.
 
