@@ -39,19 +39,19 @@ So to do it you'll need to follow these steps. First, go to your own repository 
 
 Now there you choose the way you want to create the pull request. The direction of the pull request is indicated by a small arrow symbol. You have to select repositories from the dropdown lists so that your repository and the branch where you want to store the data from the pull request are on the side to which the arrow is pointing. On the other side of the arrow must be the repository and branch from which you want to pull the changes. In this case it is [ex-man/GeneralInsurance_class](https://github.com/ex-man/GeneralInsurance_Class).
 
-![Comparing_changes](/Lesson_pictures/Comparing_changes.PNG) 
+![Comparing_changes](Lesson_pictures/Comparing_changes.PNG) 
 
 Then you click on the "Create pull request" button. Since this will also create a commit that will contain updates to one or more files, you will have to provide message and in case you want to describe more in detail what is happening in the pull request, you can add a longer comment in the comment block. At the end you will create the pull request by clicking on the "Create pull request" button.
 
-![Create_pull_request](/Lesson_pictures/Create_pull_request.PNG) 
+![Create_pull_request](Lesson_pictures/Create_pull_request.PNG) 
 
 Now the last step is to merge the pulled data into your repository. You just confirm the merge by clicking on the button.
 
-![Merge_pull_request](/Lesson_pictures/Merge_pull_request.PNG)
+![Merge_pull_request](Lesson_pictures/Merge_pull_request.PNG)
 
 In case you changed your mind and you don't want to update your repository, you can close pull request without merging. In that case your repository remains unchanged as if nothing happened.
 
-![Close_pull_request](/Lesson_pictures/Close_pull_request.PNG)
+![Close_pull_request](Lesson_pictures/Close_pull_request.PNG)
 
 Important thing to note is that when you update your repository this way, the changes you made up to that point in your repository remain the same even when the pull request is merged. The only case when the pull request does not work is when you have made changes to the same files that were changed in the original repository. This situation in Git terminology is called conflict and it has to be resolved first. Resolution of a conflict literally means deciding which of the two files will be used after the merge.
 
