@@ -23,4 +23,4 @@ Fork is basically a copy of someone’s repository into a new repository. It is 
 
 But copying of an existing repository is not the only thing that can be done with fork. When you make changes in the forked repository, you can ask the developer of the original repository to accept the changes you made. In GitHub this is called “pull request” and it is also a way how to compare the changes with the original repository.
 
-[Back](./README.md)
+[Back](/Lessons/Lesson1x/README.md)
