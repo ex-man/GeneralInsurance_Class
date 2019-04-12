@@ -23,4 +23,4 @@ This part of the course is specifically looking at General insurance => annual c
 
 That is it... Now you know everything. It is not a big magic. The magic starts when you go into the details, as there are lots of them. As you slowly progress through the course, you will learn more and more about what each step actually means.
 
-[Back](./README.md)
+[Back](././README.md)
