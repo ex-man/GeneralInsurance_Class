@@ -5,7 +5,7 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 
 ## Content
 1) [Intro to Insurance](Support/01_About_Insurance.md) - inroduction to Life Insurance and General Insurance
-2) [Setting up RStudio Cloud account and joining our session](Support/02_Setting_up_RStudio.md)
+2) [Setting up RStudio Cloud account and joining our session](Support/02_Setting_up_RStudio_Cloud.md)
 3) How to use RStudio Cloud
 
 Optional:
