@@ -6,4 +6,4 @@ Maybe you have heard about or even used RStudio desktop software. It is an envin
 During this course we will use RStudio Cloud to share the course content and publish the assignments.
 
 #### Creating an account
-There are multiple ways of creating a new account. There is a possibility to use an email, Google or GitHub account. To create an account please visit [RStudio Cloud]https://rstudio.cloud.
+There are multiple ways of creating a new account. There is a possibility to use an email, Google or GitHub account. To create an account please visit [RStudio Cloud](https://rstudio.cloud).
