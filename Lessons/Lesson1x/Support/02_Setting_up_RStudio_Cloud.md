@@ -1,7 +1,7 @@
 # RStudio Cloud
 
 #### About
-Maybe you have heard about or even used RStudio desktop software. It is an envinronment that makes work with R smoother and easier. It was created by RStudio developers to make R accessible to everyone. The project enables you to use RStudio without any need for installing anything on your computer. At the same time it makes it possible to collaborate on R projects within the cloud.
+Maybe you have heard about or even used RStudio desktop software. It is an environment that makes work with R smoother and easier. It was created by RStudio developers to make R accessible to everyone. The project enables you to use RStudio without any need for installing anything on your computer. At the same time it makes it possible to collaborate on R projects within the cloud.
 
 During this course we will use RStudio Cloud to share the course content and publish the assignments.
 
@@ -21,4 +21,4 @@ When you open a particular project, it will have the same appearance as RStudio 
 
 ![RStudio_environment](Lesson_pictures/RStudio_environment.PNG)
 
-The console, where you write your code is on the left, with the possibility to open .R and .Rmd files in the file browser. In the top right section there is the environment containing your workspace during your work in R. That's the place where you can see all your current variables and objects. In the righ bottom section you will be able to see the file manager that will enable you to navigate the files in the projects, see the plots that you create, and view and install packages.
+The console, where you write your code is on the left, with the possibility to open .R and .Rmd files in the file browser. In the top right section there is the environment containing your workspace during your work in R. That's the place where you can see all your current variables and objects. In the right bottom section you will be able to see the file manager that will enable you to navigate the files in the projects, see the plots that you create, and view and install packages.
