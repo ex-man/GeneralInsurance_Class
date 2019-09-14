@@ -1,8 +1,3 @@
----
-title: "Discounting"
-output: html_notebook
----
-
 ### Triangles in insurance
 Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous
 class were produced. It is a very simple way to get many answers like:
