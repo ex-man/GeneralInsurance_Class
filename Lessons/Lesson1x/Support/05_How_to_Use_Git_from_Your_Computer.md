@@ -39,16 +39,6 @@
 * Git Explained For Beginners
 > More about commands in Git can be found [here](https://juristr.com/blog/2013/04/git-explained/)
 
-# How it links to this class
-Hopefully you got some insight above about what git is. We decided to use it for this class (despite being and overkill) to allow us to be more up to date with the technology stack and to allow us to interact with you better. And we want to avoid sending emails back and forth. It also has one additional feature called **Pull Request** described bellow. 
-
-## Homework checking using pull requests
-We want to make sure you practice what we do in the class also at home and do not loose contact with the class. On the other hand, we work full time, so we need your help with checking what you have done. You should be sending **Pull Requests** to our git project and then comment on other requests saying why they are better or worse then yours.
-
-If you are using GitHub UI, it will navigate you through the process of getting the content of the pull request and then also via *check-out* of the right branch, and then it also suggest how to `git merge` it with your current code.
-
-For more information on [Pull Requests](https://help.github.com/articles/about-pull-requests/) click on the link.
-
 # Committing and Pushing via RStudio and Console
 
 #### Key Words: [Basic Git Commands](https://www.quora.com/How-many-git-commands-are-there-Do-I-need-to-know-them-all-to-have-good-knowledge-of-git)
