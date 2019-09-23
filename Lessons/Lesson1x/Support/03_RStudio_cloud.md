@@ -23,3 +23,5 @@ You won't. When you open a project, your local copy of all the files is created.
 ![List_of_projects_updated](Lesson_pictures/p3_list_of_projects2.PNG)
 
 You should now see the original version of the project, and your local copy. If you delete your local copy and open the original version again, a new copy will be created.
+
+[Back](/Lessons/Lesson1x/README.md)
