@@ -1,4 +1,4 @@
-# RStudio Cloud - how to use
+# RStudio Cloud - How to Use
 
 #### First steps
 When you log in, you should open the 'MatFyz' workspace. This is the environment we will use for our lessons. There, you should see the first project we will work with.
