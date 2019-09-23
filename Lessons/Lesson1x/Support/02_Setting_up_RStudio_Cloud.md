@@ -22,3 +22,5 @@ When you open a particular project, it will have the same appearance as RStudio 
 ![RStudio_environment](Lesson_pictures/RStudio_environment.PNG)
 
 The console, where you write your code is on the left, with the possibility to open .R and .Rmd files in the file browser. In the top right section there is the environment containing your workspace during your work in R. That's the place where you can see all your current variables and objects. In the right bottom section you will be able to see the file manager that will enable you to navigate the files in the projects, see the plots that you create, and view and install packages.
+
+[Back](/Lessons/Lesson1x/README.md)
