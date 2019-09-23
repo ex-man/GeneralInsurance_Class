@@ -4,9 +4,9 @@ This class will be about life and general insurance and how insurance data can b
 In this class we will use [**Git**](Support/About_GIT.md) to colaborate and share contents. 
 
 ## Content
-1) [Intro to Insurance](Support/01_About_Insurance.md) - inroduction to Life Insurance and General Insurance
-2) [RStudio Cloud](Support/02_Setting_up_RStudio_Cloud.md) - setting up an account and joining the workspace
-3) How to use RStudio Cloud
+1) [Intro to Insurance](Support/01_About_Insurance.md) - Introduction to Life Insurance and General Insurance
+2) [RStudio Cloud](Support/02_Setting_up_RStudio_Cloud.md) - Setting up an account and joining the workspace
+3) [RStudio Cloud](Support/03_RStudio_cloud.md) - How to use
 
 Optional:
 1) [About Git and GitHub](Support/02_About_Git_and_Github.md) - what is Git, GitHub and how we will use it, setting up an account (15 min)
