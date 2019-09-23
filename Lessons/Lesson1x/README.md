@@ -9,16 +9,12 @@ In this class we will use [**Git**](Support/About_GIT.md) to colaborate and shar
 3) [RStudio Cloud](Support/03_RStudio_cloud.md) - How to use
 
 Optional:
-1) [About Git and GitHub](Support/02_About_Git_and_Github.md) - what is Git, GitHub and how we will use it, setting up an account (15 min)
-2) [How Git Works](Support/03_How_Git_Works.md) - how git works - repositories, forks and branches (15 min)
-3) [Basic GitHub Actions](Support/04_Basic_GitHub_Actions.md) - forking, commiting, pull requests (30 min)
-4) [How to Use Git from Your Computer](Support/05_How_to_Use_Git_from_Your_Computer.md) - basic tutorial on how to set up Git to use it from your computer (optional)
+1) [About Git and GitHub](Support/02_About_Git_and_Github.md) - What is Git, GitHub and how we will use it, setting up an account
+2) [How Git Works](Support/03_How_Git_Works.md) - How git works - repositories, forks and branches
+3) [Basic GitHub Actions](Support/04_Basic_GitHub_Actions.md) - Forking, commiting, pull requests
+4) [How to Use Git from Your Computer](Support/05_How_to_Use_Git_from_Your_Computer.md) - Basic tutorial on how to set up Git to use it from your computer
 
 ----------------------------------------------
 #### Feedback (3 min)
 
 Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUOFM1VFFNOE5OTzFWVlNaT1NDTzVNWlZOUy4u) about this lesson to help us to improve the course.
-
-#### Homework (~20 min) [6b]
-* Answer questions in [`Lessons/Lesson1/Homework/Homework.md`](Homework/Homework.md)
-* Save your changes and `commit` to your forked repository
