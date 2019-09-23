@@ -17,8 +17,7 @@ As you can see, the whole class is stored on GitHub as a repository. This enable
 
 That is, however, not the only advantage. You will use it, as a student, to keep your repository always up-to-date with the latest changes made in the original course material. It will enable you to synchronize your works throughout all the devices on which you work. You will also be able to access the full history of changes you will make. And in the end you will learn how you can use the GitHub for cooperation with others.
 
-Also, you will be required to use GitHub to submit all of your homework and receive your evaluation here.
-
+The course material will be shared on Github, exercises will be posted in RStudio cloud. From your side there is no need to create Github account nor installing Git on your machine. On the other hand, it is possible to have the whole setup stored locally on your machine using a clone of this repository. If you wish to learn something new, you are free to try it.
 
 ### Will we use Git?
 Yes and no. The usage of Git is integrated in the GitHub itself. So you will be able to use some of the basic features of Git directly from GitHub web user interface.
