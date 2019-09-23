@@ -1,6 +1,6 @@
 # Basic GitHub Actions
 
-In this section we will provide a brief description of how to do some of the basic GitHub actions that we will require you to use throughout this course. To see what these actions actually mean and what they do, please look at the previous section.
+In this section we will provide a brief description of how to do some of the basic GitHub actions that will enable you to use Github throughout this course. To see what these actions actually mean and what they do, please look at the previous section.
 
 ### Fork
 
