@@ -24,4 +24,4 @@ You won't. When you open a project, your local copy of all the files is created.
 
 You should now see the original version of the project, and your local copy. If you delete your local copy and open the original version again, a new copy will be created.
 
-[Back](/Lessons/Lesson1x/README.md)
+[Back](/Lessons/Lesson1/README.md)
