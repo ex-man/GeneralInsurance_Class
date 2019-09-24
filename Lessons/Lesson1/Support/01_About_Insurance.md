@@ -1,10 +1,10 @@
-# Inroduction to Insurance
+# Introduction to Insurance
 
-Many people naturally see insurance as something they keep paying as they "should" or they are "affraid of" an accident. This is a consumer part of it. If we look at it from the other perspective (of a person doing the work), it is one of the most interesting professions due to the extreme variety of work and great analytical opportunities. But one of the downsides of this complexity is that one can get easily lost in what is actually happening :( For this reason, let's go back to real basics and try thinking about what insurance is.
+Many people naturally see insurance as something they keep paying as they "should" or they are "afraid of" an accident. This is a consumer part of it. If we look at it from the other perspective (of a person doing the work), it is one of the most interesting professions due to the extreme variety of work and great analytical opportunities. But one of the downsides of this complexity is that one can get easily lost in what is actually happening :( For this reason, let's go back to real basics and try thinking about what insurance is.
 
 ## Working for insurance profession
 
-If we take away all the "standard" functions that work in all industries (accountants, project managers, risk managers, IT, ...) we get to someone who is called "Actuary" and "Underwriter". Both are trying to manage risk (likelyhood of accidents) and money (the premium) so that the company is profitable, but one (*the actuary*) is looking at data and the other (*the underwriter*) is using his experience and professional judgement. In this course we will focus on the data aspect.
+If we take away all the "standard" functions that work in all industries (accountants, project managers, risk managers, IT, ...) we get to someone who is called "Actuary" and "Underwriter". Both are trying to manage risk (likelihood of accidents) and money (the premium) so that the company is profitable, but one (*the actuary*) is looking at the data and the other (*the underwriter*) is using his experience and professional judgment. In this course we will focus on the data aspect.
 
 ## Actuaries predicting future
 
@@ -23,3 +23,4 @@ This part of the course is specifically looking at General insurance => annual c
 
 That is it... Now you know everything. It is not a big magic. The magic starts when you go into the details, as there are lots of them. As you slowly progress through the course, you will learn more and more about what each step actually means.
 
+[Back](/Lessons/Lesson1/README.md)
