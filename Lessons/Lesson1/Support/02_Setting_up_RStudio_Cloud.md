@@ -9,7 +9,7 @@ During this course we will use RStudio Cloud to share the course content and pub
 There are multiple ways of creating a new account. There is a possibility to use an email, Google or GitHub account. To create an account please visit [RStudio Cloud](https://rstudio.cloud), go to the signup section and create a new account.
 
 #### Joining the course
-After you have created your account, you will be able to join our course. To get into the project click here. You will be asked if you want to join the project space.
+After you have created your account, you will be able to join our course. To get into the project click [here](https://rstudio.cloud/spaces/24950/join?access_code=SdZVz8k8LZVMEv9rnuMHa4Toie5gL9fUHMKn41bb). You will be asked if you want to join the project space.
 
 ![Join_space](Lesson_pictures/Join_space.PNG)
 
