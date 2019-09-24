@@ -55,4 +55,4 @@ In case you changed your mind and you don't want to update your repository, you 
 
 Important thing to note is that when you update your repository this way, the changes you made up to that point in your repository remain the same even when the pull request is merged. The only case when the pull request does not work is when you have made changes to the same files that were changed in the original repository. This situation in Git terminology is called conflict and it has to be resolved first. Resolution of a conflict literally means deciding which of the two files will be used after the merge.
 
-[Back](/Lessons/Lesson1x/README.md)
+[Back](/Lessons/Lesson1/README.md)
