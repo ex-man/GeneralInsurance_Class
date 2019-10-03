@@ -8,7 +8,7 @@
 	4) going one step further towards capital (OPTIONAL)
 
 ### Lesson Flow:
-1) Core ot the lesson is [Insurance triangles](loss_development.md)
+1) Core of the lesson is [Insurance triangles](loss_development.md)
 2) The optional part goes a bit further with introducing [Capital](capital_in_insurance_OPTIONAL.md)
 
 #### Feedback (3 min)  
