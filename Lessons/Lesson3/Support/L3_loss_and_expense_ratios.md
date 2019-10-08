@@ -29,4 +29,4 @@ This is usually simplified by defining a **combined ratio** which is the proport
 UWR = NEP * (1 –(Sum of losses + sum of expenses)/NEP) = NEP * (1 – COR)
 ```
 
-Now we can return to the data we have already explored when we were looking at different portfolios and various KPIs. [So let's go to the exercise.](Exercises/data_prep_exercise_KPI.md)
+Now we can return to the data we have already explored when we were looking at different portfolios and various KPIs. [So let's go to the exercise.](Support/L3_working_w_data.md)
