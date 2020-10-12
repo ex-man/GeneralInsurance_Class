@@ -12,7 +12,7 @@ There are far more questions and answers available, and there are many methods t
 ### But why should we care?
 Insurance company aims to protect customers from risks at *most appropriate* price. This means we cannot waste any resources, and we need to make a machine out of it. We pay claims *just-in-time* (not too early and not too late) and we invest money in financial derivatives with appropriate duration.
 
-On top of this there is also someone else asking us to be fail. It is the *regulator*. Insurance industry is heavily regulated and frequently audited to assure the companies are solvent and ready to pay to customers when needed, rather then to its directors, when premium is collecetsd.
+On top of this there is also someone else asking us to be fair. It is the *regulator*. Insurance industry is heavily regulated and frequently audited to assure the companies are solvent and ready to pay to customers when needed, rather then to its directors, when premium is collecetsd.
 
 So that is why - customers and regulators. This means it truely is important. So now when we know why, let's look at *how*.
 
