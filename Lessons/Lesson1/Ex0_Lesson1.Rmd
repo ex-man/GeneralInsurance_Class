@@ -1,0 +1,41 @@
+---
+title: "Exercise 0"
+output: html_notebook
+---
+
+This is an *R Markdown* Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+mtcars %>% summary()
+```
+
+What does the error mean? R tells you that it doesn't recognise the *%>%* function. The operator is actually called *pipe* and will be covered in later lessons. For now, the important fact is that we are missing a package which contains this function. 
+
+In order to load a package (library), use *library(package_name)* command.
+
+You can add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+```{r}
+library(tidyverse)
+```
+
+Wow, another error... we are not able to load the library... because it is not installed yet! Before first use of the package, you have to install the package you wish to use. This is done only the first time in the project, you don't have to install it again. However, you have to load the package in every session in order to use functions contained in it.
+
+```{r}
+install.packages('tidyverse')
+```
+
+Now, the *pipe* should work.
+
+```{r}
+library(tidyverse)
+mtcars %>% summary()
+```
+
+Indeed!
+
+You can find all theory and materials here:
+https://github.com/ex-man/GeneralInsurance_Class
+

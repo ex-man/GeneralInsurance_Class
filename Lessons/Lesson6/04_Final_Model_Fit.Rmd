@@ -1,0 +1,81 @@
+---
+title: "Final_Model_Fit"
+output: html_notebook
+---
+
+When you are satisfied with the variables that you used and the adjustments you applied, it is now time to use both training and validation dataset together to fit the final model and obtain the most accurate coefficients / multipliers that will be used for pricing use case. 
+
+```{r}
+final_data <- rbind(train, valid)
+
+final_model <- glm(data = final_data,
+              formula = Burning_Cost ~ Veh_type2_merged + Construct_year_capped,
+              family = statmod::tweedie(var.power=1.5, link.power=0),
+              weights = Time_Exposure)
+
+summary(final_model)
+
+for(var_nm in fitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+Applying the inverse link function will result in multipliers, that can now be used in pricing context.
+
+An example:
+- Base Price - Set by our business partners, our intercept will not be used
+- Car Type:
+  - Personal car: 1.00 multiplier to the base price
+  - Motorbike : 0.49 multiplier to the base price
+  - Pickup: 0.94 multipler to the base price
+  - Truck: 1.64 multiplier to the base price
+- Car Construction Year:
+  - With numeric variables, the multiplier has to be computed from the original coefficients
+  - Set a reference value, e.g. year 2011 because it has the most exposure
+  - The multiplier for a new value, e.g. year 2014 will be 1.115 computed as follows:
+    - exp(beta * value_new) / exp(beta * value_ref)
+    - exp(0.02726*2014) / exp(0.02726*2010)
+- Final price = Base Price * Car Type multiplier * Car Construction Year multiplier
+- There can be another set of multipliers that are applied on top of the final price in the pricing context
+  - Profit multiplier (we also need to earn something on top of the losses)
+  - Portfolio multiplier (are we planning to globally move the portfolio to higher/lower prices)
+  - Underwriter adjustment based on business knowledge and/or customer relationships
+  - etc.
+  
+This pricing structure is then implemented/updated in an IT system that is used by employees of insurance company when setting prices for insurance policies for next year.
+
+```{r}
+exp(summary(final_model)$coef[,1])
+
+# Vehicle Type
+broom::tidy(final_model) %>%
+  filter(stringr::str_detect(term, "Veh_type2")) %>% 
+  select(term, estimate) %>% 
+  mutate(multiplier = exp(estimate))
+
+# Construction Year
+beta <- broom::tidy(final_model) %>%
+  filter(stringr::str_detect(term, "Construct_year")) %>% 
+  pull(estimate) %>% 
+  as.numeric()
+
+all_years <- final_data$Construct_year_capped %>% 
+  unique() %>% 
+  sort()
+
+data.frame(Construct_year_capped = all_years) %>% 
+  mutate(
+    estimate = beta * Construct_year_capped,
+    estimate_ref = beta * 2011,
+    multiplier = exp(estimate) / exp(estimate_ref)
+  )
+  
+```
+
+Kratky dotaznik spokojnosti s predmetom
+https://forms.office.com/e/HffTAtKk03
+

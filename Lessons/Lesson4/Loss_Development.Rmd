@@ -1,0 +1,456 @@
+---
+title: "Loss Development"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Triangles in insurance
+
+Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous class were produced. It is a very simple way to get many answers like:
+
+1)  How long does it take to fully pay the claims?
+2)  How fast are they paid?
+3)  Is the initial estimate of the future losses conservative or optimistic?
+4)  Once we know the above, how much money can we invest and when? (Because we want to earn interest on premium)
+
+There are far more questions and answers available, and there are many methods that can do the job. But for now, let's understand at least the basics.
+
+### But why should we care?
+
+Insurance company aims to protect customers from risks at *most appropriate* price. This means we cannot waste any resources, and we need to make a machine out of it. We pay claims *just-in-time* (not too early and not too late) and we invest money in financial derivatives with appropriate duration.
+
+On top of this there is also someone else asking us to be fair. It is the *regulator*. Insurance industry is heavily regulated and frequently audited to assure the companies are solvent and ready to pay to customers when needed, rather then to its directors, when premium is collected.
+
+So that is why - customers and regulators. This means it truly is important. So now when we know why, let's look at *how*.
+
+```{r}
+# install.packages('tidyverse')
+ install.packages('ChainLadder')
+```
+
+### What is a triangle
+
+As losses take sometimes a number of years to be reported and then some more years to be paid, it is very hard to say at the end of the year whether we have "saved" enough money. For this reason, it makes sense to keep history of all claims related to 1 period.
+
+Imagine this simple situation that shows a history of a single policy:
+
+1)  1st December 2016 - insurance contract was signed to protect against car crash injury
+2)  20th November 2017 - there was an accident. The person goes to hospital and does not care about calling insurance company
+3)  1st January 2018 - person is finally home, but he will not be able to work for unknown time
+4)  5th January 2018 - claim is reported. Doctors say, the person may require another surgery in 6 months
+5)  1st February 2018 - new symptoms are found (they seem to be coming from the accident) ...
+6)  a few years later - the person finally starts working, but is partially disabled
+
+In the database of an insurance company, this policy history could look something like this:
+
+```{r, echo=F}
+tibble::tribble(
+  ~ AY, ~DY, ~Year, ~Amount, ~Note,
+  NA,   NA,   2016,  0,      "Policy Start",
+  NA,   NA,   2017,  0,      "Claim happened",
+  NA,   NA,   2018,  0,      "Claim reported",
+  NA,   NA,   2018,  10000,  "Car",
+  NA,   NA,   2018,  1000,   "Wage compensation for 2017/12",
+  NA,   NA,   2018,  3000,   "Surgery1",
+  NA,   NA,   2018,  4000,   "Surgery2",
+  NA,   NA,   2018,  12000,  "Wage compensation for 2018/01-2018/12",
+  NA,   NA,   2019,  12000,  "Wage compensation for 2019/01-2019/12",
+  NA,   NA,   2020,  2400,   "Partial disability compensation",
+  NA,   NA,   2021,  2400,   "Partial disability compensation",
+)
+```
+
+*Think about which year each information relates to*, since for the ease of archivation and reporting, the insurance company needs to relate all this history to a single year.
+
+Once we choose this year, we can reflect this information in our database:
+
+```{r, echo=F}
+tibble::tribble(
+  ~ AY, ~DY, ~Year, ~Amount, ~Note,
+  NA,   NA,  2016,  0,       "Policy Start",
+  2017, 1,   2017,  0,       "Claim happened",
+  2017, 2,   2018,  0,       "Claim reported",
+  2017, 2,   2018,  10000,   "Car",
+  2017, 2,   2018,  1000,    "Wage compensation for 2017/12",
+  2017, 2,   2018,  3000,    "Surgery1",
+  2017, 2,   2018,  4000,    "Surgery2",
+  2017, 2,   2018,  12000,   "Wage compensation for 2018/01-2018/12",
+  2017, 3,   2019,  12000,   "Wage compensation for 2019/01-2019/12",
+  2017, 4,   2020,  2400,    "Partial disability compensation",
+  2017, 5,   2021,  2400,    "Partial disability compensation",
+)
+```
+
+We can aggregate this information for each combination of AY and DY, then display in a wide (pivoted) format like this:
+
+```{r, echo=F}
+tibble::tribble(
+  ~ AY, ~ DY1, ~ DY2, ~ DY3, ~ DY4, ~ DY5,
+  2017,    0,  30000, 42000, 44400, 46400    
+)
+```
+
+However, since we're an insurance company, *we're interested in looking at the whole portfolio* (multiple policies and therefore multiple claims). Let's assume we had 10 similar claims that originated in 2017 (accident year):
+
+```{r, echo=F}
+tibble::tribble(
+  ~ AY, ~ DY1, ~ DY2, ~ DY3, ~ DY4, ~ DY5,
+  2017,    0, 300000, 420000, 444000, 464000    
+)
+```
+
+Working with a bigger portfolio also means, that *some claims usually happen every year*, not just in 2017. So a *full picture of our portfolio* could look something like this. Note that as we progress in time (AY), we have less and less information on how the losses will look like in the following development years (DY).
+
+This structure is shaped like a triangle, where the rows represent the years of origin (policy, accident or reporting year) and the columns represent how long it took until the information was recognized.
+
+```{r, echo=F}
+tibble::tribble(
+  ~ AY, ~ DY1, ~ DY2,  ~ DY3,  ~ DY4,  ~ DY5,
+  2017,    0,  300000, 420000, 444000, 464000,
+  2018, 10000, 320000, 410000, 454000, NA,
+  2019, 12000, 350000, 430000, NA,     NA,
+  2020, 6000,  305000, NA,     NA,     NA,
+  2021, 9000,  NA,     NA,     NA,     NA
+)
+```
+
+### What do we do with this?
+
+Well, we want to take the advantage of the history that we have collected and predict what is likely to happen with the latest year, that we have just got to know about. It is basically a variation of the Linear Regression, where you learn from past patterns and apply them to predict future.
+
+To get what we are talking about, it is worth visualizing this a bit. Use the ChainLadder package and explore the triangle object from example there.
+
+Load all necessary packages for the lesson
+
+```{r, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(ChainLadder)
+```
+
+#### Exercise 1
+
+*As we will be working with ChainLadder library, explore it a little bit.* To understand what it is doing run the example below (demo from ChainLadder library). But do not just run it! Think about what it is doing!
+
+```{r}
+ChainLadder::RAA
+plot(ChainLadder::RAA)
+plot(ChainLadder::RAA, lattice=TRUE)
+```
+
+Before you continue, answer this for yourself: 1) What am I looking at? (What are the axes and the lines?) 2) Why are some lines shorter then others? 3) Why are all lines starting at 0 but ending in different amounts? 4) Which line is the most favorable for the insurer?
+
+*Think about some math, that could project the future for the "unfinished lines" (e.g. liner models?)* To explore a bit of math, look at the examples from help section on "chainladder" function
+
+```{r}
+?chainladder
+
+x <- RAA[1:9,1]
+y <- RAA[1:9,2]
+
+weighted.mean(y / x, x)
+lm(y ~ x + 0,  weights = 1 / x)$coefficients
+
+summary(chainladder(RAA))
+```
+
+*Now try to predict what happens with the line using the chain ladder technique (hint: use predict() function). You can also try producing plots for predicted values (now two triangles that form a matrix).*
+
+The thing that is actually predicting the future is the age-to-age factors. Can you find them in the chainladder object?
+
+Your solution
+
+```{r}
+# prediction and visualization
+pred <- predict(chainladder(RAA))
+
+plot(RAA)
+plot(pred)
+plot(RAA, lattice = TRUE)
+plot(pred, lattice = TRUE)
+
+# inspect the object and get final age-to-age factors
+str(chainladder(RAA), max.level = 1)
+str(chainladder(RAA)$Models[[1]], max.level = 2)
+
+# your code
+chainladder(RAA)$Models[[1]]$coefficients
+chainladder(RAA)$Models[[2]]$coefficients
+```
+
+At the end this is all about age-to-age factors. There are many methods that calculate them, but at the end once you get them you know, how much more the claim will be in x years.
+
+#### Exercise 2
+
+Now let's have a look at a couple of different triangles. The data is provided for 2 different businesses. It also shows 2 different claim types for each. Can you describe how different they are? Hint: Consider the length of tail, volatility, average sizes... Hint2: There are 2 types of data - paid and case. Start using Paid...
+
+Load data with loss development information
+
+```{r}
+dt_PaidCase <- read.csv("./Data/lesson6_PaidCase.csv")
+
+head(dt_PaidCase)
+
+dt_PaidCase %>% 
+  distinct(Business, ClaimSize, dataset_type)
+```
+
+*YOUR SOLUTION* understand the data =\> run some simple overviews
+
+```{r}
+# your code
+head(dt_PaidCase)
+summary(dt_PaidCase)
+```
+
+After we are done with the exploratory analysis, we can filter the data and convert to triangle. And then we will convert the numbers to cumulative using chainladder functions
+
+*STEP 1: Take paid data for House business and Small claim size*
+
+```{r}
+Paid_HH_sml <- dt_PaidCase %>% 
+  filter(Business == "House",ClaimSize == "Small", dataset_type == "PAID")
+```
+
+*STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
+
+```{r}
+?as.triangle
+
+Paid_HH_sml_triangle <- Paid_HH_sml %>% 
+  as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
+
+Paid_HH_sml_triangle
+```
+
+*STEP 3: Now start plotting things to see more information. Then predict the future values and visualize again.*
+
+```{r}
+plot(Paid_HH_sml_triangle)
+plot(Paid_HH_sml_triangle, lattice = TRUE)
+
+pred <- predict(chainladder(Paid_HH_sml_triangle))
+plot(pred)
+plot(pred, lattice = TRUE)
+```
+
+*STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
+
+```{r}
+ata(Paid_HH_sml_triangle)
+```
+
+*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' HINT2: attr() can be used to extract attributes from an object..
+
+```{r}
+ultimate_ata_factor <- ata(Paid_HH_sml_triangle) %>% attr("vwtd") %>% prod()
+ultimate_ata_factor
+```
+
+*STEP 6: Apply the ultimate aging factor to most recent (2016) losses to see their possible ultimate amount. You should get a value located in the right bottom corner of the predicted triangle from step 3*
+
+```{r}
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
+```
+
+*If you are now comfortable with what this does, try doing the same, but using additional information: The Case data!* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
+
+```{r}
+Paid_HH_sml_triangle_incurr <- dt_PaidCase %>% 
+  filter(Business == 'House' & ClaimSize == 'Small') %>% 
+  group_by(Business, ClaimSize, ay, dy) %>% 
+  summarize(SumOfamount = sum(SumOfamount)) %>% 
+  as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+
+plot(Paid_HH_sml_triangle_incurr)
+plot(Paid_HH_sml_triangle_incurr, lattice = TRUE)
+
+Paid_HH_sml_triangle_incurr_pred <- predict(chainladder(Paid_HH_sml_triangle_incurr))
+plot(Paid_HH_sml_triangle_incurr_pred)
+plot(Paid_HH_sml_triangle_incurr_pred, lattice = TRUE)
+ata(Paid_HH_sml_triangle_incurr)
+ata(Paid_HH_sml_triangle_incurr) %>% attr("vwtd") %>% prod()
+```
+
+### Short or Long tail
+
+In insurance this means how fast is the data fully developed. The age-to-age factors help you understand exactly this. What would the age-to-age factors look like to make the business short/long tail? Are the lines of business in the exercise above short or long tailed? Try to come up with the mean payment term (weighted average of the duration until the claim is paid)
+
+HINT: (Here you definitely use *paid* claims, and it is enough to calculate weighted average of % age to age factor movements)
+
+#### Exercise 3
+
+*STEP 1: Get the volume weighted age to age factor averages (vwtd) and construct some kind of weight saying which years had the biggest positive or negative movements in loss development*
+
+```{r}
+Paid_HH_sml_vwtd <- Paid_HH_sml_triangle %>% ata() %>% attr("vwtd")
+
+Paid_HH_sml_wgt_unscaled <- abs(Paid_HH_sml_vwtd - 1)
+```
+
+*STEP 2: Scale the weights so they sum up to 1*
+
+```{r}
+Paid_HH_sml_wgt_scaled <- Paid_HH_sml_wgt_unscaled / sum(Paid_HH_sml_wgt_unscaled) 
+```
+
+*STEP 3: Multiply the scaled weights (percentages) with year indices (vector of numbers from 1 to 9) and sum up*
+
+```{r}
+Paid_HH_avg_duration <- sum(Paid_HH_sml_wgt_scaled * 1:9)
+```
+
+### Discounting losses
+
+It is very unlikely, that we incur the whole loss on the *very first day*. This allows the insurance company to *invest* the premium received and earn some interest on it. So one way of thinking about our previous example would be to think about *the future value of money* collected at the time of the claim. In reality we need to know the answers now, so *discounting the losses* is more practical then earning interest on premiums.
+
+For discounting, we'll need two things - payment duration (which we estimated in previous exercise) and interest rates. for now we'll just use [risk free rates](https://en.wikipedia.org/wiki/Risk-free_interest_rate).
+
+Usually we would use a formula like this one: `Loss_today = Loss_future * 1/((1 + interest_rate)^(future-today))`
+
+The durations until payments `(future-today)` is a generic answer. Information about the claims history and the payments will help us derive it. We can start at simple averaging (using estimate from previous exercise) and saying that the discounting duration will be equal to average payment duration.
+
+#### Exercise 4
+
+Let's come back to our triangle (House business, Small claim size, paid) and take the most recent losses (2016), bring them to the ultimate value (using ultimate age to age factor) and then discount to present value using 5% interest rate and average duration from previous exercise.
+
+```{r}
+Paid_HH_sml_2016_paid_ultimate <- Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
+Paid_HH_sml_discount_factor <- 1 / (1.05^Paid_HH_avg_duration)
+Paid_HH_sml_2016_paid_ultimate_npv <- Paid_HH_sml_2016_paid_ultimate * Paid_HH_sml_discount_factor
+
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_2016_paid_ultimate
+Paid_HH_sml_2016_paid_ultimate_npv
+```
+
+But we can be more precise in weighting and use the age-to-age factors more precisely. So let's try that... This detailed approach is usually used with the Swap rates for individual durations. You can try that at home...
+
+#### Exercise 5
+
+Now let's be more precise and use the appropriate weights and individual discount factors one by one. Also let's take into account that while loss development is usually increasing (meaning discounting losses), it could also be decreasing. If the losses are decreasing, that means we paid too much upfront, which not only prevents us from investing (no discounting), but it might even mean that we had to borrow some money. That means the losses today are even higher, which we can estimate by putting compounding interest on the losses (instead of discounting)
+
+*STEP1: Determine whether we are going to be discounting or compounding losses up to each specific year. We can use cumulative product of volume weighted age to age factor averages (vwtd) to determine that. Let's apply this to each year index, giving it positive sign in case of discounting and negative sign in case of compounding.*
+
+HINT: cumprod() and sign()
+
+```{r}
+yr_idx <- 1:9
+discount_or_compound <- sign(cumprod(Paid_HH_sml_vwtd - 1))
+yr_idx <- yr_idx * discount_or_compound
+yr_idx
+```
+
+*STEP2: Get more accurate discount factor, by multiplying the weights from Exercise 3 with appropriate discount factor for each year (1/(1+i)\^yr_idx) and sum up to a single number.*
+
+```{r}
+Paid_HH_sml_discount_factor <- sum(Paid_HH_sml_wgt_scaled * (1 / (1.05^yr_idx)))
+Paid_HH_sml_discount_factor
+```
+
+*STEP3: Apply the discount factor to ultimate losses*
+
+```{r}
+Paid_HH_sml_2016_paid_ultimate_npv <- Paid_HH_sml_2016_paid_ultimate * Paid_HH_sml_discount_factor
+
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_2016_paid_ultimate
+Paid_HH_sml_2016_paid_ultimate_npv
+```
+
+Recall what is UWR from Lesson 2. Assume premium and expenses are calculated on day 1 and the losses are already ultimate. *Can you calculate a single number, that could be used to discount the claims to arrive to Net present value of UWR?*
+
+First, load and explore the dataset.
+
+```{r}
+dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
+dt_LatestView <- read.csv("./Data/lesson6_latestView.csv") %>% 
+  mutate(Dev_Year = Dev_Year + 1)
+
+head(dt_LatestView)
+summary(dt_LatestView)
+```
+
+Re-use the logic from previous exercises and apply it to every business/segment combination to get granular discount factors.
+
+```{r}
+dt_KPI_discount_factors <- dt_LatestView %>% 
+  group_by(Business, Segment) %>% 
+  group_modify(~ {
+    tr_vwtd <- .x %>% 
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>% 
+      ata() %>% 
+      attr("vwtd")
+    
+    wgt_unscaled <- abs(tr_vwtd - 1)
+    wgt_scaled <- wgt_unscaled / sum(wgt_unscaled) 
+   
+    yr_idx <- seq_along(tr_vwtd)
+    yr_idx <- yr_idx * sign(cumprod(tr_vwtd) - 1) # interest or discount
+    
+    discount_factors <- 1 / 1.05^(yr_idx)
+    discount_factor <- sum(wgt_scaled * discount_factors)
+    
+    # informative plot
+    plot_title <- paste0(
+      .x$Business[[1]], " Business & ", .x$Segment[[1]], " Segment\n",
+      "Discount factor: ", round(discount_factor, 2)
+    )
+    
+    g <- .x %>%
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>%
+      chainladder() %>% 
+      predict() %>% 
+      plot(lattice = TRUE, main = plot_title) %>%
+      print()
+    
+    # return the discount factor, since this is a function
+    data.frame(discount_factor)
+    }, keep = TRUE
+  )
+
+dt_KPI_discount_factors
+```
+
+Add the discount factors to the dataset from Lesson 2. Calculate NPV of UWR and rank order the portfolios accordingly.
+
+```{r}
+# add the discount factors to the data from Lesson2 using 'left_join'
+dt_KPI_w_discount <- dt_KPI %>% 
+  left_join(dt_KPI_discount_factors, by = c("Business", "Segment")) %>% 
+  mutate(Losses_npv = Losses * discount_factor) %>% 
+  mutate(
+    UWR_actual = Premium - (Losses + Expenses),
+    UWR_actual_npv = Premium - (Losses_npv + Expenses)
+  )
+
+# look at business & segment aggregation of UWR and UWR NPV
+dt_KPI_w_discount %>% 
+  group_by(Business, Segment) %>% 
+  summarize(UWR_actual = sum(UWR_actual), UWR_actual_npv = sum(UWR_actual_npv)) %>% 
+  ungroup() %>% 
+  mutate(rank_uwr = dense_rank(desc(UWR_actual)), rank_uwr_npv = dense_rank(desc(UWR_actual_npv))) %>% 
+  arrange(rank_uwr_npv)
+```
+
+#### Exercise 6
+
+Now, let's have a look at it from the other way around. The following dataset includes the same data you were analysing in class 2, but contains discount factors instead of values.
+
+```{r}
+NPV_data <- read.csv("./Data/lesson6_NPV.csv")
+```
+
+*What is the average duration in all of these cases assuming a discount rate of 3%?*
+
+If discount = 1 / ((1 + interest rate)\^duration), how can we compute the duration?
+
+```{r}
+NPV_data %>% 
+  filter(NPV.Loss > 0) %>% 
+  mutate(avg_payment_duration = log(NPV.Loss, 1/1.03)) %>% 
+  dplyr::select(Region, Unit, Segment, Business, avg_payment_duration) %>% 
+  arrange(desc(avg_payment_duration))
+```

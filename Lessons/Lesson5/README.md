@@ -42,18 +42,5 @@ Why generalized model?
 
 The standard linear model requires the response variable to have a normal distribution. However, in insurance data this is not the case. The response variables in insurance mostly have Poisson distribution (for discrete variable, e.g model for the no. of claims) and the Gamma distribution (e.g. modeling amount of the losses).
 
- Let's make a simple model. Open [`basic_glm.md`](basic_glm.md)
-
- 
-#### Feedback (3 min)  
-Please fill in [survey](https://forms.office.com/Pages/ResponsePage.aspx?id=unI2RwfNcUOirniLTGGEDmMCeqOOjBtIuObM18vXqrtUMFAyOE5UM1FUSlVXSFQ3NzJMWldERktTRC4u) about this lesson to help us to improve the course.
-
-#### Homework (~30 min) [2b / 4b]
-
-1. Use One-way analysis to find out 2 more features like `Veh_type2`, which can be usefull in the GLM model and might have potiantial influence on our target.
-
-2. Create simple GLM model with features you have found in previous exercise. 
-Is the model predictive? Are you satisfied with your model? 
-Use your knowledge about GLM theory to __evaluate model__, __make a suggestion__ what could be improved and what __would be your next steps__. 
-We will focus on your comments rather than code here.
+Let's make a simple model. Open [`basic_glm.md`](basic_glm.md)
 

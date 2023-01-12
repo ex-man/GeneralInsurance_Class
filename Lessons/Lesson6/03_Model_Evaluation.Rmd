@@ -1,0 +1,48 @@
+---
+title: "Model_Evaluation"
+output: html_notebook
+---
+
+Let's come back to the validation dataset and use it to evaluate the impact that adding/removing variables and their feature engineering had on the model performance on both training and validation data.
+
+We'll create a list of all the models we had (starting with model1).
+
+```{r}
+model_list <- list(
+  "model1 \n add Veh_Type2" = model1,
+  "model2 \n add Construct_Year" = model2,
+  "model3 \n merge Veh_Type2" = model3,
+  "model4 \n cap Construct_Year" = model4
+)
+```
+
+We'll now use a function that is already prepared in `Support` folder to compute the model performance using RMSE metric.
+
+```{r}
+source("Support/compare_models.R")
+
+compare_models(model_list)
+```
+
+We'll create a small visualisation on top of the table with metrics
+
+```{r}
+library(ggplot2)
+library(tidyr)
+
+compare_models(model_list) %>% 
+  ggplot(aes(x=model_nm, y=train_rmse, group=1)) + 
+  geom_line() + 
+  geom_point() + 
+  ggtitle("Training RMSE")
+
+compare_models(model_list) %>% 
+  ggplot(aes(x=model_nm, y=valid_rmse, group=1)) + 
+  geom_line() + 
+  geom_point() + 
+  ggtitle("Validation RMSE")
+```
+
+Kratky dotaznik spokojnosti s predmetom
+https://forms.office.com/e/HffTAtKk03
+

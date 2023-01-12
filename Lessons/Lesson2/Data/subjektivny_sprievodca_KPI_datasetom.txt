@@ -1,0 +1,24 @@
+Subjektivny sprievodca datasetom KPI
+
+Region - goegraficka oblast 
+
+Unit - pobocka poistovna. V jednom regione ich moze byt viac.
+
+Segment - predpokladame, ze sa jedna o komercne poistenie (poistenie firiem). 'Small' mozu byt napr. male a stredne firmy, 'big' mozu byt velke korporacie.
+
+Business - zakladny typ poistenia / poistneho produktu
+- Accidents = poistenie seba (svojich zamestnancov) ak by sposobili skodu inym
+- Combined = balik viacerych typov poistenia dokopy
+- Criminals = poistenie v pripade kradeze/podvodu/zlocinu zamestnancov a vedenia firmy
+- Doctors = poistenie zdravotnych nakladov v pripade urazu zamestnancov firmy
+- Housing = poistenie nehnutelnosti a priestorov firmy
+- Packaging = poistenie balikov pocas cestnej a namornej prepravy firmy
+- Third party = poistenie seba (svojich zamestnancov) ak by im tretia strana sposobila skody
+- Travel = cestovne poistenie svojich zamestnancov
+
+Losses - poistne plnenie (vyplatene peniaze za poistne udalosti)
+
+Expenses - ine vydavky, napr. v suvislosti s platom zamestnancov na pobocke, provizii externym agentom, najmu priestorov pobocky, margetingovych nakladov apod.
+
+Premium - poistna premia, ktoru plati poistenec poistovni
+UWR (Plan) - vynos poistneho produktu / portfolia

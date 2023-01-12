@@ -1,0 +1,125 @@
+---
+title: "Exercise - dplyr"
+output: html_notebook
+---
+
+[Lesson 2 on Github](https://github.com/ex-man/GeneralInsurance_Class/blob/master/Lessons/Lesson2/README.md)
+
+> Run following command in R console to link to `dplyr` library:
+
+```{r}
+# install.packages('dplyr')
+library(dplyr)
+```
+
+
+### Piping
+> Now let's try to calculate simple thing using multiple encapsulated functions.
+
+```{r}
+abs(min(c(1, 4, 2, 8, -5)))
+
+class(abs(min(c(1, 4, 2, 8, -5))))
+```
+> Can you understand what this command does? Is the result what you've expected?  
+> With `dplyr` we can code the same thing using *piping*
+
+```{r}
+# ctrl + shift + m
+c(1, 4, 2, 8, -5) %>% 
+  min() %>% 
+  abs()
+```
+> Result is the same!
+
+
+### 6 basic `dplyr` verbs
+> In this exercise let's practice `dplyr` and *piping* on simple dataset. Firstly let's `read` some data in:  
+
+```{r}
+dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
+```
+
+> We can select top 6 rows using `head` function. 
+
+```{r}
+dt_KPI %>% head(3)
+```
+
+> OK, now let's create additonal column *Combined* by `mutate` and showing first 6 rows right away.  
+
+```{r}
+# base R
+dt_KPI$Combined <- dt_KPI$Losses + dt_KPI$Expenses
+dt_KPI$BetterResult <- dt_KPI$UWR.Plan. + 10
+dt_KPI$Premium <- dt_KPI$Premium + 10
+
+# dplyr
+dt_KPI %>% 
+  mutate(Combined = Losses + Expenses,
+         BetterResult = UWR.Plan. + 10,
+         Premium = Premium + 10)
+```
+
+> What if we want to see only *Region* and *Losses*? Let's `select` it to output:
+
+```{r}
+# base R
+dt_KPI$Region
+dt_KPI[["Region"]]
+dt_KPI[c("Region", "Losses")]
+
+# dplyr
+region_col <- "Region"
+
+# typing colum names
+dt_KPI %>% 
+  select(Region, Losses) %>%
+  head()
+
+# passing colum name from variable
+dt_KPI %>% 
+  select(.data[[region_col]], Losses) %>%
+  head()
+```
+
+> We can also `filter` data using condition on one (or more) columns, for instance returning *Criminals* only:
+
+```{r}
+dim(dt_KPI)
+
+dt_KPI %>% 
+  filter(Business == "Criminals" & Year > 2014) %>%
+  head()
+
+# & - and
+# | - or
+```
+
+> In some cases it is good to `arrange` the data to have a better picture about it (eg order data by *Premium*):
+
+```{r}
+dt_KPI %>% 
+  arrange(desc(Expenses), Premium) %>%
+  head()
+```
+
+> Or we may want to `summarise` data to see some basic statistic about it, like average losses.
+
+```{r}
+dt_KPI %>% 
+  summarise(Average_Premium = mean(Premium, na.rm = TRUE))
+
+```
+
+> We can see the summary split by one (or more) of columns - in this case average losses per Region
+
+```{r}
+dt_KPI %>% 
+  group_by(Region) %>% 
+  summarise(Avg_Premium = mean(Premium, na.rm = TRUE),
+            Min_Premium = min(Premium, na.rm = TRUE))
+
+```
+
+> And at last... remember that the best way to master any topic is to practice and be curious!

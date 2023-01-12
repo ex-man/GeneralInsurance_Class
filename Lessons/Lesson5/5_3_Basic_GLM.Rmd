@@ -1,0 +1,74 @@
+---
+title: "Basic GLM"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We created Target and analysed it with One-Way approach. Now, let's see how it performs with a basic glm.
+
+### Distribution of the Target
+Before we jump directly to modeling, we need to decide on which type of GLM model we can actually use.
+The first step in decision-making could be to plot the distribution of our Target.
+
+```{r}
+library(ggplot2)
+
+dt_pol_w_claims %>%
+  ggplot(aes(x=Burning_Cost)) +
+  geom_histogram()
+```
+It does not look to be very useful as there is a lot of clients that don't have any claim. Let's remove them, and we can remove outliers as well.
+
+```{r}
+# TODO: Filter claims with non-zero Burning_Cost less than 100
+dt_pol_w_claims_filt <- dt_pol_w_claims %>% 
+  filter(Burning_Cost > 0, Burning_Cost < 100)
+
+# Plot a histogram
+dt_pol_w_claims_filt %>% 
+  ggplot(aes(x = Burning_Cost)) + 
+  geom_histogram()
+```
+
+What type of distribution it reminds you of? It looks like `Gamma` or `Tweedie` (if you have never heard about Tweedie distribution, it is a combination of Poisson and Gamma; check Wikipedia for more info). 
+
+To make a proper decision we would run some statistical test on matching distribution, e.g. Kolmogorov-Smirnov test and similar.
+
+
+So let's try `Gamma` as a first attempt.
+### First Model
+
+```{r}
+model1 <- glm(
+  data = dt_pol_w_claims_filt,
+  formula = Burning_Cost ~ Veh_type2,
+  family = Gamma(link="log")
+)
+```
+
+```{r}
+summary(model1)
+```
+
+Applying inverse link function (natural exponential function) yields multipliers
+
+```{r}
+exp(summary(model1)$coef[,1])
+```
+
+```{r}
+dt_pol_w_claims_filt %>% 
+  group_by(Veh_type2) %>% 
+  summarize(
+      BC_avg = mean(Burning_Cost),
+      BC_med = median(Burning_Cost),
+      cnt = n()
+  ) %>%
+  filter(BC_avg>0) %>% 
+  ggplot(aes(y = BC_avg, x = Veh_type2)) +
+  geom_col()
+```
+

@@ -1,0 +1,107 @@
+---
+title: "Model Validation"
+output: html_notebook
+---
+
+
+In the previous Lesson you have learnt on how to create very simple design for GLM model to improve insurance portfolio. The model is truly simple and almost not usable for real life application. We need to improve it to its best using the best data we have available. So we will try to iterate using many combination of features and theirs mutation to improve the model
+
+`But how do we know model is performing well?`
+
+There are several method on how to asses the model performance, but we will focus on a few only.
+Using these methods you split your data into __training__ and __validation__ subsets to ensure model is robust and not overfit on current data, but prepared to work on future data we have not seen yet.
+
+### Validation Methods
+A few methods on how to split data:
+
+1.  Out of sample Validation (randomly split into two pieces, e.g. 80% vs. 20% of data)
+2.  Out of time Validation (split into two pieces, using some time variable, e.g. Years 2012-2016 vs. Year 2017)
+3.  Cross Validation (randomly split into k pieces and combination of k-1 folds define one part vs. remaining part)
+
+Once you split your data into training and validation part you start creating GLM model on training data and you can use the validation dataset to get an idea about the performance on unseen data later on.
+
+```{r}
+library(dplyr)
+# load data, this are data from Lesson 5 where we prepared Claims with Policies into one dataset
+dt_pol_w_claims <- readRDS("./Data/lesson5_dt_pol_w_claims_full.rds")
+```
+
+
+```{r}
+# split the dataset into Modeling and Validation part
+set.seed(58742) # to fix randomizer
+
+n_rows <- nrow(dt_pol_w_claims)
+train_idx <- sample(n_rows, round(0.80*n_rows)) # 80/20 split between train and valid
+
+train <- dt_pol_w_claims[train_idx, ]
+valid <- dt_pol_w_claims[-train_idx, ]
+
+nrow(train)
+nrow(valid)
+```
+
+### Validation Metric
+When you have predictions, now you can compare actual values with prediction and asses on how to model performs.
+
+And once again there are couple of __metrics__ to use and its usage depends on type of the model you are trying to create.
+
+A few metrics to evaluate performance of the regression model:
+
+1.  Root Mean Squared Error
+2.  Mean Absolute Error
+3.  Median Absolute Error
+4.  R2 Score
+
+Btw, for inspiration here is a nice summary of the metric functions: http://scikit-learn.org/stable/modules/model_evaluation.html created in python.
+
+All of those methods and metrics can be implemented very easily in R and we will create a simple methodology to do that. 
+
+For the future I would like to mention package `caret` or `tidymodels`, which automatize some of the actions we need to do manually here.
+
+```{r}
+# definition of the RMSE metric
+rmse <- function(prediction, actual){
+  se <- (prediction-actual)^2
+  mse <- mean(se)
+  sqrt(mse)
+}
+
+set.seed(123)
+rmse(rnorm(100), rnorm(100))
+```
+
+We do not expect nor desire to predict every observation correctly, since a lot of them have zero losses. Rather we want to divide our dataset into N roughly equal groups and make sure that the actual and predicted values of losses match on these groups, rather than on single observations.
+
+```{r}
+# improved RMSE metric computed on a grouped data
+rmse <- function(prediction, actual, n_groups=5) {
+  if(n_groups>0) {
+    prediction_order <- order(prediction)
+    prediction <- prediction[prediction_order]
+    actual <- actual[prediction_order]
+    
+    prediction_group <- cut(seq_along(actual), n_groups, labels=FALSE)
+    actual_group <- cut(seq_along(prediction), n_groups, labels=FALSE)
+    prediction_split <- split(prediction, prediction_group)
+    actual_split <- split(actual, actual_group)
+    
+    prediction <- sapply(prediction_split, mean)
+    actual <- sapply(actual_split, mean)  
+  }
+  
+  se <- (prediction-actual)^2
+  mse <- mean(se)
+  sqrt(mse)
+}
+
+set.seed(123)
+rmse(rnorm(100), rnorm(100), n_groups=0)
+
+set.seed(123)
+rmse(rnorm(100), rnorm(100), n_groups=5)
+```
+
+
+Kratky dotaznik spokojnosti s predmetom
+https://forms.office.com/e/HffTAtKk03
