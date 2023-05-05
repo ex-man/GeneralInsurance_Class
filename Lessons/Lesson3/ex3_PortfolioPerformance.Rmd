@@ -1,0 +1,125 @@
+---
+title: "Portfolio Performance"
+output: html_notebook
+---
+
+# https://github.com/ex-man/GeneralInsurance_Class/blob/master/Lessons/Lesson3/Support/L3_loss_and_expense_ratios.md
+# daniel.gabris@zurich.com
+
+# Portfolio performance
+
+```{r}
+# install.packages('tidyverse')
+library(tidyverse)
+dt_KPI <- read_csv("./Data/lesson3_KPI.csv")
+```
+
+
+
+## Computing ratios
+So far we have looked at the absolute numbers. Now we will start looking more at the data from performance perspective.
+
+Now from what you have learned so far, try to create expense ratio for the whole data (single number).
+
+```{r}
+dt_KPI %>% 
+  summarise(ER = sum(Expenses) / sum(Premium))
+```
+
+Now create loss ratio, combined ratio and underwriting result for each data record.
+
+```{r}
+dt_KPI %>% 
+  mutate(ER = Expenses / sum(Premium),
+         LR = Losses / Premium,
+         COR = LR + ER) %>% 
+  arrange(desc(LR)) %>% 
+  select(Region, Unit, LR)
+```
+
+Which of the records has the best performance in terms of individual KPIs?
+
+### Regional analysis
+Usually we look at the data in some geographic perspective. Mainly because of the local regulations, laws and accounting.
+
+Now we will have a look at the performance of our insurance company by regions.
+
+Which region is performing the best when we look at the individual KPIs?
+
+Pick KPI of your choice.
+
+```{r}
+dt_KPI %>% 
+  group_by(Region) %>% 
+  summarise(ER = sum(Expenses) / sum(Premium),
+            LR = sum(Losses) / sum(Premium),
+            COR = ER + LR) %>% 
+  arrange(COR)
+```
+
+Many times we are interested to see how the business is doing in time. It is nice if the company is historically profitable but it is also important to see if we are currently profitable.
+
+Let's see how the single regions perform in time. Create a chart that shows a particular KPI of a single region in time.
+
+```{r}
+dt_KPI %>% 
+  group_by(Region, Year) %>% 
+  summarise(LR = sum(Losses) / sum(Premium)) %>% 
+  
+  ggplot(aes(x = Year, y = LR, color = Region)) +
+  geom_line()
+
+```
+
+How would you describe what you see in the chart? What can it mean what you see in the chart?
+
+
+### Unit analysis
+Let's have a look at the analysis on a different level. Let's see how the units are performing. Prepare KPIs for each unit (i.e. prepare expense ratio, loss ratio, combined ratio and underwriting result). Which unit performs the best?
+
+```{r}
+dt_KPI %>% 
+  group_by(Unit) %>% 
+  summarise(ER = sum(Expenses) / sum(Premium),
+            LR = sum(Losses) / sum(Premium),
+            COR = ER + LR,
+            UWR = sum(Premium) - sum(Losses + Expenses)) %>% 
+  arrange(desc(UWR))
+```
+
+Now prepare a chart that shows you how the separate units perform in time.
+
+You can also try using `geom_point` in addition to the `geom_line`
+
+```{r}
+dt_KPI %>% 
+  group_by(Unit, Year) %>% 
+  summarise(UWR = sum(Premium) - sum(Losses + Expenses)) %>%
+  
+  ggplot(aes(x = Year, y = UWR, color = Unit)) +
+  geom_line() + 
+  geom_point()
+```
+
+Looking at the overall unit performance, we can check how well did the units fulfilled their plans. Create a variable where you calculate to what extent a single unit achieved to meet its plan.
+
+```{r}
+dt_KPI %>% 
+  mutate(UWR = Premium - Losses - Expenses) %>% 
+  group_by(Unit) %>% 
+  summarise(UW_PvsR = sum(UWR_Plan) - sum(UWR)) %>% # compare Underwriting Result PLAN vs Reality
+
+  ggplot() +
+  geom_col(aes(x = reorder(Unit, UW_PvsR), y = UW_PvsR))
+
+
+
+```
+
+### Segment and business analysis
+
+Over time, insurance companies are also interested in how the market looks like. We would like to know how specific segments (ie personal, small businesses, large businesses etc) perform.
+
+Create KPIs for segments and analyze it in time. Do the same for business.
+
+This will be your homework (for some of you)
