@@ -11,7 +11,7 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 mtcars %>% summary()
 ```
 
-What does the error mean? R tells you that it doesn't recognise the *%>%* function. The operator is actually called *pipe* and will be covered in later lessons. For now, the important fact is that we are missing a package which contains this function. 
+What does the error mean? R tells you that it doesn't recognize the *%>%* function. The operator is actually called *pipe* and will be covered in later lessons. For now, the important fact is that we are missing a package which contains this function. 
 
 In order to load a package (library), use *library(package_name)* command.
 
@@ -37,5 +37,5 @@ mtcars %>% summary()
 Indeed!
 
 You can find all theory and materials here:
-https://github.com/ex-man/GeneralInsurance_Class
+https://github.com/ex-man/GeneralInsurance_Class/tree/Class2023
 

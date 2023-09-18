@@ -3,7 +3,7 @@ title: "Exercise - dplyr"
 output: html_notebook
 ---
 
-[Lesson 2 on Github](https://github.com/ex-man/GeneralInsurance_Class/blob/master/Lessons/Lesson2/README.md)
+[Lesson 2 on Github](https://github.com/ex-man/GeneralInsurance_Class/blob/Class2023/Lessons/Lesson2/README.md)
 
 > Run following command in R console to link to `dplyr` library:
 
@@ -55,10 +55,12 @@ dt_KPI$BetterResult <- dt_KPI$UWR.Plan. + 10
 dt_KPI$Premium <- dt_KPI$Premium + 10
 
 # dplyr
-dt_KPI %>% 
-  mutate(Combined = Losses + Expenses,
-         BetterResult = UWR.Plan. + 10,
-         Premium = Premium + 10)
+dt_KPI %>%
+  mutate(
+    Combined = Losses + Expenses,
+    BetterResult = UWR.Plan. + 10,
+    Premium = Premium + 10
+  )
 ```
 
 > What if we want to see only *Region* and *Losses*? Let's `select` it to output:
@@ -73,13 +75,13 @@ dt_KPI[c("Region", "Losses")]
 region_col <- "Region"
 
 # typing colum names
-dt_KPI %>% 
+dt_KPI %>%
   select(Region, Losses) %>%
   head()
 
 # passing colum name from variable
-dt_KPI %>% 
-  select(.data[[region_col]], Losses) %>%
+dt_KPI %>%
+  select(all_of(region_col), Losses) %>%
   head()
 ```
 
@@ -88,7 +90,7 @@ dt_KPI %>%
 ```{r}
 dim(dt_KPI)
 
-dt_KPI %>% 
+dt_KPI %>%
   filter(Business == "Criminals" & Year > 2014) %>%
   head()
 
@@ -104,22 +106,27 @@ dt_KPI %>%
   head()
 ```
 
-> Or we may want to `summarise` data to see some basic statistic about it, like average losses.
+> Or we may want to `summarise` data to see some basic statistic about it. Let's summarize the tree basic insurance metrics we talked about.
 
 ```{r}
-dt_KPI %>% 
-  summarise(Average_Premium = mean(Premium, na.rm = TRUE))
-
+dt_KPI %>%
+  summarise(
+    Total_Premium = sum(Premium, na.rm = TRUE),
+    Average_Losses = mean(Losses, na.rm = TRUE),
+    Maximum_Expenses = max(Expenses, na.rm = TRUE)
+  )
 ```
 
-> We can see the summary split by one (or more) of columns - in this case average losses per Region
+> We can see the summary split by one (or more) of columns using the 'group_by' function. This is useful when comparing different categories, e.g. Regions.
 
 ```{r}
-dt_KPI %>% 
-  group_by(Region) %>% 
-  summarise(Avg_Premium = mean(Premium, na.rm = TRUE),
-            Min_Premium = min(Premium, na.rm = TRUE))
-
+dt_KPI %>%
+  group_by(Region) %>%
+  summarise(
+    Total_Premium = sum(Premium, na.rm = TRUE),
+    Average_Losses = mean(Losses, na.rm = TRUE),
+    Maximum_Expenses = max(Expenses, na.rm = TRUE)
+  )
 ```
 
 > And at last... remember that the best way to master any topic is to practice and be curious!

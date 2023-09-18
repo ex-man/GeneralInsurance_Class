@@ -3,13 +3,14 @@ title: "Exercise - ggplot2"
 output: html_notebook
 ---
 
-[Lesson 2 on Github](https://github.com/ex-man/GeneralInsurance_Class/blob/master/Lessons/Lesson2/README.md)
+[Lesson 2 on Github](https://github.com/ex-man/GeneralInsurance_Class/blob/Class2023/Lessons/Lesson2/README.md)
 
 > Run following command in R console to link to `ggplot2` library:
 
 ```{r}
-#install.packages('ggplot2')
+# install.packages('ggplot2')
 library(ggplot2)
+library(dplyr)
 ```
 
 > Load data if you have not done so yet:
@@ -18,7 +19,6 @@ library(ggplot2)
 dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
 ```
 
-
 ### First Plot - Scatter
 > Now let's try to show our data on simple scatter plot
 
@@ -26,14 +26,13 @@ dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
 ggplot(data = dt_KPI, aes(x = Premium, y = Expenses)) +
   geom_point()
 
-dt_KPI %>% 
+dt_KPI %>%
   ggplot(aes(x = Premium, y = Expenses)) +
   geom_point()
 
-dt_KPI %>% 
+dt_KPI %>%
   ggplot(aes(x = Region, y = Premium)) +
   geom_col()
-
 ```
 
 > We used `ggplot` function specifying *data* set to use, `aes` function to specify *aestetics* (visualisation) and *geoms* function `geom_point` to specify how data should be represemeted.  
@@ -65,7 +64,10 @@ ggplot(data = dt_KPI) +
 ggplot(data = dt_KPI,
 
 ```{r}
-ggplot(data = dt_KPI, mapping = aes(x = Premium, y = Expenses, colour = Region)) +
+ggplot(
+    data = dt_KPI,
+    mapping = aes(x = Premium, y = Expenses, colour = Region)
+  ) +
   geom_point() +
   geom_smooth()
 ```
@@ -73,4 +75,4 @@ ggplot(data = dt_KPI, mapping = aes(x = Premium, y = Expenses, colour = Region))
 > It produced chart with dots and smoothed line where regresion is done on data by *Region*.  
 > This feature of `ggplot` is called *inheritance*. You can do lot's using it.
 
-> Visit https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf for more information about ggplot2
+> Visit https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf for more information about ggplot2

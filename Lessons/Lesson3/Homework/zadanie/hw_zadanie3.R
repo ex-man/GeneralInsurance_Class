@@ -1,4 +1,4 @@
-# Skus zreprodukovat graf 'hw_kotulova.png', ktory najdes v priecinku 'Homework'.
+# Skus priblizne zreprodukovat graf 'zadanie/hw_zadanie3.png', ktory najdes v priecinku 'Homework'.
 # Budes pracovat s datami, ktore sa importuju nizsie. Ponechaj si len riadky so segmentom 'Small' a rokom 2015.
 # Na Ypsilonovej osi je premenna Combined ratio, pre ktoru plati: CoR = (Losses + Expenses) / Premium.
 

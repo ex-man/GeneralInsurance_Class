@@ -1,4 +1,4 @@
-# Skus zreprodukovat graf 'hw_salyova.png', ktory najdes v priecinku 'Homework'.
+# Skus priblizne zreprodukovat graf 'zadanie/hw_hlubinova.png', ktory najdes v priecinku 'Homework'.
 # Budes pracovat s datami, ktore sa importuju nizsie.
 
 # Rada: pouzi dva krat 'geom_line', raz pre "Losses" a raz pre "Premium"

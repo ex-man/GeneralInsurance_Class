@@ -1,4 +1,4 @@
-# Skus zreprodukovat graf 'hw_hrobarova.png', ktory najdes v priecinku 'Homework'.
+# Skus priblizne zreprodukovat graf 'zadanie/hw_zadanie1.png', ktory najdes v priecinku 'Homework'.
 # Budes pracovat s datami, ktore sa importuju nizsie. Ponechaj si len riadky s regionom 'Alandia' a segmentom 'Big'.
 # Na Ypsilonovej osi bude suma skod ('Losses').
 

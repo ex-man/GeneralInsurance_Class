@@ -1,5 +1,5 @@
-# Skus zreprodukovat graf 'hw_racikova.png', ktory najdes v priecinku 'Homework'.
-# Budes pracovat s datami, ktore sa importuju nizsie. Ponechaj si len riadky s rokom vacsim ako 2015.
+# Skus priblizne zreprodukovat graf 'zadanie/hw_zadanie8.png', ktory najdes v priecinku 'Homework'.
+# Budes pracovat s datami, ktore sa importuju nizsie. Ponechaj si len riadky s rokom mensim ako 2014.
 # Na Ypsilonovej osi je premenna 'Underwriting result' (rozdiel poistneho, skod a nakladov).
 
 # Rada 1: v ramci aes() pouzi 'fill'
@@ -11,5 +11,5 @@ library(tidyverse)
 dt_KPI <- read_csv("./Data/lesson3_KPI.csv")
 
 dt_KPI %>% 
-
+  
   ...

@@ -1,4 +1,4 @@
-# Skus zreprodukovat graf 'hw_macek.png', ktory najdes v priecinku 'Homework'.
+# Skus priblizne zreprodukovat graf 'zadanie/hw_zadanie6.png', ktory najdes v priecinku 'Homework'.
 # Budes pracovat s datami, ktore sa importuju nizsie. 
 # Vytvor premennu LossRatio, ako podiel sumy skod (Losses) a prijateho poistneho (Premium).
 
