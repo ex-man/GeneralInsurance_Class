@@ -5,9 +5,14 @@ output:
     df_print: paged
 ---
 
+# Nedela polnoc - deadline na ulohu
+# daniel.gabris@zurich.com
+
+# https://github.com/ex-man/GeneralInsurance_Class/blob/Class2023/Lessons/Lesson4/README.md
+
 ### Triangles in insurance
 
-Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous class were produced. It is a very simple way to get many answers like:
+Do you know what this is? It is the core of Reserving and in many cases also pricing. This is also how the losses from previous lessons were produced. It is a very simple way to get many answers like:
 
 1)  How long does it take to fully pay the claims?
 2)  How fast are they paid?
@@ -26,7 +31,7 @@ So that is why - customers and regulators. This means it truly is important. So 
 
 ```{r}
 # install.packages('tidyverse')
- install.packages('ChainLadder')
+install.packages('ChainLadder')
 ```
 
 ### What is a triangle
@@ -141,72 +146,68 @@ plot(ChainLadder::RAA, lattice=TRUE)
 
 Before you continue, answer this for yourself: 1) What am I looking at? (What are the axes and the lines?) 2) Why are some lines shorter then others? 3) Why are all lines starting at 0 but ending in different amounts? 4) Which line is the most favorable for the insurer?
 
-*Think about some math, that could project the future for the "unfinished lines" (e.g. liner models?)* To explore a bit of math, look at the examples from help section on "chainladder" function
+*Think about some math, that could project the future for the "unfinished lines" (e.g. liner models?)* To explore a bit of math, we will go through two simple examples. We'll focus on understanding the development from the first to the second year.
 
 ```{r}
-?chainladder
-
+RAA[, 1:2]
 x <- RAA[1:9,1]
 y <- RAA[1:9,2]
 
-weighted.mean(y / x, x)
-lm(y ~ x + 0,  weights = 1 / x)$coefficients
+y/x
+mean(y/x)
+```
+However, the result might be highly impacted by origin years which didn't have enough 'volume' of the payments. E.g. in 1982, the increase from 106 to 4285 equals to around 40 fold increase.
 
-summary(chainladder(RAA))
+We can balance this by using weighted mean, where the same payment numbers also serve as weights. As we can see the result is quite different as the impact of years with less data is now smaller.
+
+```{r}
+weighted.mean(y/x, x)
+```
+We can use this average 'development multiplier' from the first year to second year to compute the missing value in the last origin year. We obtain an estimate
+
+```{r}
+RAA[, 1:2]
+2063 * 2.999359
 ```
 
-*Now try to predict what happens with the line using the chain ladder technique (hint: use predict() function). You can also try producing plots for predicted values (now two triangles that form a matrix).*
+We can easily obtain all the development multipliers, or as we call them 'age-to-age factors' using the 'predict' function on the chainladder object.
 
-The thing that is actually predicting the future is the age-to-age factors. Can you find them in the chainladder object?
-
-Your solution
+Now the missing triangle is populated and we have a full matrix. We now also have full time series in all origin years.
 
 ```{r}
 # prediction and visualization
 pred <- predict(chainladder(RAA))
 
+RAA
+pred
 plot(RAA)
 plot(pred)
 plot(RAA, lattice = TRUE)
 plot(pred, lattice = TRUE)
-
-# inspect the object and get final age-to-age factors
-str(chainladder(RAA), max.level = 1)
-str(chainladder(RAA)$Models[[1]], max.level = 2)
-
-# your code
-chainladder(RAA)$Models[[1]]$coefficients
-chainladder(RAA)$Models[[2]]$coefficients
 ```
 
-At the end this is all about age-to-age factors. There are many methods that calculate them, but at the end once you get them you know, how much more the claim will be in x years.
+At the end this is all about age-to-age factors. There are many methods that calculate them, but once you get them, you will know, how much bigger will the claim payments be in x years.
 
 #### Exercise 2
 
-Now let's have a look at a couple of different triangles. The data is provided for 2 different businesses. It also shows 2 different claim types for each. Can you describe how different they are? Hint: Consider the length of tail, volatility, average sizes... Hint2: There are 2 types of data - paid and case. Start using Paid...
+Now that we have some idea about the methodology, we'll load our own data. The dataset has information for 2 different lines of business, as well as two different claim sizes. On top of that, we have both paid claims, as well as case reserves. The rest of the dataset should contain information similar to what we've seen in triangles earlier.
 
-Load data with loss development information
+We'll start with paid claims and come back to case reserves later.
 
 ```{r}
-dt_PaidCase <- read.csv("./Data/lesson6_PaidCase.csv")
+dt_PaidCase <- read.csv("./Data/lesson4_PaidCase.csv")
 
 head(dt_PaidCase)
+summary(dt_PaidCase)
+glimpse(dt_PaidCase)
 
 dt_PaidCase %>% 
   distinct(Business, ClaimSize, dataset_type)
 ```
 
-*YOUR SOLUTION* understand the data =\> run some simple overviews
+After we are done with the exploratory analysis, we can filter the data and convert to triangle. And then we will convert the numbers to cumulative using chainladder functions.
 
-```{r}
-# your code
-head(dt_PaidCase)
-summary(dt_PaidCase)
-```
-
-After we are done with the exploratory analysis, we can filter the data and convert to triangle. And then we will convert the numbers to cumulative using chainladder functions
-
-*STEP 1: Take paid data for House business and Small claim size*
+*STEP 1: As an example, take paid data for House business and Small claim size*
 
 ```{r}
 Paid_HH_sml <- dt_PaidCase %>% 
@@ -241,7 +242,9 @@ plot(pred, lattice = TRUE)
 ata(Paid_HH_sml_triangle)
 ```
 
-*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' HINT2: attr() can be used to extract attributes from an object..
+*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* 
+HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' 
+HINT2: attr() can be used to extract attributes from an object..
 
 ```{r}
 ultimate_ata_factor <- ata(Paid_HH_sml_triangle) %>% attr("vwtd") %>% prod()
@@ -250,12 +253,16 @@ ultimate_ata_factor
 
 *STEP 6: Apply the ultimate aging factor to most recent (2016) losses to see their possible ultimate amount. You should get a value located in the right bottom corner of the predicted triangle from step 3*
 
+This represents the expected cumulative payment of claims in the year 2025.
+
 ```{r}
 Paid_HH_sml_triangle["2016", "1"]
 Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
 ```
 
 *If you are now comfortable with what this does, try doing the same, but using additional information: The Case data!* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
+
+This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
 ```{r}
 Paid_HH_sml_triangle_incurr <- dt_PaidCase %>% 
@@ -285,21 +292,20 @@ HINT: (Here you definitely use *paid* claims, and it is enough to calculate weig
 *STEP 1: Get the volume weighted age to age factor averages (vwtd) and construct some kind of weight saying which years had the biggest positive or negative movements in loss development*
 
 ```{r}
-Paid_HH_sml_vwtd <- Paid_HH_sml_triangle %>% ata() %>% attr("vwtd")
-
-Paid_HH_sml_wgt_unscaled <- abs(Paid_HH_sml_vwtd - 1)
+(Paid_HH_sml_vwtd <- Paid_HH_sml_triangle %>% ata() %>% attr("vwtd"))
+(Paid_HH_sml_wgt_unscaled <- abs(Paid_HH_sml_vwtd - 1))
 ```
 
 *STEP 2: Scale the weights so they sum up to 1*
 
 ```{r}
-Paid_HH_sml_wgt_scaled <- Paid_HH_sml_wgt_unscaled / sum(Paid_HH_sml_wgt_unscaled) 
+(Paid_HH_sml_wgt_scaled <- Paid_HH_sml_wgt_unscaled / sum(Paid_HH_sml_wgt_unscaled))
 ```
 
 *STEP 3: Multiply the scaled weights (percentages) with year indices (vector of numbers from 1 to 9) and sum up*
 
 ```{r}
-Paid_HH_avg_duration <- sum(Paid_HH_sml_wgt_scaled * 1:9)
+(Paid_HH_avg_duration <- sum(Paid_HH_sml_wgt_scaled * 1:9))
 ```
 
 ### Discounting losses
@@ -327,6 +333,16 @@ Paid_HH_sml_2016_paid_ultimate_npv
 ```
 
 But we can be more precise in weighting and use the age-to-age factors more precisely. So let's try that... This detailed approach is usually used with the Swap rates for individual durations. You can try that at home...
+
+### Homework assignment
+```{r}
+set.seed(123)
+students <- c("Student1", "Student2", "Student3")
+assignments <- paste0("Zadanie", sample(1:8, size=length(students)))
+assignments <- setNames(assignments, students)
+dput(assignments)
+# c(Student1 = "Zadanie7", Student2 = "Zadanie8", Student3 = "Zadanie3")
+```
 
 #### Exercise 5
 
@@ -366,7 +382,7 @@ First, load and explore the dataset.
 
 ```{r}
 dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
-dt_LatestView <- read.csv("./Data/lesson6_latestView.csv") %>% 
+dt_LatestView <- read.csv("./Data/lesson4_latestView.csv") %>% 
   mutate(Dev_Year = Dev_Year + 1)
 
 head(dt_LatestView)
@@ -440,7 +456,7 @@ dt_KPI_w_discount %>%
 Now, let's have a look at it from the other way around. The following dataset includes the same data you were analysing in class 2, but contains discount factors instead of values.
 
 ```{r}
-NPV_data <- read.csv("./Data/lesson6_NPV.csv")
+NPV_data <- read.csv("./Data/lesson4_NPV.csv")
 ```
 
 *What is the average duration in all of these cases assuming a discount rate of 3%?*
