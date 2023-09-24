@@ -3,7 +3,20 @@ title: "Target Analysis"
 output: html_notebook
 ---
 
-Great, now you wrote about your ideas about the target, let's think about it together.
+# Looking for a good Target
+
+Target is a __dependent__ variable in a model you designed for the purpose of being helpful in predicting the insurance event. Good design of the model can answer questions about relationship between any __independent__ variables and target. When we spoke about _variable_ it can be anything which is __measurable__ (event, object, facts, idea, ...).
+
+Questions which might help you identify good target and design good model:
+
+- What is the event, object or idea you would like to predict?
+- Is it measurable?
+- Let's say you finished your model, how did the prediction help you to solve your insurance issue?
+- Are there any potential independent variables that might have relationship to your target you propose?
+
+Take a minute to reflect and discuss these questions.
+
+Great, now you thought a bit about your ideas regarding the target, let's think about it together.
 
 - _What is the event, object or idea you would like to predict?_
 
@@ -28,13 +41,15 @@ So once again...
 Hmm. `Paid` losses might be a good start.
 
 ```{r}
-dt_pol_w_claims <- dt_Policy %>% 
-  left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
+library(dplyr)
+library(ggplot2)
+
+dt_pol_w_claims <- readRDS("./Data/dt_pol_w_claims.rds")
 
 # TODO : Get Top 5 highest values of Paid 
 dt_pol_w_claims %>% 
     filter(!is.na(Paid)) %>% 
-    select(NrPolicy, NrObject, NrClaim, Paid) %>% 
+    select(NrPolicy, NrObject, ClmYr, Paid) %>% 
     arrange(desc(Paid)) %>% 
     head(5)
 ```
@@ -55,7 +70,6 @@ dt_pol_w_claims %>%
 
 ```
 
-
 > What's different among those first three clients?
 
 The third client asked for insurance cover only for three months! And during those three months they have similar loss amount as other clients have during one year. This leads to redefining the risk of the third client to be 4-times(!) riskier than first two clients from the table above.
@@ -63,6 +77,7 @@ The third client asked for insurance cover only for three months! And during tho
 What we described here is term `exposure`. The exposure can be different for different portfolios we analyse. E.g. it can be square root of sum insured for property business or mileage for trucks insurance. We often talk about exposure as unit of insurance cover. There are many definitions. 
 
 So let's create our exposure based on time a client was covered.
+
 ```{r}
 # tip: lubridate is great for manipulation of dates
 library(lubridate)
@@ -73,13 +88,14 @@ dt_pol_w_claims <- dt_pol_w_claims %>%
 dt_pol_w_claims %>%
   filter(!is.na(Paid)) %>% 
   arrange(desc(Paid)) %>% 
-  dplyr::select(Dt_Exp_Start, Dt_Exp_End, Time_Exposure) %>% 
+  dplyr::select(Dt_Exp_Start, Dt_Exp_End, Time_Exposure, Paid) %>% 
   head(5)
 ```
 
 Did you realize for some years there is 365 and for some 366 days? `lubridate` knows which year is a leap year. Cool, right?
 
 #### Ultimate Losses and Burning Cost
+
 Ultimate Losses are something we end up with after paying for the individual claims. They can include various parts of the claim e.g. (Losses, Reserves, Inflation, Expenses to arrange the claim, ...).
 
 Burning Cost we call overall cost per some metric of exposure, in our case we are talking about _dollar loss per day insured_.
@@ -87,21 +103,17 @@ Burning Cost we call overall cost per some metric of exposure, in our case we ar
 ```{r}
 # TODO : Compute Burning_Cost as Ult_Loss per day
 # Hint: use as.integer(Time_Exposure) to get the number of days
-dt_pol_w_claims <- dt_pol_w_claims %>% 
-    mutate(
-        Ult_Loss = Paid + Reserves,
-        Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / as.integer(Time_Exposure))
-    )
+dt_pol_w_claims <- dt_pol_w_claims %>%
+  mutate(
+    Ult_Loss = Paid + Reserves,
+    Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / as.integer(Time_Exposure))
+  )
 
-dt_pol_w_claims %>% 
-    filter(Burning_Cost != 0) %>% 
-    select(NrClaim, Ult_Loss, Time_Exposure, Burning_Cost) %>% 
-    head()
-
-dt_pol_w_claims %>% 
-    filter(Burning_Cost == 0) %>% 
-    select(NrClaim, Ult_Loss, Time_Exposure, Burning_Cost) %>% 
-    head()
+# show top 5 riskiest records based on burning cost
+dt_pol_w_claims %>%
+  arrange(desc(Burning_Cost)) %>%
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) %>%
+  head(5)
 ```
 
 Let's continue with the questions which help us to identify a good target.
@@ -115,83 +127,91 @@ Let's continue with the questions which help us to identify a good target.
     This is something we can solve using _One-Way Analysis_
 
 ## One-Way Analysis
-Perfect! It looks like we have found a good target, which might be a good measure for risky clients.
+Perfect! It looks like we have found a good target, which might be a good measure for risky customers.
 
-Now, let's try to think about the __reasons__ of client being more risky than others.
+Now, let's try to think about the __reasons__ of customers being more risky than others.
 
-#### Exercise
-Do you have any idea which type of client is definitely riskier than other? 
-Write a few sentences to your notes and commit.
+One-Way analysis is a good starting point, where we look at each potential variable separately and compare the target across values or categories of that variable.
 
-
---------------------------------------------------------------------------------
-
-One-Way analysis means we always look for one explanatory variable and one which we try to explain, in our case it's our target we identified. So first of all it makes sense to look into them as basic _scatterplot_.
-
-For the first one-way analysis we will try to explore feature about vehicle type of client: `Veh_type2`
+Let's use ggplot2 to draw a box plot of burning cost per each value/category of a variable - for example `Veh_type1`.
 
 ```{r}
-#install.packages("ggplot2")
-library(ggplot2)
-
-dt_pol_w_claims %>% ggplot(
-    aes(x = Veh_type2, y = Burning_Cost)
-) + geom_jitter()
-
+dt_pol_w_claims %>% 
+  ggplot(aes(x = Veh_type1, y = Burning_Cost)) + 
+  geom_boxplot()
 ```
 
+As you can see, this doesn't tell us much as there are some problems:
+- The boxplot doesn't show us much because
+  - There are so many zero targets
+  - There is also quite a lot of outliers
+- Also there are too many categories/values to look at, it's hard to see labels
 
-Does it help you to identify any trend? Hmm...looks like outliers messing it up. Let's go for numbers then.
+Let's solve this problems one by one.
+
+### Average target instead of plotting whole distribution
+
+Instead of plotting the whole distribution, let's just compute the average of the target (burning cost). We have to be a little careful here, simple average could be misleading. It's better to compute a weighted average, where the time exposure serves as a weight or credibility measure. This intuitively makes sense, as if you have 2 customers with the same burning cost (loss per 1 day of insurance), you'd say the one with longer exposure (length of insurance) is probably more risky.
+
+The weighted average will also weaken the effect of outliers which are often high losses that occurred during a very short exposure period.
 
 ```{r}
-# TODO: Compute mean() and median() of the Burning_Cost
-dt_pol_w_claims %>% 
-    group_by(Veh_type2) %>% 
+bc_avg <- dt_pol_w_claims %>%
+  group_by(Veh_type1) %>%
+  summarize(
+    BC_avg = weighted.mean(Burning_Cost, as.integer(Time_Exposure)),
+    exposure_sum = sum(as.integer(Time_Exposure))
+  ) %>% 
+  filter(BC_avg > 0)
+
+bc_avg %>%
+  ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
+  geom_point()
+```
+
+### Make the plot more legible
+
+We can make another two adjustments to make the plot more legible - We can filter out very low exposures and tilt the x-axis.
+
+```{r}
+bc_avg <- bc_avg %>% 
+  mutate(exposure_pct = exposure_sum / sum(exposure_sum)) %>%
+  filter(exposure_pct > 0.01)
+
+bc_avg %>%
+  ggplot(aes(y = BC_avg, x = Veh_type1, size=exposure_sum)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+```
+
+### Putting it all together and looking at all variables
+
+Now that we finally reached our final version of the plot, we can try to visualize all variables in the dataset. Do you see trends in some variables?
+
+```{r}
+all_vars <- c(
+  "Year", "Time_on_book", "Customer_Type", "D_age", "D_age_banded", 
+  "BonusMalus", "D_ZIP", "VEH_type", "Veh_type1", "Veh_type2", 
+  "VEH_brand", "Construct_year", "Capacity", "Nr_of_seats", "Sum_insured"
+)
+
+for(var_nm in all_vars) {
+  bc_avg <- dt_pol_w_claims %>%
+    group_by(.data[[var_nm]]) %>%
     summarize(
-        BC_avg = mean(Burning_Cost),
-        BC_med = median(Burning_Cost),
-        cnt = n()
-    ) %>% arrange(
-        desc(BC_avg)
-    )
+      BC_avg = weighted.mean(Burning_Cost, as.integer(Time_Exposure)),
+      exposure_sum = sum(as.integer(Time_Exposure))
+    ) %>%
+    filter(BC_avg > 0) %>%
+    mutate(exposure_pct = exposure_sum / sum(exposure_sum)) %>%
+    filter(exposure_pct > 0.01) 
+    
+  g <- bc_avg %>% 
+    ggplot(aes(y = BC_avg, x = .data[[var_nm]], size=exposure_sum)) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1)) + 
+    ggtitle(var_nm)
+  
+  print(g)
+}
 ```
-
-Why did we choose those three metrics? Do you see any story behind them? Let's try to visualize the averages.
-
-```{r}
-dt_pol_w_claims %>% 
-  group_by(Veh_type2) %>% 
-  summarize(
-      BC_avg = mean(Burning_Cost),
-      BC_med = median(Burning_Cost),
-      cnt = n()
-  ) %>%
-  filter(BC_avg>0) %>%
-  ggplot(aes(y = BC_avg, x = Veh_type2)) +
-  geom_col()
-```
-
-Let's try to remove the outliers and take a look at our data again.
-
-```{r}
-dt_pol_w_claims %>% 
-  filter(Burning_Cost <= 100) %>%
-  group_by(Veh_type2) %>% 
-  summarize(
-      BC_avg = mean(Burning_Cost),
-      BC_med = median(Burning_Cost),
-      cnt = n()
-  ) %>%
-  filter(BC_avg>0) %>% 
-  ggplot(aes(y = BC_avg, x = Veh_type2)) +
-  geom_col()
-```
-
-
-Two things happened here:
-
-    - outliers mess it up so much, that this feature is definitelly not good predictor alone, we are not able to explain those outliers using only one feature describing vehicle type.
-    - but...there is definitelly some trend, which might be usefull in next stages of modelling. (saying that there is definitelly some trend might be too strong and we should use also other methods to confirm this. e.g. ANOVA)
-
-#### Exercise
-Choose another feature and try to find out the story behind data, using similar approach as above.

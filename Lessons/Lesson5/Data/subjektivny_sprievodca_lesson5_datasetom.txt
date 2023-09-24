@@ -1,0 +1,33 @@
+Data, ktore v sebe obsahuju informacie o poistkach motorovych vozidiel a zaroven o poistnych udalostiach, ktore sa na niektorych z nich stali. Tieto data sme pouzivali a spajali na predchazajucej hodine.
+
+Year - Rok zacatia platnosti poistky
+NrPolicy - Cislo poistky
+NrObject - Cislo objektu (vozidla)
+Dt_Exp_Start - Datum zacatia platnosti poistky
+Dt_Exp_End - Datum skoncenia platnosti poistky
+Time_Exposure - Pocet dni trvania poistky (miera vystavenia sa riziku pre poistovnu)
+Premium_earned - Zarobena poistna premia
+
+Time_on_book - Ako dlho je poistenec klientom poistovne (ako dlho je v poistnom portfoliu)
+Customer_Type - Typ zakaznika, napr. poistovna moze ponukat nejaky priplatok za dalsie sluzby a teda napr. zakaznik C moze byt obycajny a zakaznik S moze byt specialny (premiovy) typ zakaznika, ktory si nejake sluzby dokupil
+D_age - Vek vodica poisteneho vozidla
+D_age_banded - Vek vodica poisteneho vozidla (kategoricka verzia)
+BonusMalus - System kde pridavame body dobrym vodicom (ktori nemali poistne udalosti) a uberame body menej sikovnym vodicom (ktori mali poistne udalosti).
+D_ZIP - PSC regionu vodica
+VEH_type, VEH_type1, Veh_type2 - rozne kategorizacie typu vozidla
+VEH_brand - anonymizovana kategorizacia znacky vozidla
+Construct_year - rok vyroby vozidla
+Capacity - objem motora vozidla v kubickych centimetroch
+Nr_of_seats - pocet sedadiel vozidla
+Sum_insured - Hodnota na, ktoru je v ramci poistky vozidlo poistene
+Nr_payments - S tymto stlpcom nebudeme pracovat pretoze si nie som isty co presne znamena
+
+NrClaim - Cislo poistnej udalosti (ak nejaka bola)
+Date_of_loss - Datum nastatia poistnej udalosti (ak nejaka bola)
+Paid - Vyplatena hodnota v ramci poistnej udalosti (ak nejaka bola)
+Reserves - Odhady buducich vyplatenych skod v ramci poistnej udalosti (ak nejaka bola)
+Settlement_date - Datum ukoncenia sudneho procesu (ak nejaky bol) v ramci poistnej udalosti (ak nejaka bola)
+ClmYr - Rok nastatia poistnej udalosti (ak nejaka bola)
+
+Ult_Loss - Ultimatna (finalna) skutocna alebo odhadovana hodnota skod vyplatenych v ramci poistnej udalosti
+Burning_Cost - Priemerna vyplatena skoda na jednotku miery vystavenia sa riziku

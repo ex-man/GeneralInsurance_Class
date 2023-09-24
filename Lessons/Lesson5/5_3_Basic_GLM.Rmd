@@ -6,69 +6,75 @@ output: html_notebook
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+One-Way analysis is definitely good and useful, but there can sometimes be certain problems:
+- There could be correlation between variables used in one-way analysis.
+- How do you determine which variables are best used to describe / predict target?
+- How do you quantify the independent influence of correlated variables on target?
 
-We created Target and analysed it with One-Way approach. Now, let's see how it performs with a basic glm.
+This is where Multi-Way approach comes in. Multi-Way analysis is usually done using a statistical or machine learning model. In insurance, when we want to create a very transparent and easily interpretable model, we usually used Generalized Linear Models - GLM.
 
-### Distribution of the Target
-Before we jump directly to modeling, we need to decide on which type of GLM model we can actually use.
-The first step in decision-making could be to plot the distribution of our Target.
+GLM is a generalization of well-known linear regression, which can be used for statistical inference when the target or error distribution is not Gaussian. Some insurance events, like frequency of claims or their payments have been highly studied and associated with some empirical distributions:
+- Frequency of claims (claim count / exposure) does approximately follow Poisson distribution.
+- Severity of claims (claim loss / claim count) does approximately follow Gamma distribution.
+- Burning cost (claim loss / exposure) does approximately follow Tweedie distribution.
+
+You can read more about GLM in the wikipedia article:
+https://en.wikipedia.org/wiki/Generalized_linear_model
+
+Since we are using Burning cost (riskiness per unit of exposure) our target will roughly follow Tweedie distribution (a lot of zeros and then skewed with long tail).
+If you are interested, you can read more in the wikipedia article:
+https://en.wikipedia.org/wiki/Tweedie_distribution
+
+Tweedie distribution is a generalization and compound of multiple different distributions. This is controlled with the Tweedie 'power parameter' or 'p'. If p > 1 and p < 2 then the distribution is a compound of Poisson and Gamma and therefore suitable to model the Burning Cost target. Let's use p=1.5 as a good default parameter.
 
 ```{r}
-library(ggplot2)
+# install.packages(c("statmod", "tweedie"))
+library(statmod)
+library(tweedie)
+library(dplyr)
 
-dt_pol_w_claims %>%
-  ggplot(aes(x=Burning_Cost)) +
-  geom_histogram()
+dt_pol_w_claims <- readRDS("./Data/dt_pol_w_claims_target.rds") %>%
+  mutate(Time_Exposure = as.integer(Time_Exposure)) %>%
+  filter(!(is.na(Veh_type2) | Veh_type2 == ""))
 ```
-It does not look to be very useful as there is a lot of clients that don't have any claim. Let's remove them, and we can remove outliers as well.
+
+Let's fit a basic GLM using a single variable - Veh_type2. This will get results very similar to the one-way analysis.
 
 ```{r}
-# TODO: Filter claims with non-zero Burning_Cost less than 100
-dt_pol_w_claims_filt <- dt_pol_w_claims %>% 
-  filter(Burning_Cost > 0, Burning_Cost < 100)
-
-# Plot a histogram
-dt_pol_w_claims_filt %>% 
-  ggplot(aes(x = Burning_Cost)) + 
-  geom_histogram()
-```
-
-What type of distribution it reminds you of? It looks like `Gamma` or `Tweedie` (if you have never heard about Tweedie distribution, it is a combination of Poisson and Gamma; check Wikipedia for more info). 
-
-To make a proper decision we would run some statistical test on matching distribution, e.g. Kolmogorov-Smirnov test and similar.
-
-
-So let's try `Gamma` as a first attempt.
-### First Model
-
-```{r}
-model1 <- glm(
-  data = dt_pol_w_claims_filt,
+basic_model <- glm(
+  data = dt_pol_w_claims,
   formula = Burning_Cost ~ Veh_type2,
-  family = Gamma(link="log")
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
 )
+
+summary(basic_model)
 ```
+The most basic information we want to get from the model are the coefficients. Since vehicle type is a categorical variable, each of its category is fitted as a separate variable and we get a separate coefficient.
 
 ```{r}
-summary(model1)
+summary(basic_model)$coef
+summary(basic_model)$coef[,1]
 ```
 
-Applying inverse link function (natural exponential function) yields multipliers
+These coefficients are little bit hard to interpret as they are now. Linear regression's coefficients are expressed in the units of the target variable. They represent average increase/decrease of the target given 1 unit change in the input variable.
+
+On the other hand, GLM uses a link function - which is a transformation, to be able to use linear combination of predictors to estimate non-linear target. This transformation is not applied on the target but on the linear combination of predictors. 
+
+We defined the target distribution as `statmod::tweedie(var.power = 1.5, link.power = 0)` and used `link.power=0` which represents logarithmic link function. Now that we know the link function, we can use the inverse link function (exponential function in our case) to obtain more interpretable coefficients.
+
+While the coefficients don't signify the average increase or decrease, their interpretation is even better. The intercept gets translated to average target (similar to linear regression intercept), but the variable coefficients get translated into average multipliers - signifying how much riskier a category is than the average.
 
 ```{r}
-exp(summary(model1)$coef[,1])
+weighted.mean(dt_pol_w_claims$Burning_Cost, dt_pol_w_claims$Time_Exposure)
+
+summary(basic_model)$coef[,1] %>% 
+  exp() %>%
+  round(3)
 ```
 
-```{r}
-dt_pol_w_claims_filt %>% 
-  group_by(Veh_type2) %>% 
-  summarize(
-      BC_avg = mean(Burning_Cost),
-      BC_med = median(Burning_Cost),
-      cnt = n()
-  ) %>%
-  filter(BC_avg>0) %>% 
-  ggplot(aes(y = BC_avg, x = Veh_type2)) +
-  geom_col()
-```
+As you can see, the CAR category is gone, this is because the most populated category gets designated as the baseline category, which is included within intercept.
 
+The other coefficients (multipliers) represent how much each vehicle type category is riskier than personal car. For example the MOTORBIKE vehicle type is 46% less risky than the personal CAR. On the other hand the TRUCK category is 64% riskier than the personal CAR.
+
+Did you expect this kind of result or are you surprised? Don't forget the riskiness includes not only the aspect of claim loss payments but also how often do these claims occur.
