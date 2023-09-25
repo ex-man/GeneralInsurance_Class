@@ -44,5 +44,5 @@ compare_models(model_list) %>%
 ```
 
 Kratky dotaznik spokojnosti s predmetom
-https://forms.office.com/e/HffTAtKk03
+https://forms.office.com/e/MdZMcpfWcb
 

@@ -26,19 +26,25 @@ for(var_nm in fitted_vars) {
 
 Applying the inverse link function will result in multipliers, that can now be used in pricing context.
 
+```{r}
+round(summary(final_model)$coef[,1], 2)
+round(exp(summary(final_model)$coef[,1]), 2)
+```
+
+
 An example:
 - Base Price - Set by our business partners, our intercept will not be used
 - Car Type:
   - Personal car: 1.00 multiplier to the base price
-  - Motorbike : 0.49 multiplier to the base price
-  - Pickup: 0.94 multipler to the base price
-  - Truck: 1.64 multiplier to the base price
+  - Motorbike : 0.525 multiplier to the base price
+  - Pickup: 0.975 multipler to the base price
+  - Truck: 1.604 multiplier to the base price
 - Car Construction Year:
   - With numeric variables, the multiplier has to be computed from the original coefficients
   - Set a reference value, e.g. year 2011 because it has the most exposure
-  - The multiplier for a new value, e.g. year 2014 will be 1.115 computed as follows:
+  - The multiplier for a new value, e.g. year 2014 will be 1.094 computed as follows:
     - exp(beta * value_new) / exp(beta * value_ref)
-    - exp(0.02726*2014) / exp(0.02726*2010)
+    - exp(0.03*2014) / exp(0.03*2011)
 - Final price = Base Price * Car Type multiplier * Car Construction Year multiplier
 - There can be another set of multipliers that are applied on top of the final price in the pricing context
   - Profit multiplier (we also need to earn something on top of the losses)
@@ -77,5 +83,5 @@ data.frame(Construct_year_capped = all_years) %>%
 ```
 
 Kratky dotaznik spokojnosti s predmetom
-https://forms.office.com/e/HffTAtKk03
+https://forms.office.com/e/MdZMcpfWcb
 

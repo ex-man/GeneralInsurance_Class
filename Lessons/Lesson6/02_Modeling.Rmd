@@ -1,0 +1,317 @@
+---
+title: "Feature Engineering"
+output: html_notebook
+---
+
+# Nedela polnoc - deadline na ulohu
+# daniel.gabris@zurich.com
+
+```{r, include=FALSE}
+libs <- c("tidyverse", "reshape2", "patchwork", "statmod")
+lapply(libs, function(lib) {
+  if(! lib %in% installed.packages()) install.packages(lib)
+})
+
+library(dplyr)
+library(ggplot2)
+options(scipen = 5)
+```
+
+Load the data from Lesson 5 where we prepared Claims and Policy information in one dataset. We will also convert the Time Exposure from a date object to the integer amount of days.
+
+```{r}
+dt_pol_w_claims <- readRDS("./Data/dt_pol_w_claims_target.rds") %>% 
+  mutate(Time_Exposure = as.integer(Time_Exposure))
+```
+
+Let's also define the potential predictors and their types - it is important to differentiate between categorical and numeric variables. The function we are loading will ensure these data types and convert when necessary.
+
+This is not the only functionality we'll be sourcing. Modeling is a complicated process and we'll focus on the most important parts here while keeping other parts abstracted away for simplicity.
+
+```{r}
+source("Support/enforce_data_types.R")
+
+var_types <- c(
+  Year="category", Time_on_book="number", Customer_Type="category",
+  D_age="number", D_age_banded="category", BonusMalus="number",
+  D_ZIP="category", VEH_type="category", Veh_type1="category", 
+  Veh_type2="category", VEH_brand="category", Construct_year="number",
+  Capacity="number", Nr_of_seats="category", Sum_insured="number")
+
+dt_pol_w_claims <- dt_pol_w_claims %>% 
+  enforce_data_types(var_types)
+```
+
+Let's remove any observations that contain missing values for some of our predictors. In other words, let's keep only the complete cases (rows).
+
+```{r}
+dim(dt_pol_w_claims)
+
+all_vars <- names(var_types)
+
+dt_pol_w_claims <- dt_pol_w_claims %>% 
+  filter(complete.cases(.[all_vars]))
+
+dim(dt_pol_w_claims)
+```
+
+Let's repeat the setup for model validation methodology from the previous exercise and load the previously defined 'rmse_group' function.
+
+```{r}
+source("Support/rmse_group.R")
+
+set.seed(58742) # to fix randomizer
+
+n_rows <- nrow(dt_pol_w_claims)
+train_idx <- sample(n_rows, round(0.80*n_rows)) # 80/20 split between train and valid
+
+train <- dt_pol_w_claims[train_idx, ]
+valid <- dt_pol_w_claims[-train_idx, ]
+
+train_actual <- train$Burning_Cost
+train_weight <- train$Time_Exposure
+```
+
+### Finalizing model structure
+
+Great! Now we have set up the methodology for checking the performance of the model so we are completely ready to start improving it.
+
+This was the very basic glm model we fit in the last lesson. This time, let's fit it only on the training data to use the correct methodology.
+
+```{r}
+model1 <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+summary(model1)
+print("Training RMSE:")
+train_predict <- predict(model1, train, type="response")
+rmse_group(train_actual, train_predict, train_weight)
+```
+
+Let's find out how risky are trucks compared to normal cars (base category included in intercept). We can achieve this by taking the model coefficients and applying the inverse link function.
+
+The model uses log link function, therefore the inverse link function is the natural exponentiation.
+
+```{r}
+round(exp(summary(model1)$coef[,1]), 2)
+```
+
+We now know the basic structure model attributes (distribution, link, weight) and we will proceed to add more variables to the model. Let's review the model building and feature engineering actions we can take.
+
+List of model building actions:
+1.  Add a new variable
+    - If you bring more information in a model, it is becoming much more accurate as it is able to catch many more various situations
+2. Remove some variable
+    - Although adding a new variable brings new information to the model, it brings also the noise. You need to find a balance between this. Model should be robust and not overfit.
+
+List of some feature engineering approaches:
+1.  Grouping of Categorical variable 
+2.  Capping strategy to keep only trending part of the variable
+3.  Variable transformation (polynomial, log, exp, ...)
+4.  Creating interactions
+
+### Add a new variable
+
+As we can see, there are many variables to choose from.
+
+```{r}
+glimpse(train[, all_vars])
+```
+
+We can use a helper function that is prepared in the `Support` folder. It can help us to:
+  - Assess how our fitted variables perform
+  - Assess which unfitted variables might provide extra information
+
+```{r}
+source("Support/emb_chart.R")
+source("Support/get_vars.R")
+```
+
+Let's look at our fitted variable first. 
+
+One line should represent the actual mean - Time_Exposure weighted mean of Burning_Cost over different vehicle types.
+The other line should represented the fitted (predicted) mean - Time_Exposure weighted mean of Burning_Cost model predictions over different vehicle types.
+
+We can't even see the second line, since they're identical. This happens only when there's a single variable in the model. In this case the model simply replicates the weighted mean from the data. But the lines will start diverging slightly, as we keep adding variables to the model.
+
+```{r}
+this_model <- model1
+fitted_vars <- get_vars(model1)
+
+for(var_nm in fitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+Let's take a look at the (many) unfitted variables. The lines should be pretty diverging, especially if an information from a certain variable is missing in the model. That means the model doesn't yet have such information to be able to differentiate between high and low risks within the variable in question.
+
+Adding such variable to the model might help to improve its performance.
+
+```{r}
+this_model <- model1
+unfitted_vars <- setdiff(all_vars, get_vars(model1))
+
+for(var_nm in unfitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+Let's say we decide to add `Construct_year` variable, because the difference between actual mean and fitted mean are pretty significant on both sides of the exposure distribution. 
+
+```{r}
+model2 <- glm(data = train,
+              formula = Burning_Cost ~ Veh_type2 + Construct_year,
+              family = statmod::tweedie(var.power=1.5, link.power=0),
+              weights = Time_Exposure)
+
+summary(model2)
+
+print("Training RMSE:")
+train_predict <- predict(model2, train, type="response")
+rmse_group(train_actual, train_predict, train_weight)
+```
+
+Let's review the fitted variables visually. We can see that the first variable is fit almost perfectly - the lines are aligned. This is caused mainly by two things:
+1) There are very few variables in the model
+2) Veh_type2 variable is a categorical one, meaning there's one coefficient (dummy variable) per category, which improves the fit
+
+On the other hand Construct_year doesn't seem to be fit very well, the two lines are quite different from each other.
+
+```{r}
+this_model <- model2
+fitted_vars <- get_vars(model2)
+
+for(var_nm in fitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+### Merging, capping and other feature engineering
+
+The visuals above should give us a hint about some of the feature engineering operations that we can attempt. Let's start with merging, which is a feature engineering adjustment that can be done with categorical types of variables.
+
+With merging, we usually merge categories based on the following rules of thumb:
+- Categories with low exposure (weight) can be merged with the base category (most frequently ocurring)
+- Categories with zero target values can be merged with the base category
+- Categories with enough exposure but very similar coefficient / multiplier can be merged together
+
+Let's try to do the merging operation with the `Veh_type2` variable and refit the model.
+
+Make sure to create a new variable (not rewrite the original) and do the operation in both training and validation dataset. This is important for later model evaluation function to work properly.
+
+```{r}
+train <- train %>% 
+  mutate(Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2))
+
+valid <- valid %>% 
+  mutate(Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2))
+
+model3 <- glm(data = train,
+              formula = Burning_Cost ~ Veh_type2_merged + Construct_year,
+              family = statmod::tweedie(var.power=1.5, link.power=0),
+              weights = Time_Exposure)
+
+summary(model3)
+
+print("Training RMSE:")
+train_predict <- predict(model3, train, type="response")
+rmse_group(train_actual, train_predict, train_weight)
+```
+
+Let's take a look at the adjustment
+
+```{r}
+this_model <- model3
+fitted_vars <- get_vars(model3)
+
+for(var_nm in fitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+As a next step, we can try capping the `Construct_year` variable. This means setting a cap (floor or ceiling) on the minimum, maximum (or both) value.
+
+For example, we'll limit the `Construct_year` between 2006 and 2015, and we'll set the higher or lower values to be equal to the bounds of our selected interval.
+
+Make sure to create a new variable (not rewrite the original) and do the operation in both training and validation dataset. This is important for later model evaluation function to work properly.
+
+```{r}
+train <- train %>% 
+  mutate(Construct_year_capped = case_when(
+    Construct_year < 2005 ~ 2005,
+    Construct_year > 2015 ~ 2015,
+    TRUE ~ Construct_year
+  ))
+
+valid <- valid %>% 
+  mutate(Construct_year_capped = case_when(
+    Construct_year < 2005 ~ 2005,
+    Construct_year > 2015 ~ 2015,
+    TRUE ~ Construct_year
+  ))
+
+model4 <- glm(data = train,
+              formula = Burning_Cost ~ Veh_type2_merged + Construct_year_capped,
+              family = statmod::tweedie(var.power=1.5, link.power=0),
+              weights = Time_Exposure)
+
+summary(model4)
+
+print("Training RMSE:")
+train_predict <- predict(model4, train, type="response")
+rmse_group(train_actual, train_predict, train_weight)
+```
+
+```{r}
+this_model <- model4
+fitted_vars <- get_vars(model4)
+
+for(var_nm in fitted_vars) {
+  emblem_graph(
+    model = this_model,
+    x_var =  var_nm
+  ) %>% 
+    show()
+}
+```
+
+Now we're able to better see whether there's any visible trend in the observed data and whether the model catches such trend. We can conclude that this not the best variable, as there's no reasonable trend, especially for the categories with the main distribution of exposure.
+
+We could for example remove this variable and try a different one, creating a new model.
+
+Finally, there's a third useful group of feature engineering adjustments - changing units, rounding or truncating (selecting for example first 2 digits of a 4 digit code). This might be especially useful when dealing with variables such as `D_zip`, `Capacity` or `VEH_brand`.
+
+We could also theoretically consider variable transformations, such as polynomials, square roots, logs or interactions, but these often make the model more complex and difficult to understand (especially for business partners). These are unfortunately out of scope of this lesson.
+
+### Homework assignment
+```{r}
+set.seed(123)
+students <- c("Student1", "Student2", "Student3")
+assignments <- paste0("Zadanie", sample(1:8, size=length(students)))
+assignments <- setNames(assignments, students)
+dput(assignments)
+# c(Student1 = "Zadanie7", Student2 = "Zadanie8", Student3 = "Zadanie3")
+```
+
+Kratky dotaznik spokojnosti s predmetom
+https://forms.office.com/e/MdZMcpfWcb
