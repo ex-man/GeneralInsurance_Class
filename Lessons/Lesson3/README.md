@@ -1,6 +1,12 @@
 # Objective
-To learn about ratios (loss ratio, expense ratio, combined ratio) and underwriting result
-
+	To understand what is behind the losses. How do they get calculated and even more impotantly - projected.
+	
 # Content
-1) [Introduction to loss and expense ratios](Support/L3_loss_and_expense_ratios.md)
-2) [Working with data](Support/L3_working_w_data.md) (45 min)
+1) [Loss Development intro](Support/01_Loss_Development_intro.html) (losses and expenses)
+2) [Chainladder package intro](Exercises/Lesson3_Ex1_Chainladder.Rmd)
+3) [Loss Development exercise](Exercises/Lesson3_Ex2_LossDevelopment.Rmd)
+4) [Exercises taking into account time value of money](Exercises/Lesson3_Ex36.Rmd)
+
+# Homework
+Read the instructions in the file `Homework/my_homework.R`.Deadline is Sunday at midnight.
+In case of any questions, please contact Daniel at daniel.gabris@zurich.com

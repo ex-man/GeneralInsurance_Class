@@ -1,12 +1,3 @@
-# Skus priblizne zreprodukovat graf 'zadanie/hw_zadanie6.png', ktory najdes v priecinku 'Homework'.
-# Budes pracovat s datami, ktore sa importuju nizsie. 
-# Vytvor premennu LossRatio, ako podiel sumy skod (Losses) a prijateho poistneho (Premium).
-
-# Vysledok skus aj interpretovat (1 - 2 vety).
-
-library(tidyverse)
-dt_KPI <- read_csv("./Data/lesson3_KPI.csv")
-
-dt_KPI %>% 
-
-    ...
+# Zopakuj postup z Exercise 2, ktore ste robili na hodine. Tentokrat pracuj s poistenim domacnosti (House),
+# Small Claim Size, type = Case (tj. odhad nevyplatenych skodd). Tak isto ako na hodine, skus okomentovat,
+# aky vzor v datach vidis a preco to tak moze byt. 

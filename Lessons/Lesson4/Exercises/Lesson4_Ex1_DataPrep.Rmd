@@ -1,0 +1,155 @@
+---
+title: "Data Preparation"
+output: html_notebook
+---
+
+# Policy and Claims data exploration
+
+As mentioned in previous lessons, we identified good and bad performers in terms of portfolios. To identify which group of people/companies are guilty of that performance we need **more granular data**. And so we received *Claims* and *Policy* data from our IT department.
+
+__Claims data__ contains info about __how risky__ is the individual client. __Policy data__ contains info about individual's features and other identifiers, which might help us to find reasons for __why__ client __is riskier__.
+
+Why are they in two different datasets?
+Policy level information is collected at the beginning of an insurance. An insurance policy might or might not have a claim. Claim may occur some time after the start of the insurance policy. Both types of information are processed by different employees of the insurance company and via different IT systems. They'll therefore usually end up in two different databases.
+
+Let's look at them separately first, and then later merge together.
+
+### Load and inspect Policy Info
+
+```{r}
+# install.packages('tidyverse')
+# install.packages("ggplot2")
+library(dplyr)
+library(lubridate) # for working with dates
+library(ggplot2)
+```
+
+Policy data are at *policy + object* level, represented by policy number and object number columns. Object represents an insured car.
+
+```{r}
+dt_Policy <- read.csv("/cloud/project/Data/lesson4_PolicyHistory.csv")
+
+dim(dt_Policy)
+View(dt_Policy)
+
+glimpse(dt_Policy)
+summary(dt_Policy)
+```
+
+Let's inspect the granularity of the dataset.
+
+```{r}
+# with aggregation
+dt_Policy %>%
+  group_by(NrPolicy) %>%
+  summarize(n = n()) %>%
+  filter(n > 1) %>%
+  arrange(desc(n))
+
+# without aggregation
+dt_Policy %>%
+  group_by(NrPolicy) %>%
+  mutate(n = n()) %>%
+  filter(n > 1)
+```
+
+### Load and inspect Claims info
+
+Claims data are at *claims* level, represented by the claims number column.
+
+```{r}
+dt_Claims <- read.csv("/cloud/project/Data/lesson4_Claims.csv")
+
+dim(dt_Claims)
+View(dt_Claims)
+
+glimpse(dt_Claims)
+summary(dt_Claims)
+```
+
+Let's inspect the granularity of the dataset.
+
+```{r}
+dt_Claims %>%
+  group_by(NrClaim) %>%
+  summarize(n = n()) %>%
+  filter(n > 1) %>%
+  arrange(desc(n))
+
+dt_Claims %>%
+  group_by(NrClaim) %>%
+  mutate(n = n()) %>%
+  filter(n > 1)
+```
+
+### Aggregate Claims information to desired granularity
+
+To properly bring the claims info on `policy + object` level, we need to ensure claims data are also on that level. Let's check it and if they are not, roll them up to that level. (The claims could for example be on a transactional level).
+
+```{r}
+dt_Claims %>%
+  group_by(NrPolicy, NrObject) %>%
+  mutate(n = n()) %>%
+  filter(n > 1)
+```
+
+It looks like one policy can have multiple claims during its coverage period. Let's introduce a new field that will become part of our level of granularity - Claim Year. We want to ensure all the claims within the same Claim Year (calendar year) are summed up together, before merging with policy data. 
+
+```{r}
+# Extract claim year
+dt_Claims <- dt_Claims %>%
+  mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) %>%
+  mutate(ClmYr = lubridate::year(Date_of_loss))
+
+# Aggregate to desired granularity
+
+dt_Claims <- dt_Claims %>%
+  group_by(NrPolicy, NrObject, ClmYr) %>%
+  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) %>%
+  ungroup()
+
+# Verify this is the final granularity
+dt_Claims %>% nrow()
+dt_Claims %>%
+  distinct(NrPolicy, NrObject, ClmYr) %>%
+  nrow()
+```
+
+### Merge Policy and Claims information together
+
+Cool! Let's finally join policies and claims together. Note that there are multiple types of joins. Most often we use either left join (preserves left dataset) or inner join (intersection between datasets). Since not every policy will have a claim, we will be using left join to preserve policy information.
+
+```{r}
+dt_pol_w_claims <- dt_Policy %>%
+  left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
+
+dt_pol_w_claims %>% head(3)
+
+dt_pol_w_claims %>%
+  filter(!is.na(ClmYr)) %>%
+  head(5)
+```
+
+Perfect! So what now? Hmm...
+
+### Quality Assurance of Join
+
+Let's look how successful we have been in finding out about our customer's losses.
+
+```{r}
+dt_pol_w_claims %>% nrow()
+dt_pol_w_claims %>%
+  filter(!is.na(ClmYr)) %>%
+  nrow()
+dt_Claims %>% nrow()
+```
+
+Does it look good or bad? Two sets of questions should arise in your head:
+
+  - Is there any better way to join those information together? Am I missing anything? Does the IT provide good data pull?
+  - Let's suppose everything looks good in your join. Does it make sense to you to have such number of claims for portfolio you are analysing? If you are not sure, you should ask your business or claims department.
+
+Let's save the dataset for next exercise  
+```{r}
+saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
+```

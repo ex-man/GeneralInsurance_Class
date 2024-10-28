@@ -1,0 +1,124 @@
+---
+title: "Exercise 2 - Loss Development"
+output: html_document
+date: "2024-10-27"
+---
+
+#### Exercise 2
+
+Now that we have some idea about the methodology, we'll load our own data. The dataset has information for 2 different lines of business, as well as two different claim sizes. On top of that, we have both paid claims, as well as case reserves. The rest of the dataset should contain information similar to what we've seen in triangles earlier.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ChainLadder)
+
+dt_PaidCase <- read.csv("/cloud/project/Data/lesson3_PaidCase.csv")
+```
+
+We'll start with paid claims and come back to case reserves later.
+
+```{r}
+head(dt_PaidCase)
+summary(dt_PaidCase)
+glimpse(dt_PaidCase)
+View(dt_PaidCase)
+
+dt_PaidCase %>%
+  distinct(Business, ClaimSize, dataset_type)
+```
+
+After we are done with the exploratory analysis, we can filter the data and convert to triangle. And then we will convert the numbers to cumulative using chainladder functions.
+
+*STEP 1: As an example, take paid data for House business and Small claim size*
+
+```{r}
+Paid_HH_sml <- dt_PaidCase %>%
+  filter(Business == "House", ClaimSize == "Small", dataset_type == "PAID")
+```
+
+*STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
+
+```{r}
+?as.triangle
+
+Paid_HH_sml_triangle <- Paid_HH_sml %>%
+  as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
+
+Paid_HH_sml_triangle
+```
+
+*STEP 3: Now start plotting things to see more information. Then predict the future values and visualize again.*
+
+```{r}
+plot(Paid_HH_sml_triangle)
+plot(Paid_HH_sml_triangle, lattice = TRUE)
+
+pred <- predict(chainladder(Paid_HH_sml_triangle))
+plot(pred)
+plot(pred, lattice = TRUE)
+```
+
+*STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
+
+```{r}
+pred
+ata(pred)
+```
+
+*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* 
+HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' 
+HINT2: attr() can be used to extract attributes from an object..
+
+```{r}
+# str(ata(pred))
+ultimate_ata_factor <- pred %>%
+  ata() %>%
+  attr("vwtd") %>%
+  prod()
+ultimate_ata_factor
+```
+
+*STEP 6: Apply the ultimate aging factor to most recent (2016) losses to see their possible ultimate amount. You should get a value located in the right bottom corner of the predicted triangle from step 3*
+
+This represents the expected cumulative payment of claims in the year 2025.
+
+```{r}
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
+# pred
+```
+
+*If you are now comfortable with what this does, try doing the same, but using additional information: The Case data!* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
+
+This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
+
+```{r}
+Paid_HH_sml_triangle_incurr <- dt_PaidCase %>%
+  filter(Business == "House" & ClaimSize == "Small") %>%
+  group_by(Business, ClaimSize, ay, dy) %>%
+  summarize(SumOfamount = sum(SumOfamount)) %>%
+  as.triangle(origin = "ay", dev = "dy", "SumOfamount")
+
+plot(Paid_HH_sml_triangle_incurr)
+plot(Paid_HH_sml_triangle_incurr, lattice = TRUE)
+
+Paid_HH_sml_triangle_incurr_pred <- predict(chainladder(Paid_HH_sml_triangle_incurr))
+plot(Paid_HH_sml_triangle_incurr_pred)
+plot(Paid_HH_sml_triangle_incurr_pred, lattice = TRUE)
+ata(Paid_HH_sml_triangle_incurr)
+ata(Paid_HH_sml_triangle_incurr) %>%
+  attr("vwtd") %>%
+  prod()
+```
+
+### Short or Long tail
+
+In insurance this means how fast is the data fully developed. The age-to-age factors help you understand exactly this. What would the age-to-age factors look like to make the business short/long tail? Are the lines of business in the exercise above short or long tailed?
+
+At the end of the exercise, we'll save two variables for later usage in Exercises 3 and 4.
+
+```{r}
+save(Paid_HH_sml_triangle, ultimate_ata_factor, file="/cloud/project/Data/exercise2_variables.RData")
+```
+

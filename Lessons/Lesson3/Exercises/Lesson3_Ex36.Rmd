@@ -1,0 +1,196 @@
+---
+title: "Exercises 3-6"
+output: html_document
+date: "2024-10-27"
+---
+
+#### Exercises 3-6
+
+Let's load the two variables we'll reuse from previous exercise.
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ChainLadder)
+
+load('/cloud/project/Data/exercise2_variables.RData')
+```
+
+### Short or Long tail
+
+In insurance this means how fast is the data fully developed. The age-to-age factors help you understand exactly this. What would the age-to-age factors look like to make the business short/long tail? Are the lines of business in the exercise above short or long tailed? Try to come up with the mean payment term (weighted average of the duration until the claim is paid)
+
+HINT: (Here you definitely use *paid* claims, and it is enough to calculate weighted average of % age to age factor movements)
+
+#### Exercise 3
+
+*STEP 1: Get the volume weighted age to age factor averages (vwtd) and construct some kind of weight saying which years had the biggest positive or negative movements in loss development*
+
+```{r}
+(Paid_HH_sml_vwtd <- Paid_HH_sml_triangle %>% ata() %>% attr("vwtd"))
+(Paid_HH_sml_wgt_unscaled <- abs(Paid_HH_sml_vwtd - 1))
+```
+
+*STEP 2: Scale the weights so they sum up to 1*
+
+```{r}
+(Paid_HH_sml_wgt_scaled <- Paid_HH_sml_wgt_unscaled / sum(Paid_HH_sml_wgt_unscaled))
+```
+
+*STEP 3: Multiply the scaled weights (percentages) with year indices (vector of numbers from 1 to 9) and sum up*
+
+```{r}
+(Paid_HH_avg_duration <- sum(Paid_HH_sml_wgt_scaled * 1:9))
+```
+
+### Discounting losses
+
+It is very unlikely, that we incur the whole loss on the *very first day*. This allows the insurance company to *invest* the premium received and earn some interest on it. So one way of thinking about our previous example would be to think about *the future value of money* collected at the time of the claim. In reality we need to know the answers now, so *discounting the losses* is more practical then earning interest on premiums.
+
+For discounting, we'll need two things - payment duration (which we estimated in previous exercise) and interest rates. for now we'll just use [risk free rates](https://en.wikipedia.org/wiki/Risk-free_interest_rate).
+
+Usually we would use a formula like this one: `Loss_today = Loss_future * 1/((1 + interest_rate)^(future-today))`
+
+The durations until payments `(future-today)` is a generic answer. Information about the claims history and the payments will help us derive it. We can start at simple averaging (using estimate from previous exercise) and saying that the discounting duration will be equal to average payment duration.
+
+#### Exercise 4
+
+Let's come back to our triangle (House business, Small claim size, paid) and take the most recent losses (2016), bring them to the ultimate value (using ultimate age to age factor) and then discount to present value using 5% interest rate and average duration from previous exercise.
+
+```{r}
+Paid_HH_sml_2016_paid_ultimate <- Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
+Paid_HH_sml_discount_factor <- 1 / (1.05^Paid_HH_avg_duration)
+Paid_HH_sml_2016_paid_ultimate_npv <- Paid_HH_sml_2016_paid_ultimate * Paid_HH_sml_discount_factor
+
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_2016_paid_ultimate
+Paid_HH_sml_2016_paid_ultimate_npv
+```
+
+But we can be more precise in weighting and use the age-to-age factors more precisely. So let's try that... This detailed approach is usually used with the Swap rates for individual durations. You can try that at home...
+
+#### Exercise 5
+
+Now let's be more precise and use the appropriate weights and individual discount factors one by one. Also let's take into account that while loss development is usually increasing (meaning discounting losses), it could also be decreasing. If the losses are decreasing, that means we paid too much upfront, which not only prevents us from investing (no discounting), but it might even mean that we had to borrow some money. That means the losses today are even higher, which we can estimate by putting compounding interest on the losses (instead of discounting)
+
+*STEP1: Determine whether we are going to be discounting or compounding losses up to each specific year. We can use cumulative product of volume weighted age to age factor averages (vwtd) to determine that. Let's apply this to each year index, giving it positive sign in case of discounting and negative sign in case of compounding.*
+
+HINT: cumprod() and sign()
+
+```{r}
+yr_idx <- 1:9
+discount_or_compound <- sign(cumprod(Paid_HH_sml_vwtd - 1))
+yr_idx <- yr_idx * discount_or_compound
+yr_idx
+```
+
+*STEP2: Get more accurate discount factor, by multiplying the weights from Exercise 3 with appropriate discount factor for each year (1/(1+i)\^yr_idx) and sum up to a single number.*
+
+```{r}
+Paid_HH_sml_discount_factor <- sum(Paid_HH_sml_wgt_scaled * (1 / (1.05^yr_idx)))
+Paid_HH_sml_discount_factor
+```
+
+*STEP3: Apply the discount factor to ultimate losses*
+
+```{r}
+Paid_HH_sml_2016_paid_ultimate_npv <- Paid_HH_sml_2016_paid_ultimate * Paid_HH_sml_discount_factor
+
+Paid_HH_sml_triangle["2016", "1"]
+Paid_HH_sml_2016_paid_ultimate
+Paid_HH_sml_2016_paid_ultimate_npv
+```
+
+Recall what is UWR from Lesson 2. Assume premium and expenses are calculated on day 1 and the losses are already ultimate. *Can you calculate a single number, that could be used to discount the claims to arrive to Net present value of UWR?*
+
+First, load and explore the dataset.
+
+```{r}
+dt_KPI <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
+dt_LatestView <- read.csv("/cloud/project/Data/lesson3_latestView.csv") %>%
+  mutate(Dev_Year = Dev_Year + 1)
+
+head(dt_LatestView)
+summary(dt_LatestView)
+```
+
+Re-use the logic from previous exercises and apply it to every business/segment combination to get granular discount factors.
+
+```{r}
+dt_KPI_discount_factors <- dt_LatestView %>%
+  group_by(Business, Segment) %>%
+  group_modify(~ {
+    tr_vwtd <- .x %>%
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>%
+      ata() %>%
+      attr("vwtd")
+
+    wgt_unscaled <- abs(tr_vwtd - 1)
+    wgt_scaled <- wgt_unscaled / sum(wgt_unscaled)
+
+    yr_idx <- seq_along(tr_vwtd)
+    yr_idx <- yr_idx * sign(cumprod(tr_vwtd) - 1) # interest or discount
+
+    discount_factors <- 1 / 1.05^(yr_idx)
+    discount_factor <- sum(wgt_scaled * discount_factors)
+
+    # informative plot
+    plot_title <- paste0(
+      .x$Business[[1]], " Business & ", .x$Segment[[1]], " Segment\n",
+      "Discount factor: ", round(discount_factor, 2)
+    )
+
+    g <- .x %>%
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>%
+      chainladder() %>%
+      predict() %>%
+      plot(lattice = TRUE, main = plot_title) %>%
+      print()
+
+    # return the discount factor, since this is a function
+    data.frame(discount_factor)
+  }, keep = TRUE)
+
+dt_KPI_discount_factors
+```
+
+Add the discount factors to the dataset from Lesson 2. Calculate NPV of UWR and rank order the portfolios accordingly.
+
+```{r}
+# add the discount factors to the data from Lesson2 using 'left_join'
+dt_KPI_w_discount <- dt_KPI %>%
+  left_join(dt_KPI_discount_factors, by = c("Business", "Segment")) %>%
+  mutate(Losses_npv = Losses * discount_factor) %>%
+  mutate(
+    UWR_actual = Premium - (Losses + Expenses),
+    UWR_actual_npv = Premium - (Losses_npv + Expenses)
+  )
+
+# look at business & segment aggregation of UWR and UWR NPV
+dt_KPI_w_discount %>%
+  group_by(Business, Segment) %>%
+  summarize(UWR_actual = sum(UWR_actual), UWR_actual_npv = sum(UWR_actual_npv)) %>%
+  ungroup() %>%
+  mutate(rank_uwr = dense_rank(desc(UWR_actual)), rank_uwr_npv = dense_rank(desc(UWR_actual_npv))) %>%
+  arrange(rank_uwr_npv)
+```
+
+#### Exercise 6
+
+Now, let's have a look at it from the other way around. The following dataset includes the same data you were analysing in class 2, but contains discount factors instead of values.
+
+```{r}
+NPV_data <- read.csv("/cloud/project/Data/lesson3_NPV.csv")
+```
+
+*What is the average duration in all of these cases assuming a discount rate of 3%?*
+
+If discount = 1 / ((1 + interest rate)\^duration), how can we compute the duration?
+
+```{r}
+NPV_data %>%
+  filter(NPV.Loss > 0) %>%
+  mutate(avg_payment_duration = log(NPV.Loss, 1 / 1.03)) %>%
+  dplyr::select(Region, Unit, Segment, Business, avg_payment_duration) %>%
+  arrange(desc(avg_payment_duration))
+```
+

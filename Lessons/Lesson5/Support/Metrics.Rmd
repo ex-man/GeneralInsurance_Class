@@ -1,0 +1,105 @@
+---
+title: "Assessing Model Performance"
+subtitle: Understanding Metrics
+output:
+  html_document:
+    df_print: paged
+    theme: flatly 
+---
+
+In the field of data analysis, several key steps are involved. 
+Initially, a data analyst must prepare the data, explore it, and create a model.
+But how can the data analyst determine whether the model is accurate enough? 
+This is where various cross-validation metrics come into play, 
+providing answers to this critical question.
+However, this raises another important query: 
+With numerous metrics available for evaluating models, 
+how do you choose the right ones for your specific needs? 
+The answer isn't always straightforward. 
+Selecting the best metrics for your model depends on various factors, 
+such as the distribution of your data, the goals of your evaluation, 
+and the context of your analysis.
+
+**Choosing the Right Metrics**
+
+When selecting the most suitable metrics for your model, 
+you should take several factors into consideration. 
+Ask yourself questions like:
+
+- Does my model exhibit a normal distribution or another type of distribution?
+- Am I solely interested in assessing the accuracy of the model, or do I have multiple models and need to identify the best one?
+- Do I want to determine whether additional independent variables enhance the model's accuracy, or is a simpler model sufficient?
+
+Your choice of metrics should align with the answers to these questions.
+It's worth noting that you can explore and compare multiple metrics to gain 
+a more comprehensive understanding of your model's performance.
+
+**Categorizing Metrics**
+
+Based on their purpose, we can categorize these metrics into two main groups:
+
+<style>
+.indented-paragraph {
+    margin-left: 20px; 
+}
+</style>
+
+<div class="indented-paragraph">
+**1. Model Evaluation Metrics**
+
+These metrics are designed to assess the performance of an already chosen model.
+They provide insights into how well the model's predictions align with actual data,
+its predictive accuracy, precision, and ability to capture variability. 
+Some common metrics in this group include:
+
+* **RMSD (Root Mean Square Deviation)**: Measures prediction accuracy, giving more weight to larger errors and being influenced by outliers.
+
+$$RMSE = \sqrt{\frac{\sum_{i=1}^{N}(x_i-\hat{x_i})^2}{N}}$$
+
+* **MAE (Mean Absolute Error)**: Measures prediction accuracy, treating all errors equally and being less sensitive to outliers.
+
+$$MAE = \frac{\sum_{i=1}^{N}|\hat{x_i} - x_i|}{N}$$
+
+* **MAD (Mean Absolute Deviation)**: Measures the spread or variability of data and is not specific to model evaluation.
+
+$$MAD = Median(|x_i - \tilde{x}|)$$
+
+* **R-squared (R²)**: Measures the proportion of variance in the dependent variable explained by the model, offering an overall goodness-of-fit measure.
+
+$$R^2 = \frac{RSS}{TSS} \:\:\:\: or \:\:\:\: R^2 = 1-  \frac{ESS}{TSS} $$
+
+<br/>
+
+<style>
+ul.a {list-style-type: circle; margin-left: 20px;}
+</style>
+
+<ul class="a">
+  <li>$TSS$ *Sum of squares of Total* - total variance: $TSS = \sum_{i=1}^{N}(x_i-\tilde{x})^2$ </li>
+  <li>$ESS$ *Sum of squares of Errors* - unexplained variance: $ESS = \sum_{i=1}^{N}(x_i-\hat{x_i})^2$</li>
+  <li>$RSS$ *Sum of squares of Regression* - explained variance: $RSS = \sum_{i=1}^{N}(\hat{x_i}-\tilde{x})^2$</li>
+  <li>$TSS = RSS+ESS$</li>
+</ul>
+
+Where: 
+
+* $x_i$ - actual value
+* $\hat{x_i}$ - predicted value
+* $\tilde{x_i}$ - mean value
+* $N$ - number of observation
+
+**2. Model Selection Metrics**
+
+These metrics are primarily used to choose the most appropriate model from a set of candidates. 
+They strike a balance between model goodness of fit and model complexity, 
+with lower values being favored. Common metrics in this category include:
+
+* **AIC (Akaike Information Criterion)**
+* **BIC (Bayesian Information Criterion)**
+* **LL (Log Likelihood)**
+
+</div>
+
+It's important to note that the provided formulas relate to models with 
+a normal distribution and a single dependent variable. 
+For more complex models, adjustments to the formulas may be necessary.

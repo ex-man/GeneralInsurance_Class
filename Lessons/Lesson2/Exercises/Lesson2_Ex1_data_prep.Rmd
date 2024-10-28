@@ -1,0 +1,117 @@
+---
+title: "Data inspection and preparation for lesson 2"
+output:
+  html_notebook:
+    df_print: paged
+    number_sections: yes
+    toc: yes
+---
+
+# Setup
+
+## Load libraries
+
+```{r}
+# libraries
+# install.packages("tidyverse")
+# install.packages("rmarkdown")
+library(dplyr)
+library(ggplot2)
+```
+
+## Load data
+
+```{r}
+# load data and replace empty strings with expliti NAs
+dt_KPI_raw <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
+dt_KPI_raw[dt_KPI_raw == ""] <- NA
+```
+
+# Data inspection
+## What type of information do we have?
+> Hint: To have a quick overview of data use glimpse() function from dplyr
+
+```{r}
+dt_KPI_raw %>% glimpse() # or glimpse(dt_KPI_raw)
+```
+
+It is good to know what your data contains and what the column names mean,
+usually Data Governance team could help you with this question.
+For now let's assume we know what our columns mean.
+
+## What do the columns contain?
+> Hint: The function summary() might help you to answer this question
+
+```{r}
+dt_KPI_raw %>% summary()
+```
+
+# Looking for defects in data 
+## Are there any missing values?
+As a first task, try to find missings for a specific column only
+```{r}
+# Select a column from dataset (e.g. Business)
+# Use appropriate function(s) to detect missing values
+# Count the missing values
+
+# Business == NA # nefunguje
+is.na(dt_KPI_raw) %>% sum()
+# dt_KPI_raw$Business
+# dt_KPI_raw$Business
+# dt_KPI_raw[["Business"]]
+is.na(dt_KPI_raw$Business) %>% sum()
+is.na(dt_KPI_raw$Business) %>% mean() * 100
+# is.na(dt_KPI_raw$Region) %>% which() %>% length()
+```
+
+Can you generalize this process for the whole dataset? 
+> Hint: Can you use any kind of loop here?
+
+```{r}
+# Your code
+for (column in names(dt_KPI_raw)) {
+    print(column)
+    print(is.na(dt_KPI_raw[[column]]) %>% sum())
+}
+```
+
+Are there any values that don't make any sense in the context of the data? 
+Which values are not allowed for specific columns? Let's have a look at individual columns.
+> Hint: Be prepared to deal with continuous and categorical values as well
+
+```{r}
+dt_KPI_raw %>% summary()
+```
+
+# Correction of defects 
+## What is the feasible way to repair missing values? 
+> Hint: Have a look at function na.omit
+
+```{r}
+dt_KPI_clean <- dt_KPI_raw %>% na.omit()
+dt_KPI_clean
+```
+
+Discussion - have you heard of solutions to fill in missing values without dropping the dataset rows?
+
+## What is the feasible way to repair values that don't make sense?
+> Hint: Look at numeric columns
+
+```{r}
+dt_KPI_clean %>% summary()
+
+dt_KPI_clean <- dt_KPI_clean %>%
+    mutate(
+        Premium = abs(Premium),
+        Expenses = abs(Expenses),
+        Losses = abs(Losses)
+    )
+# dt_KPI_clean$Premium <- f(dt_KPI_clean$Premium)
+dt_KPI_clean %>% summary()
+```
+
+## Save the dataset for future usage
+
+```{r}
+saveRDS(dt_KPI_clean, "/cloud/project/Data/lesson2_KPI_clean.rds")
+```

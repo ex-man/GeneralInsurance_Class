@@ -6,13 +6,15 @@ Many people naturally see insurance as something they keep paying as they "shoul
 
 If we take away all the "standard" functions that work in all industries (accountants, project managers, risk managers, IT, ...) we get to someone who is called "Actuary" and "Underwriter". Both are trying to manage risk (likelihood of accidents) and money (the premium) so that the company is profitable, but one (*the actuary*) is looking at the data and the other (*the underwriter*) is using his experience and professional judgment. In this course we will focus on the data aspect.
 
+During this course we might be using the terms 'actuary' and 'actuarial analysts' interchangeably, but it's important to emphasize, that certified actuaries require extra certification. Uncertified actuaries are usually called actuarial analysts and this is where the actuarial career begins for most people.
+
 ## Actuaries predicting future
 
 The role of *actuaries* in insurance is to try to project the trends in data and find out what the future claims are going to be before they happen, so that we can collect enough money up front to fund them. There are 2 types of "future":
 1) Short term - within next year e.g. when you buy your next contract (focus of General Insurance)
 2) Long term - many many years e.g. when people retire (focus of Life Insurance)
 
-This time horizon drives everything. Methods, analysis, type of work, ... All is driven by the "timing of the projection".
+This time horizon drives everything. Methods, analysis, type of work, softwares ... All is driven by the "timing of the projection".
 This part of the course is specifically looking at General insurance => annual cycle of:
 1) Collect premium
 2) Have (or do not have) claims
