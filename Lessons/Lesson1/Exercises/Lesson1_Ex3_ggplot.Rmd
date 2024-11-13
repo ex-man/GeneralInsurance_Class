@@ -24,7 +24,7 @@ ggplot(data = dt_KPI, aes(x = Premium, y = Expenses)) +
   geom_point()
 ```
 
-> We used `ggplot` function specifying *data* set to use, `aes` function to specify *aestetics* (visualisation) and *geoms* function `geom_point` to specify how data should be represemeted.  
+> We used `ggplot` function specifying *data* set to use, `aes` function to specify *aestetics* (visualisation) and *geoms* function `geom_point` to specify how data should be represented.  
 > Note that `+` serves as sign to add geom layer to a chart. We will use this technique in future steps as well.  
 
 

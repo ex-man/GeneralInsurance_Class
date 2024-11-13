@@ -6,4 +6,3 @@
 2) [Data Preparation for modeling](Exercises/Lesson4_Ex1_DataPrep.Rmd)
 3) [Target analysis](Exercises/Lesson4_Ex2_TargetAnalysis.Rmd)
 4) [GLM Motivation](Support/02_glm_motivation.md)
-5) [Basic GLM](Exercises/Lesson4_Ex3_BasicGLM.Rmd)
