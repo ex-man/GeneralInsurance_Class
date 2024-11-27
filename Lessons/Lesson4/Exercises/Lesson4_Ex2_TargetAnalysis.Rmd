@@ -1,6 +1,10 @@
 ---
 title: "Target Analysis"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 
 # Looking for a good Target
@@ -215,7 +219,37 @@ for (var_nm in all_vars) {
 }
 ```
 
+### Burning Cost per Year
+
+The Burning Cost measures the overall cost per unit of exposure. While we discussed Burning Cost per day, in insurance practice, it is more common to use Burning Cost per year (in our case _dollar loss per year insured_). By converting `Time_Exposure` to a fraction of a year using the exact number of days in each year, this normalization ensures that Burning Costs are comparable on a per-year basis and that `Time_Exposure` values are in the range (0, 1].
+
+```{r}
+# TODO: Normalize Time_Exposure to a fraction of a year. Compute Burning_Cost as Ult_Loss per year. 
+# Hint: Use the `leap_year` function from lubridate to determine the number of days in the year.
+dt_pol_w_claims <- dt_pol_w_claims %>%
+  mutate(
+    Time_Exposure = as.numeric(
+      as.integer(Time_Exposure) /
+      ifelse(
+        lubridate::leap_year(lubridate::dmy(Dt_Exp_Start)),
+        366,
+        365
+      )
+    ),
+    Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / Time_Exposure)
+  )
+
+# Show top 5 riskiest records based on burning cost
+dt_pol_w_claims %>%
+  arrange(desc(Burning_Cost)) %>%
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) %>%
+  head(5)
+```
+
 Let's save the dataset for next exercise  
 ```{r}
 saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims_target.rds")
 ```
+
+GLM Short Video - https://youtu.be/ddCO2714W-o?feature=shared
+GLM Short Article - https://towardsdatascience.com/generalized-linear-models-9cbf848bb8ab

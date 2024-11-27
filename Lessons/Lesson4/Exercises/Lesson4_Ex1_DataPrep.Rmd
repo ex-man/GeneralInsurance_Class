@@ -1,6 +1,8 @@
 ---
 title: "Data Preparation"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Policy and Claims data exploration
@@ -102,7 +104,6 @@ dt_Claims <- dt_Claims %>%
   mutate(ClmYr = lubridate::year(Date_of_loss))
 
 # Aggregate to desired granularity
-
 dt_Claims <- dt_Claims %>%
   group_by(NrPolicy, NrObject, ClmYr) %>%
   summarize(Paid = sum(Paid), Reserves = sum(Reserves)) %>%
@@ -117,7 +118,18 @@ dt_Claims %>%
 
 ### Merge Policy and Claims information together
 
-Cool! Let's finally join policies and claims together. Note that there are multiple types of joins. Most often we use either left join (preserves left dataset) or inner join (intersection between datasets). Since not every policy will have a claim, we will be using left join to preserve policy information.
+Cool! Let's finally join policies and claims together. 
+To join one table to another based on some variable(s), we can use a `___join()` functions. There are multiple types of joins. 
+
+![joins](/cloud/project/Support/join_diagram.png)
+
+- left join(): keeps all observations in x 
+- inner join(): keeps observations from x that have a matching key in y (intersection between datasets) 
+- full_join(): keeps all observations in x and y
+− semi_join(): keeps observations from x that have a matching key in y and never duplicate rows of x (intersection between datasets)
+− anti_join(): returns all rows from x without a match in y
+
+Since not every policy will have a claim, we will be using left join to preserve policy information.
 
 ```{r}
 dt_pol_w_claims <- dt_Policy %>%
