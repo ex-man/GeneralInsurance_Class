@@ -5,7 +5,7 @@
 
 ## 2. Da sa na premennu aplikovat uprava (feature engineering), ktora by zjednodusila jej vizualizaciu a interpretaciu? 
 ## Ak ano, aplikuj tuto upravu.
-## HINT: Precitaj si text na konci notebooku `02_Modeling`.
+## HINT: Precitaj si text na konci notebooku `Ex3_InsuranceModeling`.
 
 ## 3. Pridaj dalsie 2 premenne tak, aby si sa pokusil minimalizovat RMSE vypocitane na trenovacich datach.
 
