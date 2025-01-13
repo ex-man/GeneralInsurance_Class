@@ -1,0 +1,256 @@
+---
+title: "Feature engeneering"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Most of the real-world data that data scientists work with are raw data, meaning that it can contain repeated, missing, and irrelevant entries of information. If this data is used in any machine learning analysis without cleaning, it will result in low accuracy or incorrect predictions. For this reason, data cleaning, is an important technique that comes prior to any model building.
+
+Messy data can lead to the "garbage-in, garbage-out" effect, resulting in unreliable outcomes. There are many ways in which the data can be messy. For example, data could contain duplicates or unnecessary information, missing values, outliers, inconsistent text, and typos. Data sourcing issues could also appear, which could be caused by data being sourced from multiple systems or different database types, among other reasons.
+
+So in this markdown, we will prepare our data for modeling purposes. Firstly, we will look at Exploratory Data Analysis (EDA - https://r4ds.hadley.nz/eda) and then we will do data cleaning to prepare our data for modeling. EDA is simply exploratory data analysis where we look at the data and explore its parameters.
+
+```{r, include=FALSE}
+# Check whether required packages are installed. If not, install them
+libs <- c("dplyr", "tidyr", "summarytools")
+lapply(libs, function(lib) {
+  if (!lib %in% installed.packages()) install.packages(lib)
+})
+
+# Load the required packages
+library(dplyr)
+library(tidyr)
+library(summarytools)
+
+# Prevent scientific notation
+options(scipen = 5)
+```
+
+Load the data from Lesson 5 where we prepared Claims and Policy information in one dataset. 
+
+```{r}
+# Load the data
+dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds")
+```
+
+Let's look at our dataset through EDA.
+
+```{r}
+# Run EDA
+dfSummary(dt_pol_w_claims) %>% 
+  stview()
+```
+
+We can see that there are 30 504 observations and 27 variables. There are no duplicated values, but there are some missing values within some columns. The data includes date information, duplicated information (D_age, D_age banded), columns with a lot of categories, and columns with levels that have a small number of observations. Therefore, we need to adjust this data and prepare it for modeling.
+
+As defined in the last session, our target variables is the *Burning_cost*, and weights are represented within the *Time_exposure variable*.
+
+Firstly, we will handle the **missing values**. Within EDA, we saw that there are some missing values. Based on the data exploration, let's either delete these observations or replace the missing values. 
+
+```{r}
+# Replace NA in ClmYr, Paid, Reserves, Time_Exposure, Ult_Loss with 0 - Represents no claim
+no_claim <- c("ClmYr", "Paid", "Reserves", "Time_Exposure", "Ult_Loss")
+
+# For these 14 observations, there are missing values across multiple features - drop these observations
+# Extract the policy number based on which observations will be deleted
+delete_rows <- dt_pol_w_claims %>% 
+  filter(
+    is.na(D_age) & is.na(VEH_type) & is.na(Construct_year) & is.na(Capacity) & is.na(Nr_of_seats)
+  ) %>% 
+  select(NrPolicy) %>% 
+  pull()
+
+data <- dt_pol_w_claims %>%
+  # Delete observations with missing values across multiple variables
+  filter(!NrPolicy %in% delete_rows) %>% 
+  mutate(
+    # Replace NAs with 0 in the case of no claim
+    across(all_of(no_claim), ~ replace_na(., 0)),
+    # Replace remaining NAs with -1 (unknown) (D_age 63x, Capacity 3x)
+    across(all_of(c("D_age", "Capacity")), ~ replace_na(., -1))
+  )
+```
+
+From the EDA report (and data dictionary), we can see that there are some features within the dataset that are unnecessary. Let's delete this information from the dataset.
+- Delete date information as we already have information about the year (Dt_Exp_Start, Dt_Exp_End).
+- Delete identification numbers (NrPolicy, NrObject).
+- Delete duplicated information about driver age (D_age_banded, Veh_type1) as they are potentially correlated.
+- Delete Nr_payments as we don't know exactly what it means.
+- Delete information about the paid premium as this information is duplicated (Paid, Reserves, Ult_Loss, Premium_earned, ClmYr).
+After these adjustments, only related predictors are kept in the dataset.
+
+```{r}
+# Delete unnecessary columns
+data <- data %>% 
+  select(
+    -all_of(
+      c(
+        "Dt_Exp_Start", 
+        "Dt_Exp_End",
+        "NrPolicy",
+        "NrObject",
+        "Nr_payments", 
+        "D_age_banded",
+        "Veh_type1",
+        "Paid", 
+        "Reserves",
+        "Ult_Loss",
+        "Premium_earned",
+        "ClmYr"
+      )
+    )
+  ) 
+```
+
+Thanks to EDA, we can see how the variables look, how many and what kind of levels they have, the distribution of the variables, minimum and maximum values, and other statistical information about the variables.
+
+Since our dataset contains a few variables with a lot of levels with low exposure (for example, Veh_type1 has some levels with exposure around 1% of the entire dataset), we need to adjust these variables and merge categories. We usually merge categories based on the following rules of thumb:
+- Categories with low exposure (weight) can be merged with the base category (most frequently occurring).
+- Categories with zero target values can be merged with the base category.
+- Categories with enough exposure but very similar coefficients/multipliers (meaning) can be merged together.
+
+As a next step, we can try capping some variables. This means setting a cap (floor or ceiling) on the minimum, maximum (or both) value.
+
+```{r}
+# Adjust the predictors
+data <- data %>%
+  mutate(
+    # Merge categories with low exposure
+    Veh_type2 = ifelse(
+      Veh_type2 %in% c("", "OTHER", "TRACTOR"), 
+      "CAR", 
+      Veh_type2
+    ),
+    VEH_type = case_when(
+      VEH_type == 3 ~ 1,
+      VEH_type %in% c(48, 50) ~ 51,
+      VEH_type == 55 ~ 56,
+      VEH_type %in% c(90, 92, 107) ~ 91,
+      VEH_type == 128 ~ 123,
+      .default = (VEH_type)
+    ),
+    # For levels with less than 100 exposure, group them into an 'others' level
+    VEH_brand = forcats::fct_lump_min(VEH_brand, min = 100),
+    # Select only the first number to group regions
+    D_ZIP = substr(D_ZIP, 1, 1),
+    # Set the higher or lower values to be equal to the bounds of our selected interval
+    Time_on_book = ifelse(Time_on_book > 20, 20, Time_on_book),
+    D_age = ifelse(D_age < 20, 20, D_age),
+    BonusMalus = ifelse(BonusMalus < -1, -1, BonusMalus),
+    Construct_year = case_when(
+      Construct_year < 2005 ~ 2005,
+      Construct_year > 2015 ~ 2015,
+      .default = Construct_year
+    ),
+    Capacity = case_when(
+      Capacity < 0 ~ 0,
+      Capacity > 3500 ~ 3500,
+      .default = Capacity
+    ),
+    Nr_of_seats = case_when(
+      Nr_of_seats < 1 ~ "1",
+      Nr_of_seats >= 7 ~ "7+",
+      .default = as.character(Nr_of_seats)
+    )
+  )
+```
+
+Now that we have adjusted the dataset, kept only the necessary information related to our target variable, handled missing values, and adjusted the variables and their levels to make sense, we need to specify the variable types. 
+
+Defining the variable types is crucial for modeling, especially when using techniques like GBM and other ML methods. Different types of variables are treated differently by the algorithms, and specifying the correct type ensures that the model interprets the data correctly and yields accurate predictions.
+
+**Variable Types:**
+
+1. **Ordered Variables**: These are categorical variables with a meaningful order or ranking. For example, "low," "medium," and "high" risk levels. In modeling, ordered variables help the algorithm understand the hierarchy and relationships between the categories.
+
+2. **Numerical Variables**: These are variables that represent quantities and can take on a wide range of numerical values. Numerical variables are essential for modeling as they provide continuous data that can be used to identify trends and patterns.
+
+3. **Factor Variables**: Also known as categorical variables, these are variables that represent distinct categories or groups. Examples include gender, vehicle type, and policy type. Factor variables are important for modeling because they help the algorithm understand and differentiate between different groups or categories.
+
+By correctly specifying the variable types, we ensure that our GBM and ML models can accurately interpret the data, leading to better performance and more reliable predictions.
+
+```{r}
+# Specify variable types
+ordered_variables <- c(
+  "Year"
+)
+
+numerical_variables <- c(
+  "Time_on_book",
+  "D_age",
+  "BonusMalus",
+  "Construct_year",
+  "Capacity",
+  "Sum_insured",
+  "Time_Exposure",
+  "Burning_Cost"
+)
+
+factor_variables <- c(
+  "Customer_Type",
+  "D_ZIP",
+  "VEH_type",
+  "Veh_type2",
+  "VEH_brand",
+  "Nr_of_seats"
+)
+
+data <- data %>% 
+  mutate(
+    # Change variable types as needed
+    across(all_of(factor_variables), ~ as.factor(.)),
+    across(all_of(ordered_variables), ~ as.ordered(.)),
+    across(all_of(numerical_variables), ~ as.numeric(.))
+  )
+
+# Examine variables
+str(data)
+```
+
+After adjusting the variable types, we have 1 ordered variable, 8 numerical ones, and 6 factors. Most ML models struggle with categorical variables (factors) because ML models typically work best with numerical data. This is because numerical data can easily be processed by mathematical operations, which are fundamental to ML algorithms.
+
+Within our dataset, we have 6 factors, and one of them has 31 levels. Handling these categorical variables is crucial for our modeling process. In the next part of the lesson, we will explore how to treat these categorical variables.
+
+Let's check the distribution of the target variable:
+
+```{r check distribution of burning costs}
+summary(data$Burning_Cost)
+```
+
+Capping large or extreme values in the target variable can be beneficial because it reduces the influence of outliers, improves model stability, enhances performance metrics, prevents overfitting, normalizes data distribution, and leads to more interpretable models. This helps in building models that generalize better to new data.
+
+```{r check distribution of burning costs 2}
+data %>%
+  group_by(Burning_Cost) %>%
+  count() %>%
+  arrange(desc(Burning_Cost)) %>%
+  head()
+```
+
+Let's calculate what is the theoretical maximum loss we should observe in our data with a 99.5% probability
+
+```{r cap large losses 1}
+prob_max_bc <- quantile(subset(data$Burning_Cost, data$Burning_Cost > 0), 0.995)
+prob_max_bc
+```
+
+We will cap all losses above this value. In our case it's just two observations:
+
+```{r cap large losses 2}
+data <- data %>%
+  mutate(
+    Burning_Cost = ifelse(Burning_Cost >= prob_max_bc, prob_max_bc, Burning_Cost)
+  )
+
+summary(data$Burning_Cost)
+```
+
+
+```{r}
+saveRDS(data, "/cloud/project/Data/data_gbm.rds")
+```

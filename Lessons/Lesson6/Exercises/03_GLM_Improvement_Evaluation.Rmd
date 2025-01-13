@@ -1,0 +1,213 @@
+---
+title: "Enhancing GLM with GBM and Model Evaluation"
+output:
+  html_document:
+    df_print: paged
+---
+
+*Before running chunks within this markdown file, run all chunks in 01_GBM_Basic.Rmd and 02_GBM_Tuning.Rmd.*
+
+```{r load setup}
+# Load all required files. function, packages
+libs <- c("Ckmeans.1d.dp")
+lapply(libs, function(lib) {
+  if (!lib %in% installed.packages()) install.packages(lib)
+})
+
+# Load the required packages
+library(dplyr)
+library(xgboost)
+library(ggplot2)
+library(caret)
+library(plotly)
+library(tidyr)
+
+# Source support functions
+functions_path <- file.path("/cloud/project/Support/functions")
+functions_files <- list.files(
+  functions_path, 
+  pattern = "\\.R$"
+)
+
+invisible(lapply(file.path(functions_path, functions_files), source))
+
+# Load all necesarry objects from previuos reports
+data_part_03 <- readRDS(file = "/cloud/project/Data/data_part_03.rds")
+
+xgb_final <- data_part_03$xgb_final
+test <- data_part_03$test
+oneway_plots <- data_part_03$oneway_plots
+```
+
+As mentioned in the GBM motivation, we can *use GBM to improve GLM*. In the previous parts, we ran a basic GBM, tuned the GBM, and found the model with the best performance. We also learned how to interpret the model. Now, we will use this knowledge from GBM to enhance the performance of our GLM.
+
+The key idea here is to leverage the insights gained from the GBM to refine our GLM. Specifically, we will select only the most important variables identified by the GBM, adjust them using PDP and evaluate the performance of the GLM model. This approach helps us create a more efficient and potentially more accurate GLM by focusing on the most impactful predictors.
+
+In this script, we will then compare the GLM model created using insights from the GBM with the GLM models that were created in Lesson 5. We will also evaluate the impact of adding or removing variables and their feature engineering on the model's performance. This comparison will help us understand how the enhancements based on GBM insights affect the GLM's accuracy and reliability and why feature engineering and data preparation are important steps in the modeling process.
+
+Let's look at the tuned GBM model. We can see that there are still some overestimated or underestimated areas on the lift curve, but overall, the model fits well. (However, there is still room for improvement, and you can try to improve the model at home by adjusting the hyperparameters or feature engineering.)
+
+```{r lift chart}
+# Overall model performance
+lift_curve(
+  data = test,
+  target_variable = "Burning_Cost",
+  weights_input = "Time_Exposure",
+  pred_fun = calculate_predictions,
+  is_apply_onehot = TRUE,
+  object = xgb_final
+)
+```
+
+The feature importance chart shows which variables are the most important in our model. The most important variables are BonusMalus, Sum_insured, Constructed_year, Capacity, D_age, etc. These are the variables we will include in our final GLM model.
+
+```{r feature importance}
+# The most important variables
+xgb_fi <- xgb.importance(model = xgb_final)
+xgb.ggplot.importance(xgb_fi)
+```
+
+Let's also look at the trends of these important variables. For example, on the BonusMalus chart, we can see that as the BonusMalus level increase, the Burning Costs decrease.
+
+We can see that the most important variables are numeric. Now, we will adjust them, band or cap them by PDP, and change the variable type of some variables to categorical ones to improve the model.
+
+```{r oneway}
+# One way plot with PDP 
+
+# important_vars <- xgb_fi$Feature[1:7]
+# 
+# for (var in important_vars) {
+#    calculate_oneway(
+#     data = test,
+#     model = xgb_final,
+#     var = var,
+#     pred_fun = calculate_predictions,
+#     is_apply_onehot = TRUE,
+#     target_name = "Burning_Cost",
+#     weight_name = "Time_Exposure"
+#   )
+# }
+
+oneway_plots
+```
+
+Firstly load the data and models from Lesson 5, adjust the most important variables on these data, and create a new GLM model using the adjusted most important variables.
+
+```{r}
+# Load models and data from lesson 5
+glm_models <- readRDS(file = "/cloud/project/Data/glm_models.rds")
+
+train <- glm_models$train
+train_actual <- train$Burning_Cost
+train_weight <- train$Time_Exposure
+valid <- glm_models$valid
+```
+
+```{r}
+# Adjust the most important variables by PDP 
+
+# Train 
+train <- train %>% 
+  mutate(
+    # Capacity PDP
+    #  0-1300 flat, 1300-2000, 2000-3000, 3000 - INF
+    Capacity_banded = cut(
+      Capacity,
+      breaks = c(-Inf, 1300, 2000, 3000, Inf),
+      dig.lab = 6
+    ),
+    # D_age
+    #  decreasing up to 40, then increasing and after 70 flat
+    D_age_banded = cut(
+      D_age,
+      breaks = c(-Inf, seq(20, 70, 10), Inf),
+      dig.lab = 6
+    ),
+    # Sum_insured increasing trend up to 15000 - than flat
+    Sum_insured_capped = ifelse(Sum_insured > 15000, 15000, Sum_insured),
+    # Small amount of levels - categorical variables
+    BonusMalus_capped = as.factor(ifelse(BonusMalus < 0, 0, BonusMalus)),
+    Time_on_book_capped = as.factor(ifelse(Time_on_book > 20, 20, Time_on_book))
+  )
+
+# Valid 
+valid <- valid %>% 
+  mutate(
+    # Capacity PDP
+    #  0-1300 flat, 1300-2000, 2000-3000, 3000 - INF
+    Capacity_banded = cut(
+      Capacity,
+      breaks = c(-Inf, 0, 1300, 2000, 3000, Inf),
+      dig.lab = 6
+    ),
+    # D_age
+    #  decreasing up to 40, then increasing and after 70 flat
+    D_age_banded = cut(
+      D_age,
+      breaks = c(-Inf, seq(20, 70, 10), Inf),
+      dig.lab = 6
+    ),
+    # Sum_insured increasing trend up to 20000 - than flat
+    Sum_insured_capped = ifelse(Sum_insured > 20000, 20000, Sum_insured),
+    # Small amount of levels - categorical variables
+    BonusMalus_capped = as.factor(ifelse(BonusMalus < 0, 0, BonusMalus)),
+    Time_on_book_capped = as.factor(ifelse(Time_on_book > 20, 20, Time_on_book))
+  )
+```
+
+Let's create a GLM model using insights from GBM and include the variables identified as most important. However, since we identified that Veh_type2 is correlated with Construct_year and was an important variable in Lesson 5 models, we will use the Veh_type2 variable instead of Capacity.
+
+Let's fit two models: the first with the 7 most important variables, and the second with the 3 most important variables.
+
+```{r}
+# Enhancing GLM with GBM
+# 7 most important variables by GBM
+final_glm1 <- glm(
+  data = train,
+  formula = Burning_Cost ~ BonusMalus_capped + Sum_insured_capped + Veh_type2_merged + D_age_banded + Time_on_book_capped + Year,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+# 3 most important variables by GBM
+final_glm2 <- glm(
+  data = train,
+  formula = Burning_Cost ~ BonusMalus_capped + Sum_insured_capped + Veh_type2_merged,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+```
+
+Now, let's compare the models from Lesson 5 with our enhanced GLM models using insights from GBM to see if the new models are better than the previous ones.
+
+```{r}
+# Create list of models
+model_list <- list(
+  "model1 \n add \n Veh_Type2" = glm_models$model1,
+  "model2 \n add \n Construct_Year" = glm_models$model2,
+  "model3 \n merge \n Veh_Type2" = glm_models$model3,
+  "model4 \n cap \n Construct_Year" = glm_models$model4,
+  "model5 \n GLM with GBM \n 7 vars" = final_glm1,
+  "model6 \n GLM with GBM \n 3 vars" = final_glm2
+)
+
+# Compare models RMSE
+compare_models(model_list)
+```
+
+We'll create a small visualization on top of the table with metrics.
+
+```{r}
+# Plot model comparison
+compare_models(model_list) %>%
+  ggplot(aes(x = model_nm, y = train_rmse, group = 1)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Training RMSE")
+
+compare_models(model_list) %>%
+  ggplot(aes(x = model_nm, y = valid_rmse, group = 1)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Validation RMSE")
+```

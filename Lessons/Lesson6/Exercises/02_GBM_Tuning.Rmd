@@ -1,0 +1,177 @@
+---
+title: "GBM hyperparameter tuning"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Before running chunks within this markdown file, run all chunks in 02_GBM_Interpretation.Rmd.*
+
+In the previous part, we created a *baseline XGBoost with close to default parameters* . This initial model gives us a starting point to understand the basic performance of the model with only slight adjustment. While it provides an initial understanding of how the model performs, it is often not the most optimize version.
+
+Now, we will *tune our model to achieve the best performance*. Tuning a model involves adjusting its *hyperparameters* to improve its accuracy and predictive power. The goal is to find the best combination of hyperparameters that result in the highest model performance on our dataset, leading to better predictions and more reliable results.
+
+There are several techniques for tuning a model:
+
+1.  **Grid Search**: This method systematically explores a predefined set of parameter values. It is thorough but can be time-consuming and resource-hungry.
+
+2.  **Random Search**: This method selects hyperparameters at random within a specified range. It is better in terms of speed and complexity compared to grid search.
+
+However, both of these techniques share a common problem---they don't take previous iterations into consideration while searching for optimal hyperparameters.
+
+3.  **Bayesian Optimization**: This method finds relatively good hyperparameter combinations in relatively few iterations by using a probabilistic function that considers previous evaluation results.
+
+For our model tuning, we will use *grid search*. Although it can be time-consuming, it is straightforward and ensures that we explore all predefined combinations of hyperparameters to find the best one for our model.
+
+```{r}
+# Check whether required packages are installed. If not, install them
+libs <- c("xgboost", "dplyr")
+lapply(libs, function(lib) {
+  if (!lib %in% installed.packages()) install.packages(lib)
+})
+
+# Load the required packages
+library(dplyr)
+library(xgboost)
+```
+
+```{r source support functions}
+# source support functions
+functions_path <- file.path("/cloud/project/Support/functions")
+functions_files <- list.files(
+  functions_path, 
+  pattern = "\\.R$"
+)
+
+invisible(lapply(file.path(functions_path, functions_files), source))
+```
+
+To perform tuning using a grid search, we first need to define the parameters we want to tune and the values to be examined within the model. Some parameters were already defined and set in the previous part - Basic GBM. Since we are predicting the burning costs, we will set our objective to "reg:tweedie" and tweedie_variance_power to 1.85.
+
+In the grid search, we will not examine the number of iterations because we will use the early_stopping_rounds parameter, which stops early if there are no improvements in the model. Therefore, we will set the number of iterations to 1,000 and the early stopping condition to 10 -- meaning if performance does not improve for 10 runs, the calculations will stop.
+
+However, we will optimize the following parameters: - **max_depth**: The maximum depth of a tree (default is 6). - **eta**: The learning rate (default is 0.3). - **min_child_weight**: The minimum sum of instance weight needed in a child (default is 1).
+
+Setting values within the grid search can be challenging because we do not know in advance which parameters will make the model perform best. Tuning parameters is a multi-step process where you first look at the results from the initial round of hyperparameter tuning, then adjust them, and run again. This process is repeated until you are satisfied with the model. Additionally, setting many possibilities in the grid search can be problematic because it runs the models with all combinations of the parameters, which could lead to a high number of model runs.
+
+So now let's set up the random grid search.
+
+```{r define grid}
+# Defines the grid of parameters to search over
+param_grid <- expand.grid(
+  max_depth = c(3,6),
+  eta = c(0.1,0.05),
+  min_child_weight = c(1000,1500),
+  objective = "reg:tweedie",
+  tweedie_variance_power = 1.85
+)
+
+# param_grid <- expand.grid(
+#   max_depth = c(1,2,3,4,5,6),
+#   eta = seq(0.01, 0.3, by = 0.01),
+#   min_child_weight = seq(500, 2000, by = 50),
+#   objective = "reg:tweedie",
+#   tweedie_variance_power = 1.85
+# )
+# 
+# set.seed(123)
+# param_grid <- param_grid %>%
+#   sample_n(2000)
+
+param_grid
+```
+
+In the following code, we will create a list to store the results and update it with the best parameters that lead to the best-performing model. We will use a `for` loop to search across all possible combinations of the parameters and save the best one.
+
+**Note**: We will not run this grid search within this lesson as it may take a considerable amount of time, and we do not want to lose time on it. However, we have run it before, and found the best combination of parameters (at the end of the markdown). If you want to try it by yourself, you can run the grid search at home.
+
+```{r execute random grid search}
+# Initialize variables to store results
+ntrees <- c()
+tweedie_nloglik <- c()
+rmse_10groups <- c()
+
+# Perform grid search
+for(i in 1:nrow(param_grid)) {
+  current_params <- list(
+    max_depth = param_grid[i,"max_depth"],
+    eta = param_grid[i, "eta"],
+    min_child_weight = param_grid[i, "min_child_weight"],
+    objective = param_grid[i, "objective"],
+    tweedie_variance_power = param_grid[i, "tweedie_variance_power"]
+  )
+  
+  # Train the model with early stopping
+  model <- xgb.train(
+    params = current_params,
+    data = dtrain,
+    nrounds = 10000,
+    watchlist = list(train = dtrain, test = dvalid),
+    early_stopping_rounds = 20,
+    verbose = 0
+  )
+
+  fitted <- calculate_predictions(
+    object = model,
+    X = valid %>% select(-Burning_Cost,-Time_Exposure),
+    is_apply_onehot = TRUE
+  )
+  
+  # Get the best RMSE for the current model
+  ntrees[i] <- model$best_iteration
+  tweedie_nloglik[i] <- model$best_score
+  rmse_10groups[i] <- rmse_group(valid$Burning_Cost, fitted, valid$Time_Exposure, n_groups = 10)
+  
+  print(paste0("Combination ",i," out of ",nrow(param_grid)," with score ",tweedie_nloglik[i]," ready."))
+}
+
+param_grid <- param_grid %>% cbind(ntrees, tweedie_nloglik, rmse_10groups)
+
+#saveRDS(param_grid, "data/grid_search.rds")
+```
+
+*The best combination of parameters* is as follows:
+
+```{r best parameters}
+# load the precalculated grid search
+param_grid <- readRDS("/cloud/project/Data/grid_search.rds")
+
+best_param_comb <- param_grid %>%
+  filter(rmse_10groups == min(rmse_10groups))
+
+best_params <- list(
+  max_depth = best_param_comb$max_depth,
+  eta = best_param_comb$eta,
+  min_child_weight = best_param_comb$min_child_weight,
+  objective = best_param_comb$objective,
+  tweedie_variance_power = best_param_comb$tweedie_variance_power
+)
+
+best_param_comb
+```
+
+So, let's run the GBM model using the best parameters found using grid search.
+
+```{r final model}
+xgb_final <- xgb.train(
+  params = best_params,
+  data = dmodel,
+  verbose = 1,
+  nrounds = best_param_comb$ntrees
+)
+```
+
+```{r lift chart}
+lift_curve(
+  data = test,
+  target_variable = "Burning_Cost",
+  weights_input = "Time_Exposure",
+  pred_fun = calculate_predictions,
+  is_apply_onehot = TRUE,
+  object = xgb_final
+)
+```

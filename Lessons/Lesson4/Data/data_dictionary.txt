@@ -17,7 +17,7 @@ D_ZIP - PSC regionu vodica
 VEH_type, VEH_type1, Veh_type2 - rozne kategorizacie typu vozidla
 VEH_brand - anonymizovana kategorizacia znacky vozidla
 Construct_year - rok vyroby vozidla
-Capacity - objem motora vozidla v kubickych centimetroch
+Capacity - objem motora vozidla v milimetroch
 Nr_of_seats - pocet sedadiel vozidla
 Sum_insured - Hodnota na, ktoru je v ramci poistky vozidlo poistene
 Nr_payments - S tymto stlpcom nebudeme pracovat pretoze si nie som isty co presne znamena
