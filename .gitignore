@@ -4,3 +4,7 @@ packrat/src/*
 .RData
 .DS_Store
 .Rhistory
+
+# VS Code — commit extensions.json (recommended extensions for students), ignore local settings
+.vscode/settings.json
+.vscode/launch.json
