@@ -47,22 +47,18 @@ dt_KPI_clean |>
 ### Which Unit has collected the most Premium?
 
 ```{r}
-# Replace the '___' with missing code
-
 dt_KPI_clean |>
   group_by(Unit) |>
-  ___(Premium = sum(Premium)) |>
-  ___(desc(Premium))
+  summarize(Premium = sum(Premium)) |>
+  arrange(desc(Premium))
 ```
 
 ### Which Unit has the lowest Expenses?
 
 ```{r}
-# Replace the '___' with missing code
-
 dt_KPI_clean |>
-  __(Unit) |>
-  __(Expenses = sum(Expenses)) |>
+  group_by(Unit) |>
+  summarize(Expenses = sum(Expenses)) |>
   arrange(Expenses)
 ```
 
@@ -72,10 +68,10 @@ dt_KPI_clean |>
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
-  ___(Unit == 'Unit8') |>
+  filter(Unit == 'Unit8') |>
   group_by(Business) |>
-  ___(Expenses = sum(Expenses)) |>
-  ___(desc(Expenses))
+  summarize(Expenses = sum(Expenses)) |> # Hint: add a commnon aggregation function
+  arrange(desc(Expenses))
 ```
 
 ## Basic Visualization
@@ -88,8 +84,8 @@ Visualize your findings on simple bar charts - ggplot2::geom_col()
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
-  ___(Unit) |>
-  ___(
+  group_by(Unit) |>
+  summarize(
     Premium = sum(Premium),
     Expenses = sum(Expenses),
     Losses = sum(Losses)
@@ -103,7 +99,8 @@ dt_KPI_clean |>
   geom_line() +
   geom_point() 
   # +
-  #geom_smooth()
+  #geom_smooth() +
+  #geom_point()
 ```
 
 ### Which Unit has the lowest Expenses?
@@ -118,23 +115,30 @@ dt_KPI_clean |>
     Expenses = sum(Expenses),
     Losses = sum(Losses)
   ) |>
-  ___(___(
+  ggplot(aes(
     x = reorder(Unit, Expenses), 
     y = Expenses,
     group = 1
   )) +
-  geom____() +
-  geom____()
+  geom_line() +
+  geom_point()
 ```
 
 ### Which Business from Unit found in the previous task had the highest Expenses?
 
 ```{r}
-# Write this code from scratch
+# Replace the '___' with missing code
 
 dt_KPI_clean |>
-  ...
-
+  group_by(Unit == "Unit8") |>
+  group_by(Business) |>
+  summarize(
+    Premium = sum(Premium),
+    Expenses = sum(Expenses),
+    Losses = sum(Losses)
+  ) |>
+  ggplot(aes(x = reorder(Business,-Expenses), y = Expenses)) +
+  geom_col()
 ```
 
 ### Bonus - Show all Costs Insurance Company has as a stacked bar for Expenses and Losses grouped by Units
@@ -142,6 +146,7 @@ dt_KPI_clean |>
 Summarize Expenses and Losses at Unit level:
 
 ```{r}
+
 dt_by_unit <- dt_KPI_clean |>
   group_by(Unit) |>
   summarise(

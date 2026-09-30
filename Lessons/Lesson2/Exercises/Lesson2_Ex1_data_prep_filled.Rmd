@@ -94,10 +94,10 @@ Can you generalize this process for the whole dataset? \> Hint: Can you use any 
 ```{r}
 # Replace the '___' with missing code
 
-for(column_name in ___(dt_KPI_raw)) {
+for(column_name in colnames(dt_KPI_raw)) {
   print(column_name)
-  column_values <- ___
-  missing_pct <- ___(column_values) |> ___ * 100
+  column_values <- dt_KPI_raw[[column_name]]
+  missing_pct <- is.na(column_values) |> mean() * 100
   print(missing_pct)
 }
 ```
