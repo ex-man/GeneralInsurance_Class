@@ -8,3 +8,5 @@ This class will be about life and general insurance and how insurance data can b
 3) [Introduction to tidyverse and ggplot2](Support/02_About_tidyverse.md)
 4) [Dplyr exercise](Exercises/Lesson1_Ex2_dplyr.Rmd)
 5) [GGplot2 exercise](Exercises/Lesson1_Ex3_ggplot.Rmd)
+
+<!-- Class2026 update: test commit to verify push access -->
