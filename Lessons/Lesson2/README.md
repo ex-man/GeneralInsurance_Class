@@ -1,5 +1,5 @@
 # Objective
-To learn some basics of data manipulation and visualisation, basics of general insurance losses and expenses
+To learn some basics of data manipulation and visualization, basics of general insurance losses and expenses
 
 # Content
 1) [Losses and expenses (nominal)](Support/01_losses_and_expenses.md) (losses and expenses)

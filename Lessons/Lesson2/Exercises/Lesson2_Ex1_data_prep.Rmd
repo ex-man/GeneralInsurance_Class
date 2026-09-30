@@ -13,8 +13,8 @@ output:
 
 ```{r}
 # libraries
-# install.packages("tidyverse")
-# install.packages("rmarkdown")
+#install.packages("tidyverse")
+#install.packages("rmarkdown")
 library(dplyr)
 library(ggplot2)
 ```
@@ -22,92 +22,125 @@ library(ggplot2)
 ## Load data
 
 ```{r}
-# load data and replace empty strings with expliti NAs
+# load data
 dt_KPI_raw <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
+
+# replace empty strings with explicit missing values
 dt_KPI_raw[dt_KPI_raw == ""] <- NA
 ```
 
 # Data inspection
+
 ## What type of information do we have?
+
 > Hint: To have a quick overview of data use glimpse() function from dplyr
 
 ```{r}
-dt_KPI_raw %>% glimpse() # or glimpse(dt_KPI_raw)
+dt_KPI_raw |> glimpse()
+# or glimpse(dt_KPI_raw)
 ```
 
-It is good to know what your data contains and what the column names mean,
-usually Data Governance team could help you with this question.
-For now let's assume we know what our columns mean.
+It is good to know what your data contains and what the column names mean, usually Data Governance team could help you with this question. For now let's assume we know what our columns mean.
 
 ## What do the columns contain?
-> Hint: The function summary() might help you to answer this question
+
+> The function summary() might help you to answer this question. While summarizing numerical data makes sense, for categorical data, this is not useful.
+>
+> Hint: What could we achieve with using the functions group_by() and summarise() in a loop?
 
 ```{r}
-dt_KPI_raw %>% summary()
+dt_KPI_raw |> summary()
+
+# Replace the '___' with missing code
+
+char_cols <- colnames(Filter(is.character, dt_KPI_raw))
+
+for (column_name in char_cols) {
+  dt_KPI_raw |>
+    group_by(.data[[column_name]]) |>
+    summarise(count = n(), relative = n() / nrow(dt_KPI_raw)) |>
+    print()
+}
+
 ```
 
-# Looking for defects in data 
+# Looking for defects in data
+
 ## Are there any missing values?
-As a first task, try to find missings for a specific column only
+
+As a first task, try to find missing values for a specific column only
+
 ```{r}
 # Select a column from dataset (e.g. Business)
 # Use appropriate function(s) to detect missing values
 # Count the missing values
 
-# Business == NA # nefunguje
-is.na(dt_KPI_raw) %>% sum()
-# dt_KPI_raw$Business
-# dt_KPI_raw$Business
-# dt_KPI_raw[["Business"]]
-is.na(dt_KPI_raw$Business) %>% sum()
-is.na(dt_KPI_raw$Business) %>% mean() * 100
-# is.na(dt_KPI_raw$Region) %>% which() %>% length()
+is.na(dt_KPI_raw)
+is.na(dt_KPI_raw) |> sum()
+
+dt_KPI_raw$Business
+dt_KPI_raw[["Business"]]
+
+is.na(dt_KPI_raw$Business) |> sum()
+is.na(dt_KPI_raw$Business) |> mean() * 100
 ```
 
-Can you generalize this process for the whole dataset? 
-> Hint: Can you use any kind of loop here?
+Can you generalize this process for the whole dataset? \> Hint: Can you use any kind of loop here?
 
 ```{r}
-# Your code
-for (column in names(dt_KPI_raw)) {
-    print(column)
-    print(is.na(dt_KPI_raw[[column]]) %>% sum())
+colnames(dt_KPI_raw)
+names(dt_KPI_raw)
+
+# Replace the '___' with missing code
+
+for (column_name in colnames(dt_KPI_raw)) {
+    print(column_name)
+    column_values <- dt_KPI_raw[[column_name]]
+    missing_pct <- is.na(column_values) |> mean() * 100
+    print(missing_pct)
 }
+
 ```
 
-Are there any values that don't make any sense in the context of the data? 
-Which values are not allowed for specific columns? Let's have a look at individual columns.
-> Hint: Be prepared to deal with continuous and categorical values as well
+Are there any values that don't make any sense in the context of the data? Which values are not allowed for specific columns? Let's have a look at individual columns. \> Hint: Be prepared to deal with continuous and categorical values as well
 
 ```{r}
-dt_KPI_raw %>% summary()
+dt_KPI_raw |> summary()
+
 ```
 
-# Correction of defects 
-## What is the feasible way to repair missing values? 
-> Hint: Have a look at function na.omit
+# Correction of defects
+
+## What is the feasible way to repair missing values?
+
+> Hint: Have a look at function na.omit()
 
 ```{r}
-dt_KPI_clean <- dt_KPI_raw %>% na.omit()
-dt_KPI_clean
+# Replace the '___' with missing code
+
+dt_KPI_clean <- na.omit(dt_KPI_raw)
 ```
 
 Discussion - have you heard of solutions to fill in missing values without dropping the dataset rows?
 
 ## What is the feasible way to repair values that don't make sense?
+
 > Hint: Look at numeric columns
 
 ```{r}
-dt_KPI_clean %>% summary()
+dt_KPI_clean |> summary()
 
-dt_KPI_clean <- dt_KPI_clean %>%
+# Replace the '___' with missing code
+
+dt_KPI_clean <- dt_KPI_clean |>
     mutate(
-        Premium = abs(Premium),
+        Losses = abs(Losses),
         Expenses = abs(Expenses),
-        Losses = abs(Losses)
+        Premium = abs(Premium),
+        UWR.Plan. = abs(UWR.Plan.)
     )
-# dt_KPI_clean$Premium <- f(dt_KPI_clean$Premium)
-dt_KPI_clean %>% summary()
+
+dt_KPI_clean |> summary()
 ```
 
 ## Save the dataset for future usage
