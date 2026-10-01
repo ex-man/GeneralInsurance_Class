@@ -3,9 +3,10 @@ title: "Portfolio Performance"
 output: html_notebook
 ---
 
-# Nedela polnoc - deadline na ulohu
-
-# [daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email}
+# Homework information
+- Deadline is Sunday end of the day (midnight) 
+- Submission - NO submission / sending needed, do the homework in your project and teacher will review it directly there 
+- Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})
 
 # Portfolio performance
 
@@ -176,3 +177,8 @@ assignments <- paste0("Zadanie", sample(1:8, size = length(students), replace = 
 assignments <- setNames(assignments, students)
 dput(assignments)
 ```
+
+# Homework information
+- Deadline is Sunday end of the day (midnight) 
+- Submission - NO submission / sending needed, do the homework in your project and teacher will review it directly there 
+- Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})
