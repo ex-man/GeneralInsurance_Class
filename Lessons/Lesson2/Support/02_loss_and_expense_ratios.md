@@ -2,11 +2,21 @@
 
 ## Loss ratio
 
-In the previous exercise we looked at the absolute amounts of expenses and claim costs in our data. That helps us to understand how much were our total expenses that are directly or indirectly linked to our insurance business. Now the next step is the performance. It is obvious that it can happen that there are two portfolios with different size but with the same amount of losses. Which one performed better? And so here comes the term of loss ratio. Loss ratio is comparison of the volume of claim costs and the volume of net earned premium per specified segment. In the previously mentioned case, the portfolio that is performing better when compared from the perspective of losses is the one that has lower loss ratio.
+In the previous exercise we looked at the absolute amounts of expenses and claim costs in our data. That helps us to understand how much were our total expenses that are directly or indirectly linked to our insurance business. Now the next step is the performance. It is obvious that it can happen that there are two portfolios with different size but with the same amount of losses. Which one performed better? And so here comes the term of loss ratio. Loss ratio is comparison of the volume of claim costs and the volume of net earned premium (NEP) per specified segment. In the previously mentioned case, the portfolio that is performing better when compared from the perspective of losses is the one that has lower loss ratio.
+
+*Note: **earned premium** is the share of written premium corresponding to the coverage period that has already elapsed. For example, a 12-month policy written on 1 July is 50% earned by year-end.*
+
+```
+LR = Losses / NEP
+```
 
 ## Expense ratio
 
 Just like in the previous case, there are situations we want to know which of two differently sized portfolios performs better in terms of expenses. And again, that’s the place where the expense ratio is introduced. It is a ratio of total expenses and total net earned premium per specific segment.
+
+```
+ER = Expenses / NEP
+```
 
 ## Underwriting result
 
@@ -26,10 +36,18 @@ Since both loss and expense ratios are calculated as a proportion of some kind o
 UWR = NEP * (1 – sum of losses/NEP – sum of expenses/NEP) = NEP(1 – LR – ER)
 ```
 
-This is usually simplified by defining a **combined ratio** which is the proportion of both losses and expenses to the net earned premium. So now we have
+This is usually simplified by defining a **combined ratio (COR)** which is the proportion of both losses and expenses to the net earned premium:
+
+```
+COR = LR + ER
+```
+
+So now we have
 
 ```         
 UWR = NEP * (1 –(Sum of losses + sum of expenses)/NEP) = NEP * (1 – COR)
 ```
+
+*When COR > 100%, the underwriting result is negative — the insurer pays out more in losses and expenses than it collects in premium. This is called an **underwriting loss**. Insurers can still be overall profitable in such years through investment income earned on the premium float, but a sustained COR above 100% is not sustainable.*
 
 Now we can return to the data we have already explored when we were looking at different portfolios and various KPIs.

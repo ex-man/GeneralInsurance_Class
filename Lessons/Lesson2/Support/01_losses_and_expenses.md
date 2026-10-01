@@ -22,9 +22,23 @@ Just like every company, insurance companies have their **expenses** (naklady), 
 
 **Discussion - can you name some examples of fixed expenses and variable expenses?**
 
-Fixed - rent on office space - salaries of (mainly back-office) employees
+Fixed:
+- rent on office space
+- salaries of (mainly back-office) employees
+- advertisement and marketing
 
-Variable - commissions paid to agents/brokers (can also mention how commercial insurance works, and what brokers do) - claims handling costs (costs of legal counsel and litigation; fees for medical experts, engineers and investigators) - advertisement and marketing
+Variable:
+- commissions paid to agents/brokers (can also mention how commercial insurance works, and what brokers do)
+- claims handling costs / Loss Adjustment Expenses (LAE): costs of legal counsel and litigation; fees for medical experts, engineers and investigators
+
+## Distribution channels: agents vs. brokers
+
+Insurance can be sold directly by the insurer or through intermediaries. The two main intermediary types differ in who they represent:
+
+- An **agent** (agent) represents the insurer. They are typically tied to one company and sell that company's products on its behalf.
+- A **broker** (broker/maklér) represents the client. They shop the market across multiple insurers to find the best policy for their customer, and are paid a commission by the insurer whose policy is placed.
+
+This distinction matters more in **commercial insurance** (covering businesses, fleets, large properties) than in personal lines. Commercial risks are often large and complex enough that the client — a company's risk manager — hires a broker to negotiate coverage terms and price on their behalf. For standard personal lines (e.g. motor, home), policies are simpler and clients more often buy directly or through tied agents.
 
 ## Data preparation
 
