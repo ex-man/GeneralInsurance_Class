@@ -38,9 +38,9 @@ ggplot(mpg, aes(displ, hwy, colour = class)) +
 Other Material, Literature and Credits
 --------------------------------------
 
-[R for Data Science - Data Transformation](http://r4ds.had.co.nz/transform.html#introduction-2)
+[R for Data Science - Data Transformation](https://r4ds.hadley.nz/data-transform.html)
 
-[R for Data Science - Data Visualization](http://r4ds.had.co.nz/data-visualisation.html)
+[R for Data Science - Data Visualization](https://r4ds.hadley.nz/data-visualize.html)
 
 [dplyr cheatsheet](https://rstudio.github.io/cheatsheets/data-transformation.pdf)
 

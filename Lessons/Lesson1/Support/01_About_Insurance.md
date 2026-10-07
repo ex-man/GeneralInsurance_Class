@@ -8,6 +8,9 @@ If we take away all the "standard" functions that work in all industries (accoun
 
 During this course we might be using the terms 'actuary' and 'actuarial analysts' interchangeably, but it's important to emphasize, that certified actuaries require extra certification. Uncertified actuaries are usually called actuarial analysts and this is where the actuarial career begins for most people.
 
+## Balance between data and judgement
+The balance between data and judgment depends strongly on the type of insurance. In highly standardized personal lines, much of the underwriting process can be automated and driven by statistical models and predefined rules. In commercial insurance, particularly for large or unusual risks, underwriters generally have more scope to assess the specific characteristics of an individual risk and to tailor coverage and terms accordingly.
+
 ## Actuaries predicting future
 
 The role of *actuaries* in insurance is to try to project the trends in data and find out what the future claims are going to be before they happen, so that we can collect enough money up front to fund them. There are 2 types of "future":

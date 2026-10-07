@@ -14,15 +14,20 @@ library(dplyr)
 > Now let's try to calculate simple thing using multiple encapsulated functions.
 
 ```{r}
-abs(min(c(1, 4, 2, 8, -5)))
+abs(min(c(1, 4, 2, 8, -5, -1000)))
 ```
 > Can you understand what this command does? Is the result what you've expected?  
 > With `dplyr` we can code the same thing using *piping*
 
 ```{r}
+c(1, 4, 2, 8, -5) %>% 
+  min(-1000, .) %>% 
+  abs
+
 c(1, 4, 2, 8, -5) |>
-  min() |>
+  min(-1000, x=_) |>
   abs()
+  
 ```
 > Result is the same!
 
