@@ -26,7 +26,7 @@ HINT: (Here you definitely use *paid* claims, and it is enough to calculate weig
 *STEP 1: Get the volume weighted age to age factor averages (vwtd) and construct some kind of weight saying which years had the biggest positive or negative movements in loss development*
 
 ```{r}
-(Paid_HH_sml_vwtd <- Paid_HH_sml_triangle %>% ata() %>% attr("vwtd"))
+(Paid_HH_sml_vwtd <- Paid_HH_sml_triangle |> ata() |> attr("vwtd"))
 (Paid_HH_sml_wgt_unscaled <- abs(Paid_HH_sml_vwtd - 1))
 ```
 
@@ -106,7 +106,7 @@ First, load and explore the dataset.
 
 ```{r}
 dt_KPI <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
-dt_LatestView <- read.csv("/cloud/project/Data/lesson3_latestView.csv") %>%
+dt_LatestView <- read.csv("/cloud/project/Data/lesson3_latestView.csv") |>
   mutate(Dev_Year = Dev_Year + 1)
 
 head(dt_LatestView)
@@ -116,12 +116,12 @@ summary(dt_LatestView)
 Re-use the logic from previous exercises and apply it to every business/segment combination to get granular discount factors.
 
 ```{r}
-dt_KPI_discount_factors <- dt_LatestView %>%
-  group_by(Business, Segment) %>%
+dt_KPI_discount_factors <- dt_LatestView |>
+  group_by(Business, Segment) |>
   group_modify(~ {
-    tr_vwtd <- .x %>%
-      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>%
-      ata() %>%
+    tr_vwtd <- .x |>
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") |>
+      ata() |>
       attr("vwtd")
 
     wgt_unscaled <- abs(tr_vwtd - 1)
@@ -139,11 +139,11 @@ dt_KPI_discount_factors <- dt_LatestView %>%
       "Discount factor: ", round(discount_factor, 2)
     )
 
-    g <- .x %>%
-      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") %>%
-      chainladder() %>%
-      predict() %>%
-      plot(lattice = TRUE, main = plot_title) %>%
+    g <- .x |>
+      as.triangle(origin = "Year", dev = "Dev_Year", value = "Losses") |>
+      chainladder() |>
+      predict() |>
+      plot(lattice = TRUE, main = plot_title) |>
       print()
 
     # return the discount factor, since this is a function
@@ -157,20 +157,20 @@ Add the discount factors to the dataset from Lesson 2. Calculate NPV of UWR and 
 
 ```{r}
 # add the discount factors to the data from Lesson2 using 'left_join'
-dt_KPI_w_discount <- dt_KPI %>%
-  left_join(dt_KPI_discount_factors, by = c("Business", "Segment")) %>%
-  mutate(Losses_npv = Losses * discount_factor) %>%
+dt_KPI_w_discount <- dt_KPI |>
+  left_join(dt_KPI_discount_factors, by = c("Business", "Segment")) |>
+  mutate(Losses_npv = Losses * discount_factor) |>
   mutate(
     UWR_actual = Premium - (Losses + Expenses),
     UWR_actual_npv = Premium - (Losses_npv + Expenses)
   )
 
 # look at business & segment aggregation of UWR and UWR NPV
-dt_KPI_w_discount %>%
-  group_by(Business, Segment) %>%
-  summarize(UWR_actual = sum(UWR_actual), UWR_actual_npv = sum(UWR_actual_npv)) %>%
-  ungroup() %>%
-  mutate(rank_uwr = dense_rank(desc(UWR_actual)), rank_uwr_npv = dense_rank(desc(UWR_actual_npv))) %>%
+dt_KPI_w_discount |>
+  group_by(Business, Segment) |>
+  summarize(UWR_actual = sum(UWR_actual), UWR_actual_npv = sum(UWR_actual_npv)) |>
+  ungroup() |>
+  mutate(rank_uwr = dense_rank(desc(UWR_actual)), rank_uwr_npv = dense_rank(desc(UWR_actual_npv))) |>
   arrange(rank_uwr_npv)
 ```
 
@@ -187,10 +187,10 @@ NPV_data <- read.csv("/cloud/project/Data/lesson3_NPV.csv")
 If discount = 1 / ((1 + interest rate)\^duration), how can we compute the duration?
 
 ```{r}
-NPV_data %>%
-  filter(NPV.Loss > 0) %>%
-  mutate(avg_payment_duration = log(NPV.Loss, 1 / 1.03)) %>%
-  dplyr::select(Region, Unit, Segment, Business, avg_payment_duration) %>%
+NPV_data |>
+  filter(NPV.Loss > 0) |>
+  mutate(avg_payment_duration = log(NPV.Loss, 1 / 1.03)) |>
+  dplyr::select(Region, Unit, Segment, Business, avg_payment_duration) |>
   arrange(desc(avg_payment_duration))
 ```
 

@@ -107,7 +107,7 @@ valid <- glm_models$valid
 # Adjust the most important variables by PDP 
 
 # Train 
-train <- train %>% 
+train <- train |> 
   mutate(
     # Capacity PDP
     #  0-1300 flat, 1300-2000, 2000-3000, 3000 - INF
@@ -131,7 +131,7 @@ train <- train %>%
   )
 
 # Valid 
-valid <- valid %>% 
+valid <- valid |> 
   mutate(
     # Capacity PDP
     #  0-1300 flat, 1300-2000, 2000-3000, 3000 - INF
@@ -199,13 +199,13 @@ We'll create a small visualization on top of the table with metrics.
 
 ```{r}
 # Plot model comparison
-compare_models(model_list) %>%
+compare_models(model_list) |>
   ggplot(aes(x = model_nm, y = train_rmse, group = 1)) +
   geom_line() +
   geom_point() +
   ggtitle("Training RMSE")
 
-compare_models(model_list) %>%
+compare_models(model_list) |>
   ggplot(aes(x = model_nm, y = valid_rmse, group = 1)) +
   geom_line() +
   geom_point() +

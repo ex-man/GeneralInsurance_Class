@@ -21,26 +21,26 @@ apply_onehot <- function(
 
   dummy_model <- dummyVars(
     ~ ., 
-    data =  feature_set %>%
+    data =  feature_set |>
       select(where(cols_to_onehot))
   )
   
   factor_onehot <- as.data.frame(
     predict(
       dummy_model, 
-      newdata = feature_set %>%
+      newdata = feature_set |>
         select(where(cols_to_onehot))
     )
   )
   
   # Get names of columns that are not onehot encoded
-  oth_cols <- feature_set %>%
-    select(-where(cols_to_onehot)) %>%
+  oth_cols <- feature_set |>
+    select(-where(cols_to_onehot)) |>
     colnames()
   
   # Bind dummy variables with dataset 
-  feature_set %>%
-    select(all_of(oth_cols)) %>% 
+  feature_set |>
+    select(all_of(oth_cols)) |> 
     bind_cols(as.data.frame(factor_onehot))
   
 }

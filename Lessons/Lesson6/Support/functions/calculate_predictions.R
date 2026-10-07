@@ -31,7 +31,7 @@ calculate_predictions <- function(
     X <- apply_onehot(
       X,
       ...
-    ) %>% as.matrix()
+    ) |> as.matrix()
     
   } 
   

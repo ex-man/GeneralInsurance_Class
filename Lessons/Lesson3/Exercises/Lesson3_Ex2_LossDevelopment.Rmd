@@ -24,7 +24,7 @@ summary(dt_PaidCase)
 glimpse(dt_PaidCase)
 View(dt_PaidCase)
 
-dt_PaidCase %>%
+dt_PaidCase |>
   distinct(Business, ClaimSize, dataset_type)
 ```
 
@@ -33,7 +33,7 @@ After we are done with the exploratory analysis, we can filter the data and conv
 *STEP 1: As an example, take paid data for House business and Small claim size*
 
 ```{r}
-Paid_HH_sml <- dt_PaidCase %>%
+Paid_HH_sml <- dt_PaidCase |>
   filter(Business == "House", ClaimSize == "Small", dataset_type == "PAID")
 ```
 
@@ -42,7 +42,7 @@ Paid_HH_sml <- dt_PaidCase %>%
 ```{r}
 ?as.triangle
 
-Paid_HH_sml_triangle <- Paid_HH_sml %>%
+Paid_HH_sml_triangle <- Paid_HH_sml |>
   as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
 
 Paid_HH_sml_triangle
@@ -72,9 +72,9 @@ HINT2: attr() can be used to extract attributes from an object..
 
 ```{r}
 # str(ata(pred))
-ultimate_ata_factor <- pred %>%
-  ata() %>%
-  attr("vwtd") %>%
+ultimate_ata_factor <- pred |>
+  ata() |>
+  attr("vwtd") |>
   prod()
 ultimate_ata_factor
 ```
@@ -94,10 +94,10 @@ Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
 This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
 ```{r}
-Paid_HH_sml_triangle_incurr <- dt_PaidCase %>%
-  filter(Business == "House" & ClaimSize == "Small") %>%
-  group_by(Business, ClaimSize, ay, dy) %>%
-  summarize(SumOfamount = sum(SumOfamount)) %>%
+Paid_HH_sml_triangle_incurr <- dt_PaidCase |>
+  filter(Business == "House" & ClaimSize == "Small") |>
+  group_by(Business, ClaimSize, ay, dy) |>
+  summarize(SumOfamount = sum(SumOfamount)) |>
   as.triangle(origin = "ay", dev = "dy", "SumOfamount")
 
 plot(Paid_HH_sml_triangle_incurr)
@@ -107,8 +107,8 @@ Paid_HH_sml_triangle_incurr_pred <- predict(chainladder(Paid_HH_sml_triangle_inc
 plot(Paid_HH_sml_triangle_incurr_pred)
 plot(Paid_HH_sml_triangle_incurr_pred, lattice = TRUE)
 ata(Paid_HH_sml_triangle_incurr)
-ata(Paid_HH_sml_triangle_incurr) %>%
-  attr("vwtd") %>%
+ata(Paid_HH_sml_triangle_incurr) |>
+  attr("vwtd") |>
   prod()
 ```
 

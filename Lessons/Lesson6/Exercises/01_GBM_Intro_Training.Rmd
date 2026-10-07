@@ -132,10 +132,10 @@ summary(data$Burning_Cost)
 Capping large or extreme values in the target variable can be beneficial because it reduces the influence of outliers, improves model stability, enhances performance metrics, prevents overfitting, normalizes data distribution, and leads to more interpretable models. This helps in building models that generalize better to new data.
 
 ```{r check distribution of burning costs 2}
-data %>%
-  group_by(Burning_Cost) %>%
-  count() %>%
-  arrange(desc(Burning_Cost)) %>%
+data |>
+  group_by(Burning_Cost) |>
+  count() |>
+  arrange(desc(Burning_Cost)) |>
   head()
 ```
 
@@ -149,7 +149,7 @@ prob_max_bc
 We will cap all losses above this value. In our case it's just two observations:
 
 ```{r cap large losses 2}
-data <- data %>%
+data <- data |>
   mutate(
     Burning_Cost = ifelse(Burning_Cost >= prob_max_bc, prob_max_bc, Burning_Cost)
   )
@@ -199,20 +199,20 @@ str(data)
 Convert ordered factors Year, Nr_of_seats to integer levels:
 
 ```{r}
-train <- train %>%
+train <- train |>
   mutate(across(where(is.ordered), ~ as.numeric(.)))
 
-valid <- valid %>%
+valid <- valid |>
   mutate(across(where(is.ordered), ~ as.numeric(.)))
 
-model <- model %>%
+model <- model |>
   mutate(across(where(is.ordered), ~ as.numeric(.)))
 
-test <- test %>%
+test <- test |>
   mutate(across(where(is.ordered), ~ as.numeric(.)))
 
-train %>% select(Nr_of_seats) %>% distinct()
-data %>% select(Nr_of_seats) %>% distinct()
+train |> select(Nr_of_seats) |> distinct()
+data |> select(Nr_of_seats) |> distinct()
 ```
 
 Nominal categorical variables are more tricky because the attributes don't have a natural or numeric order. These variables we will encode with the One-Hot Encoding method. With One-Hot we create binary columns for each category. If a feature has three categories ("red", "blue", "green"), three new columns are created, each representing one category with 0s and 1s. This avoids implying any ordinal relationship.
@@ -225,16 +225,16 @@ valid_encoded <- apply_onehot(feature_set = valid)
 model_encoded <- apply_onehot(feature_set = model)
 test_encoded <- apply_onehot(feature_set = test)
 
-train_encoded %>% select(starts_with("D_ZIP")) %>% distinct()
+train_encoded |> select(starts_with("D_ZIP")) |> distinct()
 ```
 
 ## Train XGBoost
 
 ```{r}
-train_mat <- train_encoded %>% select(-Burning_Cost, -Time_Exposure) %>% as.matrix()
-valid_mat <-  valid_encoded %>% select(-Burning_Cost, -Time_Exposure) %>% as.matrix()
-model_mat <-  model_encoded %>% select(-Burning_Cost, -Time_Exposure) %>% as.matrix()
-test_mat <- test_encoded %>% select(-Burning_Cost, -Time_Exposure) %>% as.matrix()
+train_mat <- train_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
+valid_mat <-  valid_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
+model_mat <-  model_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
+test_mat <- test_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
 ```
 
 ```{r}
@@ -332,7 +332,7 @@ These plots help us understand the relationship between the target variable and 
 Oneway analysis provides a similar insight by exploring the model's performance per variable levels, helping us identify any overestimation or underestimation for specific levels.
 
 ```{r oneway}
-fitted_vars <- colnames(data %>% select(-Time_Exposure,-Burning_Cost))
+fitted_vars <- colnames(data |> select(-Time_Exposure,-Burning_Cost))
 
 # plots <- list()
 # 

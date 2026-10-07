@@ -42,7 +42,7 @@ Let's look at our dataset through EDA.
 
 ```{r}
 # Run EDA
-dfSummary(dt_pol_w_claims) %>% 
+dfSummary(dt_pol_w_claims) |> 
   stview()
 ```
 
@@ -58,16 +58,16 @@ no_claim <- c("ClmYr", "Paid", "Reserves", "Time_Exposure", "Ult_Loss")
 
 # For these 14 observations, there are missing values across multiple features - drop these observations
 # Extract the policy number based on which observations will be deleted
-delete_rows <- dt_pol_w_claims %>% 
+delete_rows <- dt_pol_w_claims |> 
   filter(
     is.na(D_age) & is.na(VEH_type) & is.na(Construct_year) & is.na(Capacity) & is.na(Nr_of_seats)
-  ) %>% 
-  select(NrPolicy) %>% 
+  ) |> 
+  select(NrPolicy) |> 
   pull()
 
-data <- dt_pol_w_claims %>%
+data <- dt_pol_w_claims |>
   # Delete observations with missing values across multiple variables
-  filter(!NrPolicy %in% delete_rows) %>% 
+  filter(!NrPolicy %in% delete_rows) |> 
   mutate(
     # Replace NAs with 0 in the case of no claim
     across(all_of(no_claim), ~ replace_na(., 0)),
@@ -86,7 +86,7 @@ After these adjustments, only related predictors are kept in the dataset.
 
 ```{r}
 # Delete unnecessary columns
-data <- data %>% 
+data <- data |> 
   select(
     -all_of(
       c(
@@ -118,7 +118,7 @@ As a next step, we can try capping some variables. This means setting a cap (flo
 
 ```{r}
 # Adjust the predictors
-data <- data %>%
+data <- data |>
   mutate(
     # Merge categories with low exposure
     Veh_type2 = ifelse(
@@ -200,7 +200,7 @@ factor_variables <- c(
   "Nr_of_seats"
 )
 
-data <- data %>% 
+data <- data |> 
   mutate(
     # Change variable types as needed
     across(all_of(factor_variables), ~ as.factor(.)),
@@ -225,10 +225,10 @@ summary(data$Burning_Cost)
 Capping large or extreme values in the target variable can be beneficial because it reduces the influence of outliers, improves model stability, enhances performance metrics, prevents overfitting, normalizes data distribution, and leads to more interpretable models. This helps in building models that generalize better to new data.
 
 ```{r check distribution of burning costs 2}
-data %>%
-  group_by(Burning_Cost) %>%
-  count() %>%
-  arrange(desc(Burning_Cost)) %>%
+data |>
+  group_by(Burning_Cost) |>
+  count() |>
+  arrange(desc(Burning_Cost)) |>
   head()
 ```
 
@@ -242,7 +242,7 @@ prob_max_bc
 We will cap all losses above this value. In our case it's just two observations:
 
 ```{r cap large losses 2}
-data <- data %>%
+data <- data |>
   mutate(
     Burning_Cost = ifelse(Burning_Cost >= prob_max_bc, prob_max_bc, Burning_Cost)
   )

@@ -56,8 +56,8 @@ Now the missing triangle is populated and we have a full matrix. We now also hav
 
 ```{r}
 # prediction and visualization
-pred <- RAA %>%
-  chainladder() %>%
+pred <- RAA |>
+  chainladder() |>
   predict()
 predict(chainladder(RAA))
 

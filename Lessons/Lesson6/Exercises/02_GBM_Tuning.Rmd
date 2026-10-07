@@ -79,7 +79,7 @@ param_grid <- expand.grid(
 # )
 # 
 # set.seed(123)
-# param_grid <- param_grid %>%
+# param_grid <- param_grid |>
 #   sample_n(2000)
 
 param_grid
@@ -117,7 +117,7 @@ for(i in 1:nrow(param_grid)) {
 
   fitted <- calculate_predictions(
     object = model,
-    X = valid %>% select(-Burning_Cost,-Time_Exposure),
+    X = valid |> select(-Burning_Cost,-Time_Exposure),
     is_apply_onehot = TRUE
   )
   
@@ -129,7 +129,7 @@ for(i in 1:nrow(param_grid)) {
   print(paste0("Combination ",i," out of ",nrow(param_grid)," with score ",tweedie_nloglik[i]," ready."))
 }
 
-param_grid <- param_grid %>% cbind(ntrees, tweedie_nloglik, rmse_10groups)
+param_grid <- param_grid |> cbind(ntrees, tweedie_nloglik, rmse_10groups)
 
 #saveRDS(param_grid, "data/grid_search.rds")
 ```
@@ -140,7 +140,7 @@ param_grid <- param_grid %>% cbind(ntrees, tweedie_nloglik, rmse_10groups)
 # load the precalculated grid search
 param_grid <- readRDS("/cloud/project/Data/grid_search.rds")
 
-best_param_comb <- param_grid %>%
+best_param_comb <- param_grid |>
   filter(rmse_10groups == min(rmse_10groups))
 
 best_params <- list(

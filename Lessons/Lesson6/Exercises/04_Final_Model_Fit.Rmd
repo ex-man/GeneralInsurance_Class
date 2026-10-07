@@ -34,7 +34,7 @@ valid <- glm_models$valid
 final_data <- rbind(train, valid)
 
 # Adjust predictors
-final_data <- final_data %>% 
+final_data <- final_data |> 
   mutate(
     Sum_insured_capped = round(ifelse(Sum_insured > 15000, 15000, Sum_insured), -3),
     BonusMalus_capped = as.factor(ifelse(BonusMalus < 0, 0, BonusMalus))
@@ -61,7 +61,7 @@ for (var_nm in fitted_vars) {
   emb_chart_plotly(
     model = final_glm,
     x_var = var_nm
-  ) %>%
+  ) |>
     show()
 }
 ```
@@ -106,29 +106,29 @@ This pricing structure is then implemented/updated in an IT system that is used 
 exp(summary(final_glm)$coef[, 1])
 
 # Vehicle Type
-broom::tidy(final_glm) %>%
-  filter(stringr::str_detect(term, "Veh_type2")) %>%
-  select(term, estimate) %>%
+broom::tidy(final_glm) |>
+  filter(stringr::str_detect(term, "Veh_type2")) |>
+  select(term, estimate) |>
   mutate(multiplier = exp(estimate))
 
 # Bonus Malus
-broom::tidy(final_glm) %>%
-  filter(stringr::str_detect(term, "BonusMalus")) %>%
-  select(term, estimate) %>%
+broom::tidy(final_glm) |>
+  filter(stringr::str_detect(term, "BonusMalus")) |>
+  select(term, estimate) |>
   mutate(multiplier = exp(estimate))
 
 # Sum Insured
-beta <- broom::tidy(final_glm) %>%
-  filter(stringr::str_detect(term, "Sum_insured_capped")) %>%
-  pull(estimate) %>%
+beta <- broom::tidy(final_glm) |>
+  filter(stringr::str_detect(term, "Sum_insured_capped")) |>
+  pull(estimate) |>
   as.numeric()
 
-all_levels <- final_data$Sum_insured_capped  %>%
-  unique() %>%
+all_levels <- final_data$Sum_insured_capped  |>
+  unique() |>
   sort()
 
 # exp(beta * value_new) / exp(beta * value_ref)
-data.frame(Sum_insured_capped = all_levels) %>%
+data.frame(Sum_insured_capped = all_levels) |>
   mutate(
     estimate = beta * as.numeric(Sum_insured_capped),
     estimate_ref = beta * 1000,

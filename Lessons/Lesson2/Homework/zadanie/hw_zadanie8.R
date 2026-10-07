@@ -10,5 +10,5 @@
 library(tidyverse)
 dt_KPI_clean <- readRDS("./Data/lesson2_KPI_clean.rds")
 
-dt_KPI_clean %>%
+dt_KPI_clean |>
   ...()

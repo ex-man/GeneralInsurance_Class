@@ -6,7 +6,7 @@ enforce_data_types <- function(df, var_types) {
     var_type <- var_types[[i]]
     conversion_fun <- switch(var_type, category=as.character, number=as.numeric)
     
-    df <- df %>% 
+    df <- df |> 
       mutate_at(var_nm, conversion_fun)
   }
   

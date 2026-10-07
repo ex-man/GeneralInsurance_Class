@@ -60,7 +60,7 @@ library(statmod)
 library(tweedie)
 library(dplyr)
 
-dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds") %>%
+dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds") |>
   filter(!(is.na(Veh_type2) | Veh_type2 == ""))
 
 table(dt_pol_w_claims$Veh_type2)
@@ -116,8 +116,8 @@ signifying how much riskier a category is than the average.
 ```{r}
 weighted.mean(dt_pol_w_claims$Burning_Cost, dt_pol_w_claims$Time_Exposure)
 
-summary(basic_model)$coef[, 1] %>%
-  exp() %>%
+summary(basic_model)$coef[, 1] |>
+  exp() |>
   round(3)
 ```
 

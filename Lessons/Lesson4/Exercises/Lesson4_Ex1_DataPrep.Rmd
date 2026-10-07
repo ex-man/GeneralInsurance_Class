@@ -42,16 +42,16 @@ Let's inspect the granularity of the dataset.
 
 ```{r}
 # with aggregation
-dt_Policy %>%
-  group_by(NrPolicy) %>%
-  summarize(n = n()) %>%
-  filter(n > 1) %>%
+dt_Policy |>
+  group_by(NrPolicy) |>
+  summarize(n = n()) |>
+  filter(n > 1) |>
   arrange(desc(n))
 
 # without aggregation
-dt_Policy %>%
-  group_by(NrPolicy) %>%
-  mutate(n = n()) %>%
+dt_Policy |>
+  group_by(NrPolicy) |>
+  mutate(n = n()) |>
   filter(n > 1)
 ```
 
@@ -72,15 +72,15 @@ summary(dt_Claims)
 Let's inspect the granularity of the dataset.
 
 ```{r}
-dt_Claims %>%
-  group_by(NrClaim) %>%
-  summarize(n = n()) %>%
-  filter(n > 1) %>%
+dt_Claims |>
+  group_by(NrClaim) |>
+  summarize(n = n()) |>
+  filter(n > 1) |>
   arrange(desc(n))
 
-dt_Claims %>%
-  group_by(NrClaim) %>%
-  mutate(n = n()) %>%
+dt_Claims |>
+  group_by(NrClaim) |>
+  mutate(n = n()) |>
   filter(n > 1)
 ```
 
@@ -89,9 +89,9 @@ dt_Claims %>%
 To properly bring the claims info on `policy + object` level, we need to ensure claims data are also on that level. Let's check it and if they are not, roll them up to that level. (The claims could for example be on a transactional level).
 
 ```{r}
-dt_Claims %>%
-  group_by(NrPolicy, NrObject) %>%
-  mutate(n = n()) %>%
+dt_Claims |>
+  group_by(NrPolicy, NrObject) |>
+  mutate(n = n()) |>
   filter(n > 1)
 ```
 
@@ -99,20 +99,20 @@ It looks like one policy can have multiple claims during its coverage period. Le
 
 ```{r}
 # Extract claim year
-dt_Claims <- dt_Claims %>%
-  mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) %>%
+dt_Claims <- dt_Claims |>
+  mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) |>
   mutate(ClmYr = lubridate::year(Date_of_loss))
 
 # Aggregate to desired granularity
-dt_Claims <- dt_Claims %>%
-  group_by(NrPolicy, NrObject, ClmYr) %>%
-  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) %>%
+dt_Claims <- dt_Claims |>
+  group_by(NrPolicy, NrObject, ClmYr) |>
+  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
   ungroup()
 
 # Verify this is the final granularity
-dt_Claims %>% nrow()
-dt_Claims %>%
-  distinct(NrPolicy, NrObject, ClmYr) %>%
+dt_Claims |> nrow()
+dt_Claims |>
+  distinct(NrPolicy, NrObject, ClmYr) |>
   nrow()
 ```
 
@@ -132,13 +132,13 @@ To join one table to another based on some variable(s), we can use a `___join()`
 Since not every policy will have a claim, we will be using left join to preserve policy information.
 
 ```{r}
-dt_pol_w_claims <- dt_Policy %>%
+dt_pol_w_claims <- dt_Policy |>
   left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
 
-dt_pol_w_claims %>% head(3)
+dt_pol_w_claims |> head(3)
 
-dt_pol_w_claims %>%
-  filter(!is.na(ClmYr)) %>%
+dt_pol_w_claims |>
+  filter(!is.na(ClmYr)) |>
   head(5)
 ```
 
@@ -149,11 +149,11 @@ Perfect! So what now? Hmm...
 Let's look how successful we have been in finding out about our customer's losses.
 
 ```{r}
-dt_pol_w_claims %>% nrow()
-dt_pol_w_claims %>%
-  filter(!is.na(ClmYr)) %>%
+dt_pol_w_claims |> nrow()
+dt_pol_w_claims |>
+  filter(!is.na(ClmYr)) |>
   nrow()
-dt_Claims %>% nrow()
+dt_Claims |> nrow()
 ```
 
 Does it look good or bad? Two sets of questions should arise in your head:

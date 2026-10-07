@@ -8,10 +8,10 @@ This is an *R Markdown* Notebook. When you execute code within the notebook, the
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-mtcars %>% summary()
+mtcars |> summary()
 ```
 
-What does the error mean? R tells you that it doesn't recognize the *%>%* function. The operator is actually called *pipe* and will be covered in later lessons. For now, the important fact is that we are missing a package which contains this function. 
+What does the error mean? R tells you that it doesn't recognize the *|>* function. The operator is actually called *pipe* and will be covered in later lessons. For now, the important fact is that we are missing a package which contains this function. 
 
 In order to load a package (library), use *library(package_name)* command.
 
@@ -34,9 +34,9 @@ library(tidyverse)
 
 summary(mtcars)
 
-mtcars %>%
+mtcars |>
   summary()
 
-# %>%
+# |>
 #  nieco_dalsie()
 ```

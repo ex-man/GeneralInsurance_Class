@@ -51,10 +51,10 @@ library(ggplot2)
 dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims.rds")
 
 # TODO : Get Top 5 highest values of Paid
-dt_pol_w_claims %>%
-  filter(!is.na(Paid)) %>%
-  select(NrPolicy, NrObject, ClmYr, Paid) %>%
-  arrange(desc(Paid)) %>%
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  select(NrPolicy, NrObject, ClmYr, Paid) |>
+  arrange(desc(Paid)) |>
   head(5)
 ```
 
@@ -66,10 +66,10 @@ Specifically, we will show when the policy started and when it was ended.
 
 ```{r}
 # TODO : Get Top 5 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
-dt_pol_w_claims %>%
-  filter(!is.na(Paid)) %>%
-  select(NrPolicy, NrObject, Paid, Dt_Exp_Start, Dt_Exp_End) %>%
-  arrange(desc(Paid)) %>%
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  select(NrPolicy, NrObject, Paid, Dt_Exp_Start, Dt_Exp_End) |>
+  arrange(desc(Paid)) |>
   head(5)
 ```
 
@@ -85,13 +85,13 @@ So let's create our exposure based on time a client was covered.
 # tip: lubridate is great for manipulation of dates
 library(lubridate)
 
-dt_pol_w_claims <- dt_pol_w_claims %>%
+dt_pol_w_claims <- dt_pol_w_claims |>
   mutate(Time_Exposure = lubridate::dmy(Dt_Exp_End) - lubridate::dmy(Dt_Exp_Start) + 1)
 
-dt_pol_w_claims %>%
-  filter(!is.na(Paid)) %>%
-  arrange(desc(Paid)) %>%
-  dplyr::select(Dt_Exp_Start, Dt_Exp_End, Time_Exposure, Paid) %>%
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  arrange(desc(Paid)) |>
+  dplyr::select(Dt_Exp_Start, Dt_Exp_End, Time_Exposure, Paid) |>
   head(5)
 ```
 
@@ -106,16 +106,16 @@ Burning Cost we call overall cost per some metric of exposure, in our case we ar
 ```{r}
 # TODO : Compute Burning_Cost as Ult_Loss per day
 # Hint: use as.integer(Time_Exposure) to get the number of days
-dt_pol_w_claims <- dt_pol_w_claims %>%
+dt_pol_w_claims <- dt_pol_w_claims |>
   mutate(
     Ult_Loss = Paid + Reserves,
     Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / as.integer(Time_Exposure))
   )
 
 # show top 5 riskiest records based on burning cost
-dt_pol_w_claims %>%
-  arrange(desc(Burning_Cost)) %>%
-  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) %>%
+dt_pol_w_claims |>
+  arrange(desc(Burning_Cost)) |>
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) |>
   head(5)
 ```
 
@@ -139,7 +139,7 @@ One-Way analysis is a good starting point, where we look at each potential varia
 Let's use ggplot2 to draw a box plot of burning cost per each value/category of a variable - for example `Veh_type1`.
 
 ```{r}
-dt_pol_w_claims %>%
+dt_pol_w_claims |>
   ggplot(aes(x = Veh_type1, y = Burning_Cost)) +
   geom_boxplot()
 ```
@@ -159,15 +159,15 @@ Instead of plotting the whole distribution, let's just compute the average of th
 The weighted average will also weaken the effect of outliers which are often high losses that occurred during a very short exposure period.
 
 ```{r}
-bc_avg <- dt_pol_w_claims %>%
-  group_by(Veh_type1) %>%
+bc_avg <- dt_pol_w_claims |>
+  group_by(Veh_type1) |>
   summarize(
     BC_avg = weighted.mean(Burning_Cost, as.integer(Time_Exposure)),
     exposure_sum = sum(as.integer(Time_Exposure))
-  ) %>%
+  ) |>
   filter(BC_avg > 0)
 
-bc_avg %>%
+bc_avg |>
   ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
   geom_point()
 ```
@@ -177,11 +177,11 @@ bc_avg %>%
 We can make another two adjustments to make the plot more legible - We can filter out very low exposures and tilt the x-axis.
 
 ```{r}
-bc_avg <- bc_avg %>%
-  mutate(exposure_pct = exposure_sum / sum(exposure_sum)) %>%
+bc_avg <- bc_avg |>
+  mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
   filter(exposure_pct > 0.01)
 
-bc_avg %>%
+bc_avg |>
   ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
   geom_point() +
   theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1))
@@ -199,17 +199,17 @@ all_vars <- c(
 )
 
 for (var_nm in all_vars) {
-  bc_avg <- dt_pol_w_claims %>%
-    group_by(.data[[var_nm]]) %>%
+  bc_avg <- dt_pol_w_claims |>
+    group_by(.data[[var_nm]]) |>
     summarize(
       BC_avg = weighted.mean(Burning_Cost, as.integer(Time_Exposure)),
       exposure_sum = sum(as.integer(Time_Exposure))
-    ) %>%
-    filter(BC_avg > 0) %>%
-    mutate(exposure_pct = exposure_sum / sum(exposure_sum)) %>%
+    ) |>
+    filter(BC_avg > 0) |>
+    mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
     filter(exposure_pct > 0.01)
 
-  g <- bc_avg %>%
+  g <- bc_avg |>
     ggplot(aes(y = BC_avg, x = .data[[var_nm]], size = exposure_sum)) +
     geom_point() +
     theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
@@ -226,7 +226,7 @@ The Burning Cost measures the overall cost per unit of exposure. While we discus
 ```{r}
 # TODO: Normalize Time_Exposure to a fraction of a year. Compute Burning_Cost as Ult_Loss per year. 
 # Hint: Use the `leap_year` function from lubridate to determine the number of days in the year.
-dt_pol_w_claims <- dt_pol_w_claims %>%
+dt_pol_w_claims <- dt_pol_w_claims |>
   mutate(
     Time_Exposure = as.numeric(
       as.integer(Time_Exposure) /
@@ -240,9 +240,9 @@ dt_pol_w_claims <- dt_pol_w_claims %>%
   )
 
 # Show top 5 riskiest records based on burning cost
-dt_pol_w_claims %>%
-  arrange(desc(Burning_Cost)) %>%
-  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) %>%
+dt_pol_w_claims |>
+  arrange(desc(Burning_Cost)) |>
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) |>
   head(5)
 ```
 

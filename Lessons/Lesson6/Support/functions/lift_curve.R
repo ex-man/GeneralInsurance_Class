@@ -23,7 +23,7 @@ lift_curve <- function(
   
   if(is_fitted == FALSE) {
     
-    X <- data %>%
+    X <- data |>
       select(-all_of(c(target_variable, weights_input)))
     
     # calculate fitted values
@@ -34,16 +34,16 @@ lift_curve <- function(
   }
   
   # Prepare data used for metrics and graph
-  testing_plot <- data %>%
-    arrange(fitted) %>%
+  testing_plot <- data |>
+    arrange(fitted) |>
     mutate(
       observed = get(target_variable),
       weights = if (is.null(weights_input)) 1 else get(weights_input),
       bin = cut_weight(weights, bins)
-    ) %>%
-    select(fitted, weights, observed, bin) %>%
-    mutate(across(everything(), as.numeric)) %>%
-    group_by(bin) %>%
+    ) |>
+    select(fitted, weights, observed, bin) |>
+    mutate(across(everything(), as.numeric)) |>
+    group_by(bin) |>
     dplyr::summarise(
       fit = (sum(fitted * weights)) / sum(weights),
       obs = (sum(observed * weights)) / sum(weights),
@@ -51,8 +51,8 @@ lift_curve <- function(
     )
   
   # Create graph
-  testing_plot %>%
-    plotly::plot_ly(x = ~bin) %>%
+  testing_plot |>
+    plotly::plot_ly(x = ~bin) |>
     # Bins - exposure
     plotly::add_trace(
       y = ~wth,
@@ -60,7 +60,7 @@ lift_curve <- function(
       marker = list(color = "orange"),
       alpha = 0.5,
       name = "Exposure"
-    ) %>%
+    ) |>
     # Line - observed values
     plotly::add_trace(
       y = ~obs,
@@ -70,7 +70,7 @@ lift_curve <- function(
       name = "Observed",
       marker = list(color = "#F8766D"),
       line = list(color = "#F8766D")
-    ) %>%
+    ) |>
     # Line - predicted values
     plotly::add_trace(
       y = ~fit,
@@ -80,7 +80,7 @@ lift_curve <- function(
       name = "Predicted",
       marker = list(color = "#619CFF"),
       line = list(color = "#619CFF")
-    ) %>%
+    ) |>
     # Specify layout
     plotly::layout(
       yaxis = list(

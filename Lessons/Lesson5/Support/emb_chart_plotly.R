@@ -26,20 +26,20 @@ emb_chart_plotly <- function(
   
   # if any weights are assigned, create it (equal to 1)
   if(is.null(weight)) {
-    dt.frm <- dt.frm %>% 
+    dt.frm <- dt.frm |> 
       mutate(weight_col=1)
     weight <- "weight_col"
   }
   
   #data preparation for graph
-  prepared <- dt.frm %>%
-    group_by(get(x_var)) %>% 
+  prepared <- dt.frm |>
+    group_by(get(x_var)) |> 
     summarize(
       actual_mean = weighted.mean(.data[[target]], .data[[weight]], na.rm = TRUE),
       fitted_mean = weighted.mean(.data[[prediction]], .data[[weight]], na.rm = TRUE),
       weight_sum = sum(.data[[weight]])
-    ) %>% 
-    mutate(weight_sum_pct = weight_sum/sum(weight_sum)*100) %>%
+    ) |> 
+    mutate(weight_sum_pct = weight_sum/sum(weight_sum)*100) |>
     rename("group_var" = "get(x_var)" ) 
   
   # print data if selected 
@@ -54,26 +54,26 @@ emb_chart_plotly <- function(
   if((is.character(x_unique) || is.factor(x_unique)) && length(x_unique) > 20) {
     
     # group factors together
-    prepared <- prepared %>% 
+    prepared <- prepared |> 
       mutate(
         group_var_label = ifelse(
           weight_sum_pct > 100/length(x_unique), 
           group_var,
           ""
         )
-      ) %>% 
+      ) |> 
       filter(group_var_label != "")
     
   } else {
     # else do nothing
-    prepared <- prepared %>% 
+    prepared <- prepared |> 
       mutate(group_var_label = group_var)
     scale_x_fun <- NULL
   }
   
   #graph
-  prepared %>%
-    plot_ly(x = ~group_var_label) %>%
+  prepared |>
+    plot_ly(x = ~group_var_label) |>
     # bins - exposure
     add_trace(
       y = ~weight_sum_pct,
@@ -81,7 +81,7 @@ emb_chart_plotly <- function(
       marker = list(color = "orange"),
       alpha = 0.5,
       name = "Exposure"
-    ) %>%
+    ) |>
     # line - observed values
     add_trace(
       y = ~actual_mean,
@@ -91,7 +91,7 @@ emb_chart_plotly <- function(
       name = "Actual",
       marker = list(color = "#F8766D"),
       line = list(color = "#F8766D")
-    ) %>%
+    ) |>
     # line - predicted values
     add_trace(
       y = ~fitted_mean,
@@ -101,7 +101,7 @@ emb_chart_plotly <- function(
       name = "Fitted",
       marker = list(color = "#619CFF"),
       line = list(color = "#619CFF")
-    ) %>%
+    ) |>
     # specify layout
     layout(
       title = list(

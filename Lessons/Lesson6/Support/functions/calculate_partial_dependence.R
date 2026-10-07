@@ -58,18 +58,18 @@ calculate_partial_dependence <- function(
   }
   
   # Extract levels from variables
-  variable_levels <- data %>%
-    select(all_of(var)) %>%
+  variable_levels <- data |>
+    select(all_of(var)) |>
     distinct()
   
   # Check if variable is numeric
-  is_numeric <- variable_levels %>%
-    pull() %>% 
+  is_numeric <- variable_levels |>
+    pull() |> 
     is.numeric()
   
   # Check the granularity of the variable
-  is_granular <- variable_levels %>% 
-    pull() %>% 
+  is_granular <- variable_levels |> 
+    pull() |> 
     length()
   
   # If levels are numeric and too granular, create a subsample of the values
@@ -78,7 +78,7 @@ calculate_partial_dependence <- function(
     
     levels <- round(
       quantile(
-        variable_levels %>% 
+        variable_levels |> 
           arrange(get(var)),
         probs = seq(0, 1, 1 / 1000), 
         names = FALSE, 
@@ -94,13 +94,13 @@ calculate_partial_dependence <- function(
   }
   
   # Create column to store calculated partial dependences
-  variable_levels <- variable_levels %>%
+  variable_levels <- variable_levels |>
     mutate(pd = 0)
   
   # Compute partial dependeces for each combination of feature values
   for (i in 1:nrow(variable_levels)) {
     # Modify the data to have the current combination of feature values
-    data_modif <- data_subs %>%
+    data_modif <- data_subs |>
       mutate(!!var := variable_levels[[i, 1]])
     
     # calculate partial dependeces
