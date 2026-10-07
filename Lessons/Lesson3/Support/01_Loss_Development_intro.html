@@ -1662,27 +1662,34 @@ important. So now when we know why, let’s look at <em>how</em>.</p>
 some more years to be paid, it is very hard to say at the end of the
 year whether we have “saved” enough money. For this reason, it makes
 sense to keep history of all claims related to 1 period.</p>
-<p>Imagine this simple situation that shows a history of a single
-policy:</p>
+<p>Imagine this simple situation. <strong>Driver A</strong> holds a PZP
+policy — mandatory third-party liability insurance that covers damages
+they may cause to others. <strong>Person B</strong> is someone Driver A
+will injure in an accident.</p>
 <ol style="list-style-type: decimal">
-<li>1st December 2021 - insurance contract was signed to protect against
-car crash injury</li>
-<li>20th November 2022 - there was an accident. The person goes to
-hospital and does not care about calling insurance company</li>
-<li>1st January 2023 - the person is finally home, but they will not be
-able to work for unknown time</li>
-<li>5th January 2023 - claim is reported. Doctors say, the person may
-require another surgery in 6 months</li>
-<li>1st February 2023 - new symptoms are found (they seem to be coming
-from the accident) …</li>
-<li>a few years later - the person finally starts working, but is
-partially disabled</li>
+<li>1st December 2021 — Driver A signs a PZP contract. This covers
+bodily injury and property damage they may cause to third parties.</li>
+<li>20th November 2022 — Driver A causes an accident, injuring Person B.
+Person B is rushed to hospital. Driver A reports the accident to their
+insurer within a few days, as required by law.</li>
+<li>December 2022 — While in hospital, Person B’s family contacts SKP
+(the national motor insurance bureau) with Driver A’s license plate and
+identifies the insurer. They notify the insurer of the injury, but
+Person B is in no condition to formally submit a claim yet.</li>
+<li>1st January 2023 — Person B returns home after weeks in hospital,
+but will not be able to work for an unknown period.</li>
+<li>5th January 2023 — Person B formally submits a claim to Driver A’s
+insurer. Doctors say another surgery may be needed in 6 months.</li>
+<li>1st February 2023 — new symptoms are found (they seem to be related
+to the accident) …</li>
+<li>a few years later — Person B finally starts working again, but is
+partially disabled.</li>
 </ol>
 <p>In the database of an insurance company, this policy history could
 look something like this:</p>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["AY"],"name":[1],"type":["lgl"],"align":["right"]},{"label":["DY"],"name":[2],"type":["lgl"],"align":["right"]},{"label":["Year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Amount"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Note"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"NA","2":"NA","3":"2021","4":"0","5":"Policy Start"},{"1":"NA","2":"NA","3":"2022","4":"0","5":"Claim happened"},{"1":"NA","2":"NA","3":"2023","4":"0","5":"Claim reported"},{"1":"NA","2":"NA","3":"2023","4":"10000","5":"Car"},{"1":"NA","2":"NA","3":"2023","4":"1000","5":"Wage compensation for 2022/12"},{"1":"NA","2":"NA","3":"2023","4":"3000","5":"Surgery1"},{"1":"NA","2":"NA","3":"2023","4":"4000","5":"Surgery2"},{"1":"NA","2":"NA","3":"2023","4":"12000","5":"Wage compensation for 2023/01-2023/12"},{"1":"NA","2":"NA","3":"2024","4":"12000","5":"Wage compensation for 2024/01-2024/12"},{"1":"NA","2":"NA","3":"2025","4":"2400","5":"Partial disability compensation"},{"1":"NA","2":"NA","3":"2026","4":"2400","5":"Partial disability compensation"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["AY"],"name":[1],"type":["lgl"],"align":["right"]},{"label":["DY"],"name":[2],"type":["lgl"],"align":["right"]},{"label":["Year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Amount"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Note"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"NA","2":"NA","3":"2021","4":"0","5":"Policy Start"},{"1":"NA","2":"NA","3":"2022","4":"0","5":"Accident (Driver A reports to insurer)"},{"1":"NA","2":"NA","3":"2023","4":"0","5":"Claim submitted by Person B"},{"1":"NA","2":"NA","3":"2023","4":"10000","5":"Car"},{"1":"NA","2":"NA","3":"2023","4":"1000","5":"Wage compensation for 2022/12"},{"1":"NA","2":"NA","3":"2023","4":"3000","5":"Surgery1"},{"1":"NA","2":"NA","3":"2023","4":"4000","5":"Surgery2"},{"1":"NA","2":"NA","3":"2023","4":"12000","5":"Wage compensation for 2023/01-2023/12"},{"1":"NA","2":"NA","3":"2024","4":"12000","5":"Wage compensation for 2024/01-2024/12"},{"1":"NA","2":"NA","3":"2025","4":"2400","5":"Partial disability compensation"},{"1":"NA","2":"NA","3":"2026","4":"2400","5":"Partial disability compensation"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p><em>Think about which year each information relates to</em>, since
@@ -1692,7 +1699,7 @@ to relate all this history to a single year.</p>
 database:</p>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["AY"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["DY"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Amount"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Note"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"NA","2":"NA","3":"2021","4":"0","5":"Policy Start"},{"1":"2022","2":"1","3":"2022","4":"0","5":"Claim happened"},{"1":"2022","2":"2","3":"2023","4":"0","5":"Claim reported"},{"1":"2022","2":"2","3":"2023","4":"10000","5":"Car"},{"1":"2022","2":"2","3":"2023","4":"1000","5":"Wage compensation for 2022/12"},{"1":"2022","2":"2","3":"2023","4":"3000","5":"Surgery1"},{"1":"2022","2":"2","3":"2023","4":"4000","5":"Surgery2"},{"1":"2022","2":"2","3":"2023","4":"12000","5":"Wage compensation for 2023/01-2023/12"},{"1":"2022","2":"3","3":"2024","4":"12000","5":"Wage compensation for 2024/01-2024/12"},{"1":"2022","2":"4","3":"2025","4":"2400","5":"Partial disability compensation"},{"1":"2022","2":"5","3":"2026","4":"2400","5":"Partial disability compensation"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["AY"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["DY"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Amount"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Note"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"NA","2":"NA","3":"2021","4":"0","5":"Policy Start"},{"1":"2022","2":"1","3":"2022","4":"0","5":"Accident (Driver A reports to insurer)"},{"1":"2022","2":"2","3":"2023","4":"0","5":"Claim submitted by Person B"},{"1":"2022","2":"2","3":"2023","4":"10000","5":"Car"},{"1":"2022","2":"2","3":"2023","4":"1000","5":"Wage compensation for 2022/12"},{"1":"2022","2":"2","3":"2023","4":"3000","5":"Surgery1"},{"1":"2022","2":"2","3":"2023","4":"4000","5":"Surgery2"},{"1":"2022","2":"2","3":"2023","4":"12000","5":"Wage compensation for 2023/01-2023/12"},{"1":"2022","2":"3","3":"2024","4":"12000","5":"Wage compensation for 2024/01-2024/12"},{"1":"2022","2":"4","3":"2025","4":"2400","5":"Partial disability compensation"},{"1":"2022","2":"5","3":"2026","4":"2400","5":"Partial disability compensation"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>We can aggregate this information for each combination of AY and DY,
@@ -1712,7 +1719,7 @@ in 2022 (accident year):</p>
   </script>
 </div>
 <p>Working with a bigger portfolio also means, that <em>some claims
-usually happen every year</em>, not just in 2017. So a <em>full picture
+usually happen every year</em>, not just in 2022. So a <em>full picture
 of our portfolio</em> could look something like this. Note that as we
 progress in time (AY), we have less and less information on how the
 losses will look like in the following development years (DY).</p>

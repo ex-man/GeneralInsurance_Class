@@ -28,14 +28,15 @@ So that is why - customers and regulators. This means it truly is important. So 
 
 As losses take sometimes a number of years to be reported and then some more years to be paid, it is very hard to say at the end of the year whether we have "saved" enough money. For this reason, it makes sense to keep history of all claims related to 1 period.
 
-Imagine this simple situation that shows a history of a single policy:
+Imagine this simple situation. **Driver A** holds a PZP policy — mandatory third-party liability insurance that covers damages they may cause to others. **Person B** is someone Driver A will injure in an accident.
 
-1)  1st December 2021 - insurance contract was signed to protect against car crash injury
-2)  20th November 2022 - there was an accident. The person goes to hospital and does not care about calling insurance company
-3)  1st January 2023 - the person is finally home, but they will not be able to work for unknown time
-4)  5th January 2023 - claim is reported. Doctors say, the person may require another surgery in 6 months
-5)  1st February 2023 - new symptoms are found (they seem to be coming from the accident) ...
-6)  a few years later - the person finally starts working, but is partially disabled
+1)  1st December 2021 — Driver A signs a PZP contract. This covers bodily injury and property damage they may cause to third parties.
+2)  20th November 2022 — Driver A causes an accident, injuring Person B. Person B is rushed to hospital. Driver A reports the accident to their insurer within a few days, as required by law.
+3)  December 2022 — While in hospital, Person B's family contacts SKP (the national motor insurance bureau) with Driver A's license plate and identifies the insurer. They notify the insurer of the injury, but Person B is in no condition to formally submit a claim yet.
+4)  1st January 2023 — Person B returns home after weeks in hospital, but will not be able to work for an unknown period.
+5)  5th January 2023 — Person B formally submits a claim to Driver A's insurer. Doctors say another surgery may be needed in 6 months.
+6)  1st February 2023 — new symptoms are found (they seem to be related to the accident) ...
+7)  a few years later — Person B finally starts working again, but is partially disabled.
 
 In the database of an insurance company, this policy history could look something like this:
 
@@ -43,8 +44,8 @@ In the database of an insurance company, this policy history could look somethin
 tibble::tribble(
   ~AY, ~DY, ~Year, ~Amount, ~Note,
   NA, NA, 2021, 0, "Policy Start",
-  NA, NA, 2022, 0, "Claim happened",
-  NA, NA, 2023, 0, "Claim reported",
+  NA, NA, 2022, 0, "Accident (Driver A reports to insurer)",
+  NA, NA, 2023, 0, "Claim submitted by Person B",
   NA, NA, 2023, 10000, "Car",
   NA, NA, 2023, 1000, "Wage compensation for 2022/12",
   NA, NA, 2023, 3000, "Surgery1",
@@ -64,8 +65,8 @@ Once we choose this year, we can reflect this information in our database:
 tibble::tribble(
   ~AY, ~DY, ~Year, ~Amount, ~Note,
   NA,   NA,  2021,  0,       "Policy Start",
-  2022, 1,   2022,  0,       "Claim happened",
-  2022, 2,   2023,  0,       "Claim reported",
+  2022, 1,   2022,  0,       "Accident (Driver A reports to insurer)",
+  2022, 2,   2023,  0,       "Claim submitted by Person B",
   2022, 2,   2023,  10000,   "Car",
   2022, 2,   2023,  1000,    "Wage compensation for 2022/12",
   2022, 2,   2023,  3000,    "Surgery1",
@@ -95,7 +96,7 @@ tibble::tribble(
 )
 ```
 
-Working with a bigger portfolio also means, that *some claims usually happen every year*, not just in 2017. So a *full picture of our portfolio* could look something like this. Note that as we progress in time (AY), we have less and less information on how the losses will look like in the following development years (DY).
+Working with a bigger portfolio also means, that *some claims usually happen every year*, not just in 2022. So a *full picture of our portfolio* could look something like this. Note that as we progress in time (AY), we have less and less information on how the losses will look like in the following development years (DY).
 
 This structure is shaped like a triangle, where the rows represent the years of origin (policy, accident or reporting year) and the columns represent how long it took until the information was recognized.
 
