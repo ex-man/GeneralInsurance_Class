@@ -30,11 +30,11 @@ As losses take sometimes a number of years to be reported and then some more yea
 
 Imagine this simple situation that shows a history of a single policy:
 
-1)  1st December 2016 - insurance contract was signed to protect against car crash injury
-2)  20th November 2017 - there was an accident. The person goes to hospital and does not care about calling insurance company
-3)  1st January 2018 - person is finally home, but he will not be able to work for unknown time
-4)  5th January 2018 - claim is reported. Doctors say, the person may require another surgery in 6 months
-5)  1st February 2018 - new symptoms are found (they seem to be coming from the accident) ...
+1)  1st December 2021 - insurance contract was signed to protect against car crash injury
+2)  20th November 2022 - there was an accident. The person goes to hospital and does not care about calling insurance company
+3)  1st January 2023 - the person is finally home, but they will not be able to work for unknown time
+4)  5th January 2023 - claim is reported. Doctors say, the person may require another surgery in 6 months
+5)  1st February 2023 - new symptoms are found (they seem to be coming from the accident) ...
 6)  a few years later - the person finally starts working, but is partially disabled
 
 In the database of an insurance company, this policy history could look something like this:
@@ -42,17 +42,17 @@ In the database of an insurance company, this policy history could look somethin
 ```{r, echo=F}
 tibble::tribble(
   ~AY, ~DY, ~Year, ~Amount, ~Note,
-  NA, NA, 2016, 0, "Policy Start",
-  NA, NA, 2017, 0, "Claim happened",
-  NA, NA, 2018, 0, "Claim reported",
-  NA, NA, 2018, 10000, "Car",
-  NA, NA, 2018, 1000, "Wage compensation for 2017/12",
-  NA, NA, 2018, 3000, "Surgery1",
-  NA, NA, 2018, 4000, "Surgery2",
-  NA, NA, 2018, 12000, "Wage compensation for 2018/01-2018/12",
-  NA, NA, 2019, 12000, "Wage compensation for 2019/01-2019/12",
-  NA, NA, 2020, 2400, "Partial disability compensation",
-  NA, NA, 2021, 2400, "Partial disability compensation",
+  NA, NA, 2021, 0, "Policy Start",
+  NA, NA, 2022, 0, "Claim happened",
+  NA, NA, 2023, 0, "Claim reported",
+  NA, NA, 2023, 10000, "Car",
+  NA, NA, 2023, 1000, "Wage compensation for 2022/12",
+  NA, NA, 2023, 3000, "Surgery1",
+  NA, NA, 2023, 4000, "Surgery2",
+  NA, NA, 2023, 12000, "Wage compensation for 2023/01-2023/12",
+  NA, NA, 2024, 12000, "Wage compensation for 2024/01-2024/12",
+  NA, NA, 2025, 2400, "Partial disability compensation",
+  NA, NA, 2026, 2400, "Partial disability compensation",
 )
 ```
 
@@ -63,17 +63,17 @@ Once we choose this year, we can reflect this information in our database:
 ```{r, echo=F}
 tibble::tribble(
   ~AY, ~DY, ~Year, ~Amount, ~Note,
-  NA,   NA,  2016,  0,       "Policy Start",
-  2017, 1,   2017,  0,       "Claim happened",
-  2017, 2,   2018,  0,       "Claim reported",
-  2017, 2,   2018,  10000,   "Car",
-  2017, 2,   2018,  1000,    "Wage compensation for 2017/12",
-  2017, 2,   2018,  3000,    "Surgery1",
-  2017, 2,   2018,  4000,    "Surgery2",
-  2017, 2,   2018,  12000,   "Wage compensation for 2018/01-2018/12",
-  2017, 3,   2019,  12000,   "Wage compensation for 2019/01-2019/12",
-  2017, 4,   2020,  2400,    "Partial disability compensation",
-  2017, 5,   2021,  2400,    "Partial disability compensation",
+  NA,   NA,  2021,  0,       "Policy Start",
+  2022, 1,   2022,  0,       "Claim happened",
+  2022, 2,   2023,  0,       "Claim reported",
+  2022, 2,   2023,  10000,   "Car",
+  2022, 2,   2023,  1000,    "Wage compensation for 2022/12",
+  2022, 2,   2023,  3000,    "Surgery1",
+  2022, 2,   2023,  4000,    "Surgery2",
+  2022, 2,   2023,  12000,   "Wage compensation for 2023/01-2023/12",
+  2022, 3,   2024,  12000,   "Wage compensation for 2024/01-2024/12",
+  2022, 4,   2025,  2400,    "Partial disability compensation",
+  2022, 5,   2026,  2400,    "Partial disability compensation",
 )
 ```
 
@@ -82,16 +82,16 @@ We can aggregate this information for each combination of AY and DY, then displa
 ```{r, echo=F}
 tibble::tribble(
   ~AY, ~DY1, ~DY2, ~DY3, ~DY4, ~DY5,
-  2017, 0, 30000, 42000, 44400, 46400
+  2022, 0, 30000, 42000, 44400, 46800
 )
 ```
 
-However, since we're an insurance company, *we're interested in looking at the whole portfolio* (multiple policies and therefore multiple claims). Let's assume we had 10 similar claims that originated in 2017 (accident year):
+However, since we're an insurance company, *we're interested in looking at the whole portfolio* (multiple policies and therefore multiple claims). Let's assume we had 10 similar claims that originated in 2022 (accident year):
 
 ```{r, echo=F}
 tibble::tribble(
   ~AY, ~DY1, ~DY2, ~DY3, ~DY4, ~DY5,
-  2017, 0, 300000, 420000, 444000, 464000
+  2022, 0, 300000, 420000, 444000, 468000
 )
 ```
 
@@ -102,11 +102,11 @@ This structure is shaped like a triangle, where the rows represent the years of 
 ```{r, echo=F}
 tibble::tribble(
   ~AY, ~DY1, ~DY2, ~DY3, ~DY4, ~DY5,
-  2017, 0, 300000, 420000, 444000, 464000,
-  2018, 10000, 320000, 410000, 454000, NA,
-  2019, 12000, 350000, 430000, NA, NA,
-  2020, 6000, 305000, NA, NA, NA,
-  2021, 9000, NA, NA, NA, NA
+  2022, 0, 300000, 420000, 444000, 468000,
+  2023, 10000, 320000, 410000, 454000, NA,
+  2024, 12000, 350000, 430000, NA, NA,
+  2025, 6000, 305000, NA, NA, NA,
+  2026, 9000, NA, NA, NA, NA
 )
 ```
 
