@@ -148,7 +148,7 @@ dt_KPI_discount_factors <- dt_LatestView |>
 
     # return the discount factor, since this is a function
     data.frame(discount_factor)
-  }, keep = TRUE)
+  }, .keep = TRUE)
 
 dt_KPI_discount_factors
 ```
