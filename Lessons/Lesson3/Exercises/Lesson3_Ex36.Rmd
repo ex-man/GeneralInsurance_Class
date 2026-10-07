@@ -78,7 +78,7 @@ HINT: cumprod() and sign()
 
 ```{r}
 yr_idx <- 1:9
-discount_or_compound <- sign(cumprod(Paid_HH_sml_vwtd - 1))
+discount_or_compound <- sign(cumprod(Paid_HH_sml_vwtd) - 1)
 yr_idx <- yr_idx * discount_or_compound
 yr_idx
 ```

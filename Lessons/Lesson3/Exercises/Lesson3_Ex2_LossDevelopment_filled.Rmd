@@ -33,9 +33,8 @@ After we are done with the exploratory analysis, we can filter the data and conv
 *STEP 1: As an example, take paid data for House business and Small claim size*
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
 Paid_HH_sml <- dt_PaidCase |>
-  filter(___, ___, ___)
+  filter(Business == "House", ClaimSize == "Small", dataset_type == "PAID")
 ```
 
 *STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
@@ -52,8 +51,12 @@ Paid_HH_sml_triangle
 *STEP 3: Now start plotting things to see more information. Then predict the future values and visualize again.*
 
 ```{r}
-# Write this code snippet from scratch
-...
+plot(Paid_HH_sml_triangle)
+plot(Paid_HH_sml_triangle, lattice = TRUE)
+
+pred <- predict(chainladder(Paid_HH_sml_triangle))
+plot(pred)
+plot(pred, lattice = TRUE)
 ```
 
 *STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
@@ -63,17 +66,16 @@ pred
 ata(pred)
 ```
 
-*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)*
-HINT1: You can use str() function to get a hint about potential extraction of 'vwtd'
+*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* 
+HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' 
 HINT2: attr() can be used to extract attributes from an object..
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
 # str(ata(pred))
 ultimate_ata_factor <- pred |>
-  ___() |>
-  ___("vwtd") |>
-  ___()
+  ata() |>
+  attr("vwtd") |>
+  prod()
 ultimate_ata_factor
 ```
 
@@ -92,13 +94,12 @@ Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
 This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
 Paid_HH_sml_triangle_incurr <- dt_PaidCase |>
   filter(Business == "House" & ClaimSize == "Small") |>
   group_by(Business, ClaimSize, ay, dy) |>
-  summarize(SumOfamount = ___) |>
+  summarize(SumOfamount = sum(SumOfamount)) |>
   ungroup() |>
-  as.triangle(origin = ___, dev = ___, value = ___)
+  as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
 
 plot(Paid_HH_sml_triangle_incurr)
 plot(Paid_HH_sml_triangle_incurr, lattice = TRUE)
@@ -121,3 +122,4 @@ At the end of the exercise, we'll save two variables for later usage in Exercise
 ```{r}
 save(Paid_HH_sml_triangle, ultimate_ata_factor, file="/cloud/project/Data/exercise2_variables.RData")
 ```
+

@@ -114,4 +114,4 @@ tibble::tribble(
 
 Well, we want to take the advantage of the history that we have collected and predict what is likely to happen with the latest year, that we have just got to know about. It is basically a variation of the Linear Regression, where you learn from past patterns and apply them to predict future.
 
-To get what we are talking about, it is worth visualizing this a bit. Use the ChainLadder package and explore the triangle object from example there.
+To get what we are talking about, it is worth visualizing this a bit. Use the ChainLadder package and explore the triangle object from example there. The difference between the predicted ultimate losses and current paid claims is our reserve (IBNR — Incurred But Not Reported/Recorded).
