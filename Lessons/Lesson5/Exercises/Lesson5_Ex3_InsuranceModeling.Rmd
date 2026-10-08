@@ -8,9 +8,10 @@ editor_options:
     wrap: 72
 ---
 
-# Nedela polnoc - deadline na ulohu
-
-# [daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email}
+# Homework information
+- Deadline is Sunday end of the day (midnight)
+- Submission - NO submission / sending needed, do the homework in your project and teacher will review it directly there
+- Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})
 
 ```{r, include=FALSE}
 libs <- c("tidyverse", "reshape2", "patchwork", "statmod")
@@ -380,32 +381,34 @@ business partners). These are unfortunately out of scope of this lesson.
 set.seed(456)
 
 students <- c(
-  "Bence Rácz",
-  "Matej Dukát",
-  "Yuliia Polovynka",
-  "Olha Morozova",
-  "Natália Zifčáková",
-  "Katarína Magátová",
-  "Terézia Duračinská",
-  "Lukáš Košťany",
-  "Roman Vidunov",
-  "Martin Žarnovský",
-  "Myroslava Hrechyn",
-  "Juraj Darnay",
-  "Veronika Gašparovičová",
-  "Ema Sviteková",
-  "Máté Nagy",
-  "Matej Kula",
-  "Patrik Satke",
-  "Robert Valaška",
-  "Zuzana Babušíková",
-  "Lukáš Kepaza",
-  "Vladimír Kiebel",
-  "Nikola Suchá",
-  "Paulína Miklóšová"
+  "Student1",
+  "Student2",
+  "Student3",
+  "Student4",
+  "Student5",
+  "Student6",
+  "Student7",
+  "Student8",
+  "Student9",
+  "Student10",
+  "Student11",
+  "Student12",
+  "Student13",
+  "Student14",
+  "Student15",
+  "Student16",
+  "Student17",
+  "Student18",
+  "Student19",
+  "Student20"
 )
 
 assignments <- paste0("Zadanie", sample(1:8, size = length(students), replace = TRUE))
 assignments <- setNames(assignments, students)
 print(assignments)
 ```
+
+# Homework information
+- Deadline is Sunday end of the day (midnight)
+- Submission - NO submission / sending needed, do the homework in your project and teacher will review it directly there
+- Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})
