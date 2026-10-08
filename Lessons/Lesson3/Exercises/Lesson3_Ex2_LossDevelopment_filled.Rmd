@@ -1,7 +1,7 @@
 ---
 title: "Exercise 2 - Loss Development"
 output: html_document
-date: "2024-10-27"
+date: "2026-10-08"
 ---
 
 #### Exercise 2
@@ -22,7 +22,7 @@ We'll start with paid claims and come back to case reserves later.
 head(dt_PaidCase)
 summary(dt_PaidCase)
 glimpse(dt_PaidCase)
-View(dt_PaidCase)
+# View(dt_PaidCase)
 
 dt_PaidCase |>
   distinct(Business, ClaimSize, dataset_type)
@@ -40,7 +40,7 @@ Paid_HH_sml <- dt_PaidCase |>
 *STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
 
 ```{r}
-?as.triangle
+# ?as.triangle
 
 Paid_HH_sml_triangle <- Paid_HH_sml |>
   as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
@@ -54,16 +54,16 @@ Paid_HH_sml_triangle
 plot(Paid_HH_sml_triangle)
 plot(Paid_HH_sml_triangle, lattice = TRUE)
 
-pred <- predict(chainladder(Paid_HH_sml_triangle))
-plot(pred)
-plot(pred, lattice = TRUE)
+pred_paid <- predict(chainladder(Paid_HH_sml_triangle))
+plot(pred_paid)
+plot(pred_paid, lattice = TRUE)
 ```
 
 *STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
 
 ```{r}
-pred
-ata(pred)
+pred_paid
+ata(pred_paid)
 ```
 
 *STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* 
@@ -71,8 +71,8 @@ HINT1: You can use str() function to get a hint about potential extraction of 'v
 HINT2: attr() can be used to extract attributes from an object..
 
 ```{r}
-# str(ata(pred))
-ultimate_ata_factor <- pred |>
+# str(ata(pred_paid))
+ultimate_ata_factor <- Paid_HH_sml_triangle |>
   ata() |>
   attr("vwtd") |>
   prod()
@@ -86,29 +86,57 @@ This represents the expected cumulative payment of claims in the year 2025.
 ```{r}
 Paid_HH_sml_triangle["2016", "1"]
 Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
-# pred
+# pred_paid
 ```
 
-*If you are now comfortable with what this does, try doing the same, but using additional information: The Case data!* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
+### Case reserves
+
+*If you are now comfortable with what this does, try doing the same, but using a different information: The Case Reserve data!* These are the reserves that claim adjusters set for individual claims after review and maybe some analytical inputs (models, reserving analyses).
+
+Do you expect case reserves to behave differently through time than paid values?
+
+```{r}
+Case_HH_sml_triangle <- dt_PaidCase |>
+  filter(Business == "House", ClaimSize == "Small", dataset_type == "CASE") |> 
+  as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
+  
+plot(Case_HH_sml_triangle)
+plot(Case_HH_sml_triangle, lattice = TRUE)
+
+pred_case <- predict(chainladder(Case_HH_sml_triangle))
+plot(pred_case)
+plot(pred_case, lattice = TRUE)
+
+ata(pred_case)
+
+ata(Case_HH_sml_triangle) |>
+  attr("vwtd") |>
+  prod()
+```
+
+
+### Putting paid and case reserves together
+
+*Finally, we can try putting paid losses and case reserves together and see what happens* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
 
 This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
 ```{r}
-Paid_HH_sml_triangle_incurr <- dt_PaidCase |>
-  filter(Business == "House" & ClaimSize == "Small") |>
+Incurred_HH_sml_triangle <- dt_PaidCase |>
+  filter(Business == "House", ClaimSize == "Small") |>
   group_by(Business, ClaimSize, ay, dy) |>
   summarize(SumOfamount = sum(SumOfamount)) |>
   ungroup() |>
   as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
 
-plot(Paid_HH_sml_triangle_incurr)
-plot(Paid_HH_sml_triangle_incurr, lattice = TRUE)
+plot(Incurred_HH_sml_triangle)
+plot(Incurred_HH_sml_triangle, lattice = TRUE)
 
-Paid_HH_sml_triangle_incurr_pred <- predict(chainladder(Paid_HH_sml_triangle_incurr))
-plot(Paid_HH_sml_triangle_incurr_pred)
-plot(Paid_HH_sml_triangle_incurr_pred, lattice = TRUE)
-ata(Paid_HH_sml_triangle_incurr)
-ata(Paid_HH_sml_triangle_incurr) |>
+pred_incurred <- predict(chainladder(Incurred_HH_sml_triangle))
+plot(pred_incurred)
+plot(pred_incurred, lattice = TRUE)
+ata(pred_incurred)
+ata(Incurred_HH_sml_triangle) |>
   attr("vwtd") |>
   prod()
 ```

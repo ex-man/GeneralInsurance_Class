@@ -1,7 +1,7 @@
 ---
 title: "Exercise 2 - Loss Development"
 output: html_document
-date: "2024-10-27"
+date: "2026-10-08"
 ---
 
 #### Exercise 2
@@ -22,7 +22,7 @@ We'll start with paid claims and come back to case reserves later.
 head(dt_PaidCase)
 summary(dt_PaidCase)
 glimpse(dt_PaidCase)
-View(dt_PaidCase)
+# View(dt_PaidCase)
 
 dt_PaidCase |>
   distinct(Business, ClaimSize, dataset_type)
@@ -33,15 +33,14 @@ After we are done with the exploratory analysis, we can filter the data and conv
 *STEP 1: As an example, take paid data for House business and Small claim size*
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
 Paid_HH_sml <- dt_PaidCase |>
-  filter(___, ___, ___)
+  filter(Business == "House", ClaimSize == "Small", dataset_type == "PAID")
 ```
 
 *STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
 
 ```{r}
-?as.triangle
+# ?as.triangle
 
 Paid_HH_sml_triangle <- Paid_HH_sml |>
   as.triangle(origin = "ay", dev = "dy", value = "SumOfamount")
@@ -52,28 +51,31 @@ Paid_HH_sml_triangle
 *STEP 3: Now start plotting things to see more information. Then predict the future values and visualize again.*
 
 ```{r}
-# Write this code snippet from scratch
-...
+___(Paid_HH_sml_triangle)
+___(Paid_HH_sml_triangle, ___ = TRUE)
+
+pred_paid <- ___
+___(pred_paid)
+___(pred_paid, ___ = TRUE)
 ```
 
 *STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
 
 ```{r}
-pred
-ata(pred)
+pred_paid
+ata(pred_paid)
 ```
 
-*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)*
-HINT1: You can use str() function to get a hint about potential extraction of 'vwtd'
+*STEP 5: Get the volume weighted averages (vwtd) and multiply, to get the ultimate aging factor (from year 1 to year 10)* 
+HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' 
 HINT2: attr() can be used to extract attributes from an object..
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
-# str(ata(pred))
-ultimate_ata_factor <- pred |>
-  ___() |>
-  ___("vwtd") |>
-  ___()
+# str(ata(pred_paid))
+ultimate_ata_factor <- Paid_HH_sml_triangle |>
+  ata() |>
+  attr("vwtd") |>
+  prod()
 ultimate_ata_factor
 ```
 
@@ -84,32 +86,54 @@ This represents the expected cumulative payment of claims in the year 2025.
 ```{r}
 Paid_HH_sml_triangle["2016", "1"]
 Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
-# pred
+# pred_paid
 ```
 
-*If you are now comfortable with what this does, try doing the same, but using additional information: The Case data!* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
+### Case reserves
+
+*If you are now comfortable with what this does, try doing the same, but using a different information: The Case Reserve data!* These are the reserves that claim adjusters set for individual claims after review and maybe some analytical inputs (models, reserving analyses).
+
+Do you expect case reserves to behave differently through time than paid values?
+
+```{r}
+Case_HH_sml_triangle <- dt_PaidCase |>
+  ___(Business == "House", ClaimSize == "Small", dataset_type == "CASE") |> 
+  ___(origin = ___, dev = ___, value = ___)
+  
+plot(Case_HH_sml_triangle)
+plot(Case_HH_sml_triangle, lattice = TRUE)
+
+pred_case <- ___(___(Case_HH_sml_triangle))
+plot(pred_case)
+plot(pred_case, lattice = TRUE)
+
+# look at age-to-age factors
+___(pred_case)
+
+# look at ultimate age-to-age factor
+___(Case_HH_sml_triangle) |>
+  attr("vwtd") |>
+  prod()
+```
+
+
+### Putting paid and case reserves together
+
+*Finally, we can try putting paid losses and case reserves together and see what happens* Hint: Sum Paid and Case together (using group_by() and summarize()) to come up with the final claims estimates (the Incurred claims).
 
 This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
 ```{r}
-# Fill in the ___ placeholders with the correct code
-Paid_HH_sml_triangle_incurr <- dt_PaidCase |>
-  filter(Business == "House" & ClaimSize == "Small") |>
+Incurred_HH_sml_triangle <- dt_PaidCase |>
+  ___(Business == "House", ClaimSize == "Small") |>
   group_by(Business, ClaimSize, ay, dy) |>
-  summarize(SumOfamount = ___) |>
+  ___(SumOfamount = sum(SumOfamount)) |>
   ungroup() |>
-  as.triangle(origin = ___, dev = ___, value = ___)
+  ___(origin = "ay", dev = "dy", value = "SumOfamount")
 
-plot(Paid_HH_sml_triangle_incurr)
-plot(Paid_HH_sml_triangle_incurr, lattice = TRUE)
+# Fill in the rest from scratch
+...
 
-Paid_HH_sml_triangle_incurr_pred <- predict(chainladder(Paid_HH_sml_triangle_incurr))
-plot(Paid_HH_sml_triangle_incurr_pred)
-plot(Paid_HH_sml_triangle_incurr_pred, lattice = TRUE)
-ata(Paid_HH_sml_triangle_incurr)
-ata(Paid_HH_sml_triangle_incurr) |>
-  attr("vwtd") |>
-  prod()
 ```
 
 ### Short or Long tail
@@ -121,3 +145,4 @@ At the end of the exercise, we'll save two variables for later usage in Exercise
 ```{r}
 save(Paid_HH_sml_triangle, ultimate_ata_factor, file="/cloud/project/Data/exercise2_variables.RData")
 ```
+

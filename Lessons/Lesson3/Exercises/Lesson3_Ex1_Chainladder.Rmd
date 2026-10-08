@@ -55,8 +55,18 @@ We can easily obtain all the development multipliers, or as we call them 'age-to
 Now the missing triangle is populated and we have a full matrix. We now also have full time series in all origin years.
 
 ```{r}
-# Write this code snippet from scratch
-...
+# prediction and visualization
+pred <- RAA |>
+  chainladder() |>
+  predict()
+predict(chainladder(RAA))
+
+RAA
+pred
+plot(RAA)
+plot(pred)
+plot(RAA, lattice = TRUE)
+plot(pred, lattice = TRUE)
 ```
 
 At the end this is all about age-to-age factors. There are many methods that calculate them, but once you get them, you will know, how much bigger will the claim payments be in x years.
