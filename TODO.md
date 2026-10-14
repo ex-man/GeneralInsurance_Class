@@ -1,6 +1,9 @@
 TODO
 - Lessons 5-6: code and support material review (see detailed follow-ups from the Lesson 4 review below)
-- Lessons 4-6: prepare partial blank versions for students (if applicable)
+- Lessons 5-6: prepare partial blank versions for students (if applicable)
+- Lesson 4: student versions (Lesson4_Ex1_DataPrep.Rmd, Lesson4_Ex2_TargetAnalysis.Rmd) contain [STUDENT TASK]
+  markers with suggested blanks / write-from-scratch sections. Before handing out: replace the marked code with ___
+  (or delete it for write-from-scratch) and drop the "# Suggested ..." helper comments. Solutions: *_filled.Rmd.
 
 ## Lesson 5 — follow-ups from Lesson 4 review
 - [ ] L5 Ex3: port the Lift Chart section from the Class 2025 Posit Cloud export

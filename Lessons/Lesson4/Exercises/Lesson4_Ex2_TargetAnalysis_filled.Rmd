@@ -1,0 +1,351 @@
+---
+title: "Target Analysis"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+# Looking for a good Target
+
+Target is a __dependent__ variable in a model you designed for the purpose of being helpful in predicting the insurance event. Good design of the model can answer questions about relationship between any __independent__ variables and target. When we speak about a _variable_, it can be anything which is __measurable__ (event, object, facts, idea, ...).
+
+Questions which might help you identify good target and design good model:
+
+- What is the event, object or idea you would like to predict?
+- Is it measurable?
+- Let's say you finished your model, how did the prediction help you to solve your insurance issue?
+- Are there any potential independent variables that might have relationship to your target you propose?
+
+Take a minute to reflect and discuss these questions.
+
+Great, now you thought a bit about your ideas regarding the target, let's think about it together.
+
+- _What is the event, object or idea you would like to predict?_
+
+    We definitely want to find out the risk of the specific client and predict it for potential clients.
+
+- _Is it measurable?_
+
+    How can we measure risk? Which information identifies a risky client?
+
+    This is something we need to discuss more and have a whole section about it. Examples of a good risk indicator are Ultimate Losses, Ultimate Loss Ratio, Ultimate Frequency and it depends pretty much on what kind of risk you are interested in.
+
+    Let's take an example. If you are really interested in risk described in dollar values, you will probably end up using Ultimate Loss as a good measurable variable indicating riskiness of the client.
+
+    But, some of the insurance coverages pay only a fixed amount of dollars when claims occur. In such case there is not so much importance on the dollar value paid, but much more important thing is how many claims a client had. We usually choose Ultimate Frequency as a good target, or a combination of Loss amount and Frequency.
+
+    So the answer here depends pretty much on the definition of the insurance product and its specific risk you are trying to predict.
+
+So once again...
+
+> What is a good measure of a risky client?
+
+Hmm. `Paid` losses might be a good start.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims.rds")
+
+# TODO : Get Top 5 highest values of Paid
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  select(NrPolicy, NrObject, ClmYr, Paid) |>
+  arrange(desc(Paid)) |>
+  head(5)
+```
+
+### Exposure
+> Is it enough? Can we say that clients with a similar loss amount have a similar risk?
+
+Well...it might be not enough. Let's look at a slightly longer list, and we will add some more information.
+Specifically, we will show when the policy started and when it ended.
+
+```{r}
+# TODO : Get Top 6 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  select(NrPolicy, NrObject, ClmYr, Paid, Dt_Exp_Start, Dt_Exp_End) |>
+  arrange(desc(Paid)) |>
+  head(6)
+```
+
+> What's different about the sixth client compared to the first ones?
+
+The first five clients were insured for the whole year. The sixth client was insured only for about **half a year** (185 days) and yet had a loss of a similar size. Per day of insurance, this client was therefore about **twice(!) as risky** as the others. And there are clients with even shorter cover - we will meet one insured for just 15 days in a moment.
+
+What we described here is the term `exposure`. The exposure can be different for different portfolios we analyse. E.g. it can be sum insured for property business or mileage for truck insurance. We often talk about exposure as a unit of insurance cover. There are many definitions.
+
+So let's create our exposure based on time a client was covered.
+
+```{r}
+# tip: lubridate is great for manipulation of dates
+library(lubridate)
+
+dt_pol_w_claims <- dt_pol_w_claims |>
+  mutate(Time_Exposure = lubridate::dmy(Dt_Exp_End) - lubridate::dmy(Dt_Exp_Start) + 1)
+
+dt_pol_w_claims |>
+  filter(!is.na(Paid)) |>
+  arrange(desc(Paid)) |>
+  dplyr::select(Dt_Exp_Start, Dt_Exp_End, Time_Exposure, Paid) |>
+  head(5)
+```
+
+Did you realize for some years there are 365 and for some 366 days? `lubridate` knows which year is a leap year. Cool, right?
+
+#### Incurred Losses and Burning Cost
+
+Ultimate Losses are what we end up with after all the individual claims are fully paid. They can include various parts of the claim e.g. (Losses, Reserves, Inflation, Expenses to arrange the claim, ...).
+
+In our data we only know what has been **paid** so far and what the claims handlers expect still to pay on the **known** claims (case **reserves**). Their sum is called **incurred loss**. It is not yet the ultimate loss - remember from Lesson 3 that recent claims still develop and that some claims are not even reported yet (IBNR). Look at the `Reserves` of the most recent claims (2015) and compare them with older years - the latest year is still far from being settled:
+
+```{r}
+dt_pol_w_claims |>
+  filter(!is.na(ClmYr)) |>
+  group_by(ClmYr) |>
+  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
+  mutate(Reserves_pct = Reserves / (Paid + Reserves))
+```
+
+To keep things simple, we will use the incurred loss (`Paid + Reserves`) as an approximation of the ultimate loss and call it `Ult_Loss`. In a real pricing exercise we would first develop it to ultimate with the methods from Lesson 3.
+
+Burning Cost is what we call the overall cost per some metric of exposure, in our case we are talking about _dollar loss per day insured_.
+
+```{r}
+# TODO : Compute Burning_Cost as Ult_Loss per day
+# Hint: use as.integer(Time_Exposure) to get the number of days
+dt_pol_w_claims <- dt_pol_w_claims |>
+  mutate(
+    Ult_Loss = Paid + Reserves,
+    Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / as.integer(Time_Exposure))
+  )
+
+# show top 5 riskiest records based on burning cost
+dt_pol_w_claims |>
+  arrange(desc(Burning_Cost)) |>
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) |>
+  head(5)
+```
+
+#### Burning Cost per Year
+
+While we discussed Burning Cost per day, in insurance practice it is more common to use Burning Cost per year (in our case _dollar loss per year insured_). The yearly figure is also directly comparable with the premium, which is charged per year. By converting `Time_Exposure` to a fraction of a year using the exact number of days in each year, Burning Costs become comparable on a per-year basis and `Time_Exposure` values are in the range (0, 1]. A policy covering the whole year then counts as exactly 1 **policy-year** (also called *earned car-year*).
+
+```{r}
+# TODO: Normalize Time_Exposure to a fraction of a year. Compute Burning_Cost as Ult_Loss per year.
+# Hint: Use the `leap_year` function from lubridate to determine the number of days in the year.
+dt_pol_w_claims <- dt_pol_w_claims |>
+  mutate(
+    Time_Exposure = as.numeric(
+      as.integer(Time_Exposure) /
+      ifelse(
+        lubridate::leap_year(lubridate::dmy(Dt_Exp_Start)),
+        366,
+        365
+      )
+    ),
+    Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / Time_Exposure)
+  )
+
+# Show top 5 riskiest records based on burning cost
+dt_pol_w_claims |>
+  arrange(desc(Burning_Cost)) |>
+  select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) |>
+  head(5)
+
+# full years now have exposure of exactly 1
+summary(dt_pol_w_claims$Time_Exposure)
+```
+
+### Frequency, Severity and Loss Ratio
+
+Before we start looking for the reasons of riskiness, let's get a feel for the portfolio as a whole. Burning cost can be split into two parts, which tell two different stories:
+
+- **Frequency** - how often a claim happens: number of claims / exposure
+- **Severity** - how expensive a claim is on average: loss / number of claims
+- **Burning cost** = loss / exposure = frequency x severity
+
+And because burning cost is now a yearly figure, we can compare it with the yearly premium we charge. Their ratio is the **loss ratio** you already know from Lesson 2 - just computed from policy level data this time.
+
+```{r}
+portfolio_kpi <- function(dt) {
+  dt |>
+    summarize(
+      Exposure = sum(Time_Exposure),
+      Nr_Claims = sum(!is.na(Ult_Loss)), # policies (per year) with at least one claim
+      Loss = sum(Ult_Loss, na.rm = TRUE),
+      Premium = sum(Premium_earned)
+    ) |>
+    mutate(
+      Frequency = Nr_Claims / Exposure,
+      Severity = Loss / Nr_Claims,
+      Burning_Cost = Loss / Exposure,
+      Avg_Premium = Premium / Exposure,
+      Loss_Ratio = Loss / Premium
+    )
+}
+
+# whole portfolio
+dt_pol_w_claims |> portfolio_kpi()
+
+# per year
+dt_pol_w_claims |>
+  group_by(Year) |>
+  portfolio_kpi()
+```
+
+On average, roughly 8 out of 100 cars have a claim during a year, and such a claim costs a bit over 3 000. That gives a burning cost of about 245 per car per year, while we charge about 310 on average. (Strictly speaking we count *policy-years with a claim*, as we summed claims of the same year together in the previous exercise. Close enough for us.)
+
+> Is a loss ratio of about 78% good or bad? What else has to be paid from the premium?
+
+Remember the combined ratio from Lesson 2 - besides losses, the premium must also cover the **expenses** (and ideally leave some **profit**). The price that covers the expected loss, expenses and profit is called the **Technical Price**:
+
+$$\text{Technical Price} = \frac{\text{expected Burning Cost}}{1 - \text{expense loading} - \text{profit loading}}$$
+
+The difficult part is the *expected burning cost of a particular client*. That is exactly what our model should predict.
+
+Let's continue with the questions which help us to identify a good target.
+
+- _Let's say you finished your model, how did the prediction help you to solve your insurance issue?_
+
+    When we have a good model which can accurately predict the Burning Cost (the expected loss per year of insurance), it will help us build a suitable price to offer to a potential client. The price should not be too high for less risky clients, so we are competitive on the market, but also high enough to cover potential claims. This is the _Technical Price_ from above.
+
+- _Are there any potential independent variables that might have a relationship to the target you propose?_
+
+    This is something we can solve using _One-Way Analysis_
+
+## One-Way Analysis
+Perfect! It looks like we have found a good target, which might be a good measure for risky customers.
+
+Now, let's try to think about the __reasons__ of customers being more risky than others.
+
+One-Way analysis is a good starting point, where we look at each potential variable separately and compare the target across values or categories of that variable.
+
+Let's use ggplot2 to draw a box plot of burning cost per each value/category of a variable - for example `Veh_type1`.
+
+```{r}
+dt_pol_w_claims |>
+  ggplot(aes(x = Veh_type1, y = Burning_Cost)) +
+  geom_boxplot()
+```
+
+As you can see, this doesn't tell us much as there are some problems:
+
+- The boxplot doesn't show us much because
+  - There are so many zero targets (about 94% of the policies have no claim at all)
+  - There are also quite a lot of outliers
+- Also there are too many categories/values to look at, it's hard to see labels
+
+Let's solve these problems one by one.
+
+### Average target instead of plotting whole distribution
+
+Instead of plotting the whole distribution, let's just compute the average of the target (burning cost). We have to be a little careful here, a simple average could be misleading. It's better to compute a weighted average, where the time exposure serves as a weight or **credibility** measure. This intuitively makes sense: if you have 2 customers with the same burning cost (loss per 1 year of insurance), the one with longer exposure (length of insurance) gives us **more reliable** information - a client insured for 2 weeks with no claim tells us much less than a client insured for a whole year with no claim.
+
+The weighted average also weakens the effect of outliers, which are often high losses that occurred during a very short exposure period.
+
+And there's one more nice property: the exposure-weighted average of burning cost is exactly the **total loss divided by total exposure** - i.e. the burning cost of the whole group, the same number we computed for the portfolio above.
+
+```{r}
+dt_pol_w_claims |>
+  summarize(
+    BC_weighted = weighted.mean(Burning_Cost, Time_Exposure),
+    BC_total = sum(Ult_Loss, na.rm = TRUE) / sum(Time_Exposure),
+    BC_simple = mean(Burning_Cost)
+  )
+```
+
+```{r}
+bc_avg <- dt_pol_w_claims |>
+  group_by(Veh_type1) |>
+  summarize(
+    BC_avg = weighted.mean(Burning_Cost, Time_Exposure),
+    exposure_sum = sum(Time_Exposure)
+  )
+
+bc_avg |>
+  ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
+  geom_point()
+```
+
+### Make the plot more legible
+
+We can make another two adjustments to make the plot more legible - we can filter out categories with very low exposure (they are not credible anyway) and tilt the x-axis labels.
+
+Note that we compute the exposure share on **all** categories first and only then filter. We also keep the categories with zero burning cost - a well populated category with no claims is a valuable piece of information too.
+
+```{r}
+bc_avg <- bc_avg |>
+  mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
+  filter(exposure_pct > 0.01)
+
+bc_avg |>
+  ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1))
+```
+
+### Banding numeric variables
+
+Some of our variables are numeric with many distinct values (`Capacity`, `Sum_insured`, `D_age`, ...) or categorical with hundreds of levels (`D_ZIP`). When every value becomes its own group, each group is tiny, most of them get filtered out and the plot shows nothing useful.
+
+```{r}
+dt_pol_w_claims |>
+  summarize(across(c(Capacity, Sum_insured, D_age, Construct_year, D_ZIP), n_distinct))
+```
+
+The solution is **banding** - grouping the values into a few intervals (or shorter codes) with enough exposure in each. We create the banded versions in a separate dataset just for the analysis, so our modelling dataset stays unchanged. You will use the same tricks when building models in the next lesson.
+
+```{r}
+dt_oneway <- dt_pol_w_claims |>
+  mutate(
+    # numeric variables cut into intervals
+    D_age = cut(D_age, breaks = c(-Inf, 30, 40, 50, 60, 70, Inf)),
+    Capacity = cut(Capacity, breaks = c(-Inf, 1000, 1400, 1800, 2200, 3000, Inf), dig.lab = 6),
+    Sum_insured = cut(Sum_insured, breaks = c(-Inf, 1000, 2500, 5000, 10000, 15000, 20000, Inf), dig.lab = 6),
+    # very old cars are rare - cap them to a single group
+    Construct_year = pmax(Construct_year, 2005),
+    # first digit of the ZIP code roughly identifies the region
+    D_ZIP = substr(D_ZIP, 1, 1)
+  )
+```
+
+### Putting it all together and looking at all variables
+
+Now that we finally reached our final version of the plot, we can try to visualize all variables in the dataset. Do you see trends in some variables? Which ones would you expect to be important for the price of motor insurance?
+
+```{r}
+all_vars <- c(
+  "Year", "Time_on_book", "Customer_Type", "D_age", "D_age_banded",
+  "BonusMalus", "D_ZIP", "VEH_type", "Veh_type1", "Veh_type2",
+  "VEH_brand", "Construct_year", "Capacity", "Nr_of_seats", "Sum_insured"
+)
+
+for (var_nm in all_vars) {
+  bc_avg <- dt_oneway |>
+    group_by(.data[[var_nm]]) |>
+    summarize(
+      BC_avg = weighted.mean(Burning_Cost, Time_Exposure),
+      exposure_sum = sum(Time_Exposure)
+    ) |>
+    mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
+    filter(exposure_pct > 0.01)
+
+  g <- bc_avg |>
+    ggplot(aes(y = BC_avg, x = .data[[var_nm]], size = exposure_sum)) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+    ggtitle(var_nm)
+
+  print(g)
+}
+```
+
+Let's save the dataset for next exercise
+```{r}
+saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims_target.rds")
+```
