@@ -210,7 +210,7 @@ The rest are claims whose policy (or policy + object) is not in our policy data.
 
 #### Did the loss happen while the policy was active?
 
-We joined only on policy and object, but **not on time**. A claim should only count against the policy if the loss happened between `Dt_Exp_Start` and `Dt_Exp_End`.
+We joined only on policy and object, but **not on time**. Let's also check that the claims actually fit their policies. A claim should only count against the policy if the loss happened between `Dt_Exp_Start` and `Dt_Exp_End`.
 
 ```{r}
 claims_timing <- dt_Claims_raw |>
@@ -231,11 +231,50 @@ claims_timing |>
   head(5)
 ```
 
-A small number of claims happened **outside** the period of cover - some shortly after it ended, some even a year before it started. In a real project we would either fix the join (e.g. join also on `Year = ClmYr`) or send these cases to IT / claims department for clarification.
+A small number of claims happened **outside** the period of cover - some shortly after it ended, some even a year before it started. Look at the first one: a loss of more than 40 000 from 2013 attached to a policy which started in 2014. The policy could not have covered it. If we left it there, this client would look like one of the riskiest in the whole portfolio!
 
-For this course we **keep the simple join**, so that our results stay comparable with the following lessons. The effect is small (around 2% of the total loss), but keep it in mind - we will meet one of these claims again in the next exercise.
+These claims most likely belong to another (earlier or later) policy of the same client, which is not in our data. Ideally we would ask IT / claims department, but we can already fix our join.
 
-Back to the second question - is the number of claims plausible? About 2 000 claims on roughly 25 000 years of insurance means roughly **8 claims per 100 cars per year**, which is a reasonable claim frequency for motor insurance.
+#### Fixing the join
+
+A claim belongs to a policy only if the loss happened while the policy was active. So let's keep only those claims, aggregate them again to *policy + object + claim year* and redo the join.
+
+```{r}
+# number of rows with a claim and total loss before the fix
+dt_pol_w_claims |>
+  summarize(
+    rows_with_claim = sum(!is.na(ClmYr)),
+    loss = sum(Paid + Reserves, na.rm = TRUE)
+  )
+
+# keep only claims that happened during the period of cover
+dt_Claims <- claims_timing |>
+  filter(loss_in_cover) |>
+  group_by(NrPolicy, NrObject, ClmYr) |>
+  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
+  ungroup()
+
+dt_pol_w_claims <- dt_Policy |>
+  left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
+
+# and after the fix
+dt_pol_w_claims |>
+  summarize(
+    rows_with_claim = sum(!is.na(ClmYr)),
+    loss = sum(Paid + Reserves, na.rm = TRUE)
+  )
+
+# check: every claim now falls in the year of its policy
+dt_pol_w_claims |>
+  filter(!is.na(ClmYr), ClmYr != Year) |>
+  nrow()
+```
+
+We removed less than 40 claims - about 2% of the loss. Small numbers, but they included one of the largest claims in the portfolio, which would have distorted our view of the riskiest clients.
+
+> Takeaway: always check your join **structurally** (keys, granularity, number of rows before and after) and **logically** (does the result make business sense - e.g. can the loss happen outside of the cover?).
+
+Back to the second question - is the number of claims plausible? About 1 900 claims on roughly 25 000 years of insurance means roughly **8 claims per 100 cars per year**, which is a reasonable claim frequency for motor insurance.
 
 Let's save the dataset for next exercise
 ```{r}

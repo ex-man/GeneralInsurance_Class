@@ -59,25 +59,23 @@ dt_pol_w_claims |>
 ```
 
 ### Exposure
-> Is it enough? Can we say those first three clients have similar risk?
+> Is it enough? Can we say that clients with a similar loss amount have a similar risk?
 
-Well...it might be not enough. Let's look at the same example, but we will add some more information.
+Well...it might be not enough. Let's look at a slightly longer list, and we will add some more information.
 Specifically, we will show when the policy started and when it ended.
 
 ```{r}
-# TODO : Get Top 5 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
+# TODO : Get Top 6 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
 dt_pol_w_claims |>
   filter(!is.na(Paid)) |>
   select(NrPolicy, NrObject, ClmYr, Paid, Dt_Exp_Start, Dt_Exp_End) |>
   arrange(desc(Paid)) |>
-  head(5)
+  head(6)
 ```
 
-> What's different among those first three clients?
+> What's different about the sixth client compared to the first ones?
 
-The first two clients were insured for the whole year. The third client was insured only for **69 days** (just over two months) and yet had a loss of a similar size. Per day of insurance, this client was therefore about **5 times(!) riskier** than the first two clients.
-
-_(Sharp-eyed students may notice that the third client's loss is dated 2013, while the policy covers 2014. This is one of the "loss outside the period of cover" cases we found in the join quality check in the previous exercise. In a real project this one would go back to IT for clarification. The idea of exposure, however, holds regardless.)_
+The first five clients were insured for the whole year. The sixth client was insured only for about **half a year** (185 days) and yet had a loss of a similar size. Per day of insurance, this client was therefore about **twice(!) as risky** as the others. And there are clients with even shorter cover - we will meet one insured for just 15 days in a moment.
 
 What we described here is the term `exposure`. The exposure can be different for different portfolios we analyse. E.g. it can be sum insured for property business or mileage for truck insurance. We often talk about exposure as a unit of insurance cover. There are many definitions.
 
@@ -103,7 +101,7 @@ Did you realize for some years there are 365 and for some 366 days? `lubridate` 
 
 Ultimate Losses are what we end up with after all the individual claims are fully paid. They can include various parts of the claim e.g. (Losses, Reserves, Inflation, Expenses to arrange the claim, ...).
 
-In our data we only know what has been **paid** so far and what the claims handlers expect still to pay on the **known** claims (case **reserves**). Their sum is called **incurred loss**. It is not yet the ultimate loss - remember from Lesson 3 that recent claims still develop and that some claims are not even reported yet (IBNR). Look at the `Reserves` of the most recent claims and compare them with older years:
+In our data we only know what has been **paid** so far and what the claims handlers expect still to pay on the **known** claims (case **reserves**). Their sum is called **incurred loss**. It is not yet the ultimate loss - remember from Lesson 3 that recent claims still develop and that some claims are not even reported yet (IBNR). Look at the `Reserves` of the most recent claims (2015) and compare them with older years - the latest year is still far from being settled:
 
 ```{r}
 dt_pol_w_claims |>
@@ -200,9 +198,9 @@ dt_pol_w_claims |>
   portfolio_kpi()
 ```
 
-On average, roughly 8 out of 100 cars have a claim during a year, and such a claim costs a bit over 3 000. That gives a burning cost of about 250 per car per year, while we charge about 310 on average. (Strictly speaking we count *policy-years with a claim*, as we summed claims of the same year together in the previous exercise. Close enough for us.)
+On average, roughly 8 out of 100 cars have a claim during a year, and such a claim costs a bit over 3 000. That gives a burning cost of about 245 per car per year, while we charge about 310 on average. (Strictly speaking we count *policy-years with a claim*, as we summed claims of the same year together in the previous exercise. Close enough for us.)
 
-> Is a loss ratio of about 80% good or bad? What else has to be paid from the premium?
+> Is a loss ratio of about 78% good or bad? What else has to be paid from the premium?
 
 Remember the combined ratio from Lesson 2 - besides losses, the premium must also cover the **expenses** (and ideally leave some **profit**). The price that covers the expected loss, expenses and profit is called the **Technical Price**:
 
