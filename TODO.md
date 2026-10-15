@@ -9,7 +9,22 @@ TODO
   dt_pol_w_claims.rds verified identical). TO DO:
   - [x] 6 explanatory images generated and saved in Lessons/Lesson4/Support/img_*.png (prompts and usage of the
         generator: tools/image_generation/)
-  - [ ] rebuild the student version Lesson4_Ex1_DataPrep.Rmd (partially blanked) from the new _filled.Rmd
+  - [ ] manually create the new partially blanked student version Lesson4_Ex1_DataPrep.Rmd from the new _filled.Rmd
+        and insert it (the old one still has the previous structure). The helper-function chunk ("Exercise: wrap the
+        patterns into helper functions") is filled in the _filled version and is the natural place for blanks.
+  - [ ] consider (exploration only, nothing decided): do the "claim within policy cover" fix (and the claim year
+        handling) AFTER the join as a simple filter, instead of before it, to streamline the lesson. Points to weigh:
+        - currently the fix sits before the join: inner_join claims to policy dates + between() filter, then one
+          aggregation (keeps the join itself simple and the saved dt_pol_w_claims.rds is unchanged);
+        - post-join would mean: aggregate claims per policy + object + claim year, left join, then drop/blank claim
+          columns where the claim year (or loss date) is outside the cover. But claims are aggregated to claim year
+          before the join, so the loss date is gone - a post-join filter on the year alone cannot detect claims
+          outside the cover within the same year (1 of the 37 such claims) and a dropped claim row would also turn
+          the policy row into "no claim" (needs care to keep one row per policy);
+        - alternatives: join on the raw claims (fan-out, then aggregate), or aggregate after the join with the loss
+          date still available;
+        - whichever is chosen must still save an identical dt_pol_w_claims.rds (or L5/L6 data/text need an update, see
+          the BLOCKING section below).
 
 ## Lesson 5 — follow-ups from Lesson 4 review
 - [ ] L5 Ex3: port the Lift Chart section from the Class 2025 Posit Cloud export
