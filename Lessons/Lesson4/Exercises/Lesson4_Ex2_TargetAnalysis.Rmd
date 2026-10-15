@@ -7,8 +7,6 @@ output:
   pdf_document: default
 ---
 
-> **How to use this notebook.** Sections marked **[STUDENT TASK - FILL IN THE BLANKS]** or **[STUDENT TASK - WRITE FROM SCRATCH]** are for you to complete - they practise what you already know from earlier in this lesson or from Lessons 1-3. The code to complete is between `# ===== STUDENT TASK START =====` and `# ===== STUDENT TASK END =====`. All other chunks are demonstrations - run them and read the output. The solution is in the `_filled` version of this notebook.
-
 # Looking for a good Target
 
 Target is a __dependent__ variable in a model you designed for the purpose of being helpful in predicting the insurance event. Good design of the model can answer questions about relationship between any __independent__ variables and target. When we speak about a _variable_, it can be anything which is __measurable__ (event, object, facts, idea, ...).
@@ -46,13 +44,7 @@ So once again...
 
 Hmm. `Paid` losses might be a good start.
 
-> **[STUDENT TASK - WRITE FROM SCRATCH]** Load `Data/dt_pol_w_claims.rds` (output of Exercise 1) and show the 5 records with the highest `Paid` (only rows with a claim; columns `NrPolicy`, `NrObject`, `ClmYr`, `Paid`).
->
-> _Builds on: readRDS from Lesson 2; filter / select / arrange / head from Lesson 1_
-
 ```{r}
-# ===== STUDENT TASK START (write from scratch) =====
-# Suggested: remove all code between START and END and let students write it
 library(dplyr)
 library(ggplot2)
 
@@ -60,11 +52,10 @@ dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims.rds")
 
 # TODO : Get Top 5 highest values of Paid
 dt_pol_w_claims |>
-  filter(!is.na(Paid)) |>
-  select(NrPolicy, NrObject, ClmYr, Paid) |>
-  arrange(desc(Paid)) |>
-  head(5)
-# ===== STUDENT TASK END =====
+  ___(!___(Paid)) |>
+  ___(NrPolicy, NrObject, ClmYr, Paid) |>
+  ___(desc(Paid)) |>
+  ___(5)
 ```
 
 ### Exposure
@@ -73,20 +64,9 @@ dt_pol_w_claims |>
 Well...it might be not enough. Let's look at a slightly longer list, and we will add some more information.
 Specifically, we will show when the policy started and when it ended.
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Repeat the previous task for the top 6 and add the start and end date of the policy.
->
-> _Builds on: the previous chunk_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the select() columns, arrange(desc(___)) and head(___)
 # TODO : Get Top 6 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
-dt_pol_w_claims |>
-  filter(!is.na(Paid)) |>
-  select(NrPolicy, NrObject, ClmYr, Paid, Dt_Exp_Start, Dt_Exp_End) |>
-  arrange(desc(Paid)) |>
-  head(6)
-# ===== STUDENT TASK END =====
+
 ```
 
 > What's different about the sixth client compared to the first ones?
@@ -119,38 +99,25 @@ Ultimate Losses are what we end up with after all the individual claims are full
 
 In our data we only know what has been **paid** so far and what the claims handlers expect still to pay on the **known** claims (case **reserves**). Their sum is called **incurred loss**. It is not yet the ultimate loss - remember from Lesson 3 that recent claims still develop and that some claims are not even reported yet (IBNR). Look at the `Reserves` of the most recent claims (2015) and compare them with older years - the latest year is still far from being settled:
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Summarize `Paid` and `Reserves` by claim year and compute the share of reserves in the incurred loss.
->
-> _Builds on: group_by + summarize + mutate (Lessons 1-2); case reserves from Lesson 3_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the group_by() column, the two sum() expressions and the Reserves_pct formula
 dt_pol_w_claims |>
   filter(!is.na(ClmYr)) |>
   group_by(ClmYr) |>
   summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
   mutate(Reserves_pct = Reserves / (Paid + Reserves))
-# ===== STUDENT TASK END =====
 ```
 
 To keep things simple, we will use the incurred loss (`Paid + Reserves`) as an approximation of the ultimate loss and call it `Ult_Loss`. In a real pricing exercise we would first develop it to ultimate with the methods from Lesson 3.
 
 Burning Cost is what we call the overall cost per some metric of exposure, in our case we are talking about _dollar loss per day insured_.
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Compute `Ult_Loss` as Paid + Reserves and `Burning_Cost` as `Ult_Loss` per day of exposure (0 for policies without a claim).
->
-> _Builds on: mutate / ifelse (Lessons 1-2)_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the Ult_Loss formula, the ifelse() condition and the division by as.integer(Time_Exposure)
 # TODO : Compute Burning_Cost as Ult_Loss per day
 # Hint: use as.integer(Time_Exposure) to get the number of days
 dt_pol_w_claims <- dt_pol_w_claims |>
   mutate(
-    Ult_Loss = Paid + Reserves,
-    Burning_Cost = ifelse(is.na(Ult_Loss), 0, Ult_Loss / as.integer(Time_Exposure))
+    Ult_Loss = ___ + ___,
+    Burning_Cost = ifelse(is.na(___), 0, ___ / as.integer(___))
   )
 
 # show top 5 riskiest records based on burning cost
@@ -158,20 +125,13 @@ dt_pol_w_claims |>
   arrange(desc(Burning_Cost)) |>
   select(NrPolicy, ClmYr, Ult_Loss, Time_Exposure, Burning_Cost) |>
   head(5)
-# ===== STUDENT TASK END =====
 ```
 
 #### Burning Cost per Year
 
 While we discussed Burning Cost per day, in insurance practice it is more common to use Burning Cost per year (in our case _dollar loss per year insured_). The yearly figure is also directly comparable with the premium, which is charged per year. By converting `Time_Exposure` to a fraction of a year using the exact number of days in each year, Burning Costs become comparable on a per-year basis and `Time_Exposure` values are in the range (0, 1]. A policy covering the whole year then counts as exactly 1 **policy-year** (also called *earned car-year*).
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Convert `Time_Exposure` to a fraction of a year (365 or 366 days) and recompute `Burning_Cost` per year.
->
-> _Builds on: the per-day burning cost just above; ifelse (Lesson 2)_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: leap_year(dmy(___)), the 366 / 365 values in ifelse() and the Burning_Cost formula
 # TODO: Normalize Time_Exposure to a fraction of a year. Compute Burning_Cost as Ult_Loss per year.
 # Hint: Use the `leap_year` function from lubridate to determine the number of days in the year.
 dt_pol_w_claims <- dt_pol_w_claims |>
@@ -195,7 +155,6 @@ dt_pol_w_claims |>
 
 # full years now have exposure of exactly 1
 summary(dt_pol_w_claims$Time_Exposure)
-# ===== STUDENT TASK END =====
 ```
 
 ### Frequency, Severity and Loss Ratio
@@ -208,13 +167,7 @@ Before we start looking for the reasons of riskiness, let's get a feel for the p
 
 And because burning cost is now a yearly figure, we can compare it with the yearly premium we charge. Their ratio is the **loss ratio** you already know from Lesson 2 - just computed from policy level data this time.
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Complete the KPI function - Frequency, Severity, Burning Cost, Average Premium and Loss Ratio from the summed Exposure, Nr_Claims, Loss and Premium. Then apply it to the whole portfolio and per Year.
->
-> _Builds on: loss ratio and KPIs from Lesson 2; frequency x severity = burning cost (explained above)_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the right-hand sides of the five formulas in mutate(), and group_by(___) in the per-year call
 portfolio_kpi <- function(dt) {
   dt |>
     summarize(
@@ -237,9 +190,8 @@ dt_pol_w_claims |> portfolio_kpi()
 
 # per year
 dt_pol_w_claims |>
-  group_by(Year) |>
+  ___(___) |>
   portfolio_kpi()
-# ===== STUDENT TASK END =====
 ```
 
 On average, roughly 8 out of 100 cars have a claim during a year, and such a claim costs a bit over 3 000. That gives a burning cost of about 245 per car per year, while we charge about 310 on average. (Strictly speaking we count *policy-years with a claim*, as we summed claims of the same year together in the previous exercise. Close enough for us.)
@@ -273,8 +225,8 @@ Let's use ggplot2 to draw a box plot of burning cost per each value/category of 
 
 ```{r}
 dt_pol_w_claims |>
-  ggplot(aes(x = Veh_type1, y = Burning_Cost)) +
-  geom_boxplot()
+  ___(___(x = Veh_type1, y = Burning_Cost)) +
+  ___()
 ```
 
 As you can see, this doesn't tell us much as there are some problems:
@@ -305,15 +257,15 @@ dt_pol_w_claims |>
 
 ```{r}
 bc_avg <- dt_pol_w_claims |>
-  group_by(Veh_type1) |>
-  summarize(
-    BC_avg = weighted.mean(Burning_Cost, Time_Exposure),
-    exposure_sum = sum(Time_Exposure)
+  ___(Veh_type1) |>
+  ___(
+    BC_avg = ___(Burning_Cost, Time_Exposure),
+    exposure_sum = ___(Time_Exposure)
   )
 
 bc_avg |>
-  ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
-  geom_point()
+  ___(___(y = BC_avg, x = Veh_type1, size = ___)) +
+  ___()
 ```
 
 ### Make the plot more legible
@@ -322,13 +274,7 @@ We can make another two adjustments to make the plot more legible - we can filte
 
 Note that we compute the exposure share on **all** categories first and only then filter. We also keep the categories with zero burning cost - a well populated category with no claims is a valuable piece of information too.
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Add each category's share of the total exposure, keep only categories with more than 1% of exposure, and tilt the x-axis labels.
->
-> _Builds on: mutate / filter and ggplot theme (Lesson 1)_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the exposure_pct formula, the filter() threshold and angle = ___ in element_text()
 bc_avg <- bc_avg |>
   mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
   filter(exposure_pct > 0.01)
@@ -337,7 +283,6 @@ bc_avg |>
   ggplot(aes(y = BC_avg, x = Veh_type1, size = exposure_sum)) +
   geom_point() +
   theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1))
-# ===== STUDENT TASK END =====
 ```
 
 ### Banding numeric variables
@@ -351,17 +296,11 @@ dt_pol_w_claims |>
 
 The solution is **banding** - grouping the values into a few intervals (or shorter codes) with enough exposure in each. We create the banded versions in a separate dataset just for the analysis, so our modelling dataset stays unchanged. You will use the same tricks when building models in the next lesson.
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Band the numeric variables. `D_age` is done for you as an example; complete `Capacity` and `Sum_insured` with `cut()`, cap `Construct_year` at 2005 and keep the first digit of `D_ZIP`.
->
-> _Builds on: banding explained above; data preparation from Lesson 2_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: keep the D_age line; blank the breaks vectors of Capacity / Sum_insured, the pmax() value and the substr() arguments
 dt_oneway <- dt_pol_w_claims |>
   mutate(
     # numeric variables cut into intervals
-    D_age = cut(D_age, breaks = c(-Inf, 30, 40, 50, 60, 70, Inf)),
+    D_age_banded2 = cut(D_age, breaks = c(-Inf, 30, 40, 50, 60, 70, Inf)),
     Capacity = cut(Capacity, breaks = c(-Inf, 1000, 1400, 1800, 2200, 3000, Inf), dig.lab = 6),
     Sum_insured = cut(Sum_insured, breaks = c(-Inf, 1000, 2500, 5000, 10000, 15000, 20000, Inf), dig.lab = 6),
     # very old cars are rare - cap them to a single group
@@ -369,22 +308,15 @@ dt_oneway <- dt_pol_w_claims |>
     # first digit of the ZIP code roughly identifies the region
     D_ZIP = substr(D_ZIP, 1, 1)
   )
-# ===== STUDENT TASK END =====
 ```
 
 ### Putting it all together and looking at all variables
 
 Now that we finally reached our final version of the plot, we can try to visualize all variables in the dataset. Do you see trends in some variables? Which ones would you expect to be important for the price of motor insurance?
 
-> **[STUDENT TASK - FILL IN THE BLANKS]** Inside the loop, compute the exposure-weighted burning cost and exposure per category of `var_nm`, add the exposure share and filter out small categories. Then plot it.
->
-> _Builds on: the Veh_type1 one-way chunks above; .data[[var_nm]] lets you use a column whose name is stored in a variable_
-
 ```{r}
-# ===== STUDENT TASK START (fill in the blanks) =====
-# Suggested blanks: the body of summarize() / mutate() / filter() (same as in the Veh_type1 chunks above) and the aes() mapping
 all_vars <- c(
-  "Year", "Time_on_book", "Customer_Type", "D_age", "D_age_banded",
+  "Year", "Time_on_book", "Customer_Type", "D_age", "D_age_banded", "D_age_banded2",
   "BonusMalus", "D_ZIP", "VEH_type", "Veh_type1", "Veh_type2",
   "VEH_brand", "Construct_year", "Capacity", "Nr_of_seats", "Sum_insured"
 )
@@ -407,7 +339,6 @@ for (var_nm in all_vars) {
 
   print(g)
 }
-# ===== STUDENT TASK END =====
 ```
 
 Let's save the dataset for next exercise
