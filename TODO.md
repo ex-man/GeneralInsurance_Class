@@ -4,6 +4,12 @@ TODO
 - Lesson 4: student versions (Lesson4_Ex1_DataPrep.Rmd, Lesson4_Ex2_TargetAnalysis.Rmd) contain [STUDENT TASK]
   markers with suggested blanks / write-from-scratch sections. Before handing out: replace the marked code with ___
   (or delete it for write-from-scratch) and drop the "# Suggested ..." helper comments. Solutions: *_filled.Rmd.
+- Lesson 4 Ex1: filled version restructured (helpers check_primary_key / show_highest_duplicates / show_duplicate_info /
+  join_summary, period-of-cover filter moved before the join, investigation moved to a Bonus section; saved
+  dt_pol_w_claims.rds verified identical). TO DO:
+  - [ ] generate the 6 images from Lessons/Lesson4/Support/image_prompts.md (img_A_keys, img_B_summarize_vs_mutate,
+        img_B_recycled_n_trap, img_C1_left_join_chain, img_C2_granularity_fanout, img_C3_resolve_granularity) into Support/
+  - [ ] rebuild the student version Lesson4_Ex1_DataPrep.Rmd (partially blanked) from the new _filled.Rmd
 
 ## Lesson 5 — follow-ups from Lesson 4 review
 - [ ] L5 Ex3: port the Lift Chart section from the Class 2025 Posit Cloud export

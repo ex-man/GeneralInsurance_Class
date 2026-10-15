@@ -5,7 +5,7 @@
 
 # Content
 1) [Modeling Motivation](Support/01_model_motivation.md) - why we need a price per policy and what the technical price is
-2) [Data Preparation for modeling](Exercises/Lesson4_Ex1_DataPrep.Rmd) - granularity of policy and claims data, joins, quality checks of the join
+2) [Data Preparation for modeling](Exercises/Lesson4_Ex1_DataPrep.Rmd) - keys and granularity of policy and claims data (with reusable helper functions), left joins, structural and logical quality checks of the join; optional bonus on out-of-cover and unmatched claims
 3) [Target analysis](Exercises/Lesson4_Ex2_TargetAnalysis.Rmd) - exposure, burning cost, frequency and severity, loss ratio, one-way analysis
 4) [GLM Motivation](Support/02_glm_motivation.md) - why one-way analysis is not enough, distributions, log link and multiplicative tariffs
 

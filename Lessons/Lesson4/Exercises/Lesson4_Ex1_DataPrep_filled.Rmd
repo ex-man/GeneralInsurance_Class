@@ -14,7 +14,13 @@ __Claims data__ contains info about __how risky__ the individual client is. __Po
 Why are they in two different datasets?
 Policy level information is collected at the beginning of an insurance. An insurance policy might or might not have a claim. A claim may occur some time after the start of the insurance policy. Both types of information are processed by different employees of the insurance company and via different IT systems. They'll therefore usually end up in two different databases.
 
-Let's look at them separately first, and then later merge them together.
+Let's look at them separately first, and then merge them together. Our roadmap:
+
+1. **Inspect keys and granularity** of both datasets (what does one row represent?)
+2. **Bring claims to the policy granularity** (one row per policy + object)
+3. **Join** claims to policies
+4. **Check the join** - structurally and logically
+5. **Save** the result for the next exercise
 
 ### Load and inspect Policy Info
 
@@ -38,30 +44,92 @@ glimpse(dt_Policy)
 summary(dt_Policy)
 ```
 
-Let's inspect the granularity of the dataset.
+#### Keys: what identifies a row?
+
+Before joining anything we need to know what **identifies one row** of each table.
+
+- **Primary key** - a column (or combination of columns) that is *unique* in its table. It identifies exactly one row.
+- **Foreign key** - a column (or combination) that *points to* the primary key of another table. It can repeat, and it may even point to a row that does not exist.
+
+![keys](/cloud/project/Support/img_A_keys.png)
+
+We join tables by matching a foreign key to a primary key, so the first thing to check is whether our assumed key really is unique. Let's inspect the granularity of the Policy dataset. There are two basic patterns - both start with `group_by()`, but they do very different things:
+
+![summarize vs mutate](/cloud/project/Support/img_B_summarize_vs_mutate.png)
 
 ```{r}
-# with aggregation
+# OVERVIEW: group_by + summarize -> one row per group.
+# Which keys are duplicated and how many times? (sorted by n)
 dt_Policy |>
   group_by(NrPolicy) |>
   summarize(n = n()) |>
   filter(n > 1) |>
   arrange(desc(n))
 
-# without aggregation
+# DETAIL: group_by + mutate -> all rows stay, n is repeated on every row of the group.
+# How do the duplicated rows differ? (sorted by key, so the duplicates are next to each other)
 dt_Policy |>
   group_by(NrPolicy) |>
   mutate(n = n()) |>
-  filter(n > 1)
-
-# is policy + object unique?
-dt_Policy |>
-  count(NrPolicy, NrObject) |>
   filter(n > 1) |>
-  nrow()
+  arrange(NrPolicy)
 ```
 
-Some policies cover more than one car, but each *policy + object* combination appears only once. Notice also that each row belongs to exactly one `Year` - the period of cover (`Dt_Exp_Start` to `Dt_Exp_End`) always lies within a single calendar year. Most of them cover the whole year, but some start later or end earlier.
+Careful with the `n` in the second table: it is a number **copied to every row of its group**. It is useful to filter and to read, but it must not be aggregated again (`sum(n)` would count a policy with 2 cars twice).
+
+![recycled n](/cloud/project/Support/img_B_recycled_n_trap.png)
+
+#### Exercise: wrap the patterns into helper functions
+
+We will repeat these checks on every table in this lesson, so let's write them once. Each function gets a data frame `df` and a character vector of column names `cols`. `across(all_of(cols))` is how we pass a vector of column names to `group_by()` / `arrange()`.
+
+```{r}
+# TRUE if the columns `cols` uniquely identify each row of `df`
+check_primary_key <- function(df, cols) {
+  nrow(distinct(df, across(all_of(cols)))) == nrow(df)
+}
+
+# overview: keys that are duplicated, with the number of occurrences (most frequent first)
+show_highest_duplicates <- function(df, cols) {
+  df |>
+    group_by(across(all_of(cols))) |>
+    summarize(n = n(), .groups = "drop") |>
+    filter(n > 1) |>
+    arrange(desc(n))
+}
+
+# detail: all rows with a duplicated key, duplicates next to each other
+show_duplicate_info <- function(df, cols) {
+  df |>
+    group_by(across(all_of(cols))) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    filter(n > 1) |>
+    arrange(across(all_of(cols)))
+}
+
+# summary of a policy + claims dataset: rows, rows with a claim, total incurred loss
+join_summary <- function(df) {
+  df |>
+    summarize(
+      rows = n(),
+      rows_with_claim = sum(!is.na(ClmYr)),
+      loss = sum(Paid + Reserves, na.rm = TRUE)
+    )
+}
+```
+
+Now use them - is `NrPolicy` a primary key of the Policy data? What about policy + object?
+
+```{r}
+check_primary_key(dt_Policy, "NrPolicy")
+check_primary_key(dt_Policy, c("NrPolicy", "NrObject"))
+
+# the same overview as above, in one line
+show_highest_duplicates(dt_Policy, "NrPolicy") |> head()
+```
+
+Some policies cover more than one car, but each *policy + object* combination appears only once - that is the primary key of the Policy data. Notice also that each row belongs to exactly one `Year` - the period of cover (`Dt_Exp_Start` to `Dt_Exp_End`) always lies within a single calendar year. Most of them cover the whole year, but some start later or end earlier.
 
 ### Load and inspect Claims info
 
@@ -77,38 +145,36 @@ glimpse(dt_Claims)
 summary(dt_Claims)
 ```
 
-Let's inspect the granularity of the dataset.
+Let's inspect the granularity of the dataset. Is `NrClaim` a primary key?
 
 ```{r}
-dt_Claims |>
-  group_by(NrClaim) |>
-  summarize(n = n()) |>
-  filter(n > 1) |>
-  arrange(desc(n))
+check_primary_key(dt_Claims, "NrClaim")
 
-dt_Claims |>
-  group_by(NrClaim) |>
-  mutate(n = n()) |>
-  filter(n > 1) |>
-  arrange(NrClaim)
+# overview and detail of the duplicated claim numbers
+show_highest_duplicates(dt_Claims, "NrClaim")
+show_duplicate_info(dt_Claims, "NrClaim")
 ```
 
 Surprise - the claim number is *not* unique. A few claim numbers appear on two different policies with different loss dates, which looks like a data issue in the source system (e.g. claim numbers reused). In practice you would ask the claims department about it. As there are only a few such cases, we will keep them as separate claims.
 
-Also have a look at the `summary()` output above: the minimum of `Paid` is negative. Negative payments are usually **recoveries** - money the insurer gets back, e.g. from the at-fault party's insurer (subrogation) or from selling the wreck (salvage).
+### Bring Claims to the Policy granularity
 
-### Aggregate Claims information to desired granularity
-
-To properly bring the claims info on `policy + object` level, we need to ensure claims data are also on that level. Let's check it and if they are not, roll them up to that level. (The claims could for example be on a transactional level).
+We want to add claims to the policy data, whose primary key is *policy + object*. Is it also unique in the claims?
 
 ```{r}
-dt_Claims |>
-  group_by(NrPolicy, NrObject) |>
-  mutate(n = n()) |>
-  filter(n > 1)
+check_primary_key(dt_Claims, c("NrPolicy", "NrObject"))
+show_duplicate_info(dt_Claims, c("NrPolicy", "NrObject"))
 ```
 
-It looks like one policy can have multiple claims during its coverage period. Let's introduce a new field that will become part of our level of granularity - Claim Year. We want to ensure all the claims within the same Claim Year (calendar year) are summed up together, before merging with policy data.
+It is not - one policy can have multiple claims. If we joined the claims as they are, every policy row with 2 claims would be **duplicated** and the granularity of our base table would silently change (and e.g. `sum(Premium_earned)` would count that premium twice):
+
+![granularity fan-out](/cloud/project/Support/img_C2_granularity_fanout.png)
+
+The cleaner way is to fix the granularity of the table we are joining **before** the join (the other option - joining first and aggregating the final table - is possible, but less preferred, because we would have to decide for *every* column how to aggregate it):
+
+![resolve granularity](/cloud/project/Support/img_C3_resolve_granularity.png)
+
+Let's introduce a new field that will become part of our level of granularity - Claim Year - so that all the claims within the same calendar year are summed up together.
 
 ```{r}
 # Extract claim year
@@ -116,20 +182,28 @@ dt_Claims <- dt_Claims |>
   mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) |>
   mutate(ClmYr = lubridate::year(Date_of_loss))
 
-# keep the claim-level data for the quality checks later
+# keep the claim-level data (we use it in the bonus section)
 dt_Claims_raw <- dt_Claims
+```
+
+One more thing: a claim belongs to a policy only if the loss happened **while the policy was active**, i.e. between `Dt_Exp_Start` and `Dt_Exp_End`. A few claims in our data do not fit - so we keep only the claims that happened during the period of cover. (Why this matters is shown in the *Bonus* section at the end.)
+
+```{r}
+dt_Claims_in_cover <- dt_Claims |>
+  inner_join(
+    dt_Policy |> select(NrPolicy, NrObject, Dt_Exp_Start, Dt_Exp_End),
+    by = c("NrPolicy", "NrObject")
+  ) |>
+  filter(between(Date_of_loss, dmy(Dt_Exp_Start), dmy(Dt_Exp_End)))
 
 # Aggregate to desired granularity
-dt_Claims <- dt_Claims |>
+dt_Claims <- dt_Claims_in_cover |>
   group_by(NrPolicy, NrObject, ClmYr) |>
   summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
   ungroup()
 
 # Verify this is the final granularity
-dt_Claims |> nrow()
-dt_Claims |>
-  distinct(NrPolicy, NrObject, ClmYr) |>
-  nrow()
+check_primary_key(dt_Claims, c("NrPolicy", "NrObject", "ClmYr"))
 ```
 
 ### Merge Policy and Claims information together
@@ -139,14 +213,14 @@ To join one table to another based on some variable(s), we can use the `___join(
 
 ![joins](/cloud/project/Support/join_diagram.png)
 
-- `left_join()`: keeps all observations in x
-- `right_join()`: keeps all observations in y
-- `inner_join()`: keeps observations from x that have a matching key in y (intersection between datasets)
-- `full_join()`: keeps all observations in x and y
-- `semi_join()`: keeps observations from x that have a matching key in y and never duplicates rows of x (a filter, no columns from y are added)
-- `anti_join()`: returns all rows from x without a match in y (great for finding what did *not* match)
+- `left_join()`: keeps all observations in x, adds columns from y (NA when no match)
+- `inner_join()`: keeps only observations that have a match in both x and y
+- `anti_join()`: returns all rows from x *without* a match in y (great for finding what did *not* match)
+- also: `right_join()` (keeps all of y), `full_join()` (keeps all of x and y), `semi_join()` (like `inner_join()` without adding columns from y, never duplicates rows of x)
 
-Since not every policy will have a claim, we will be using left join to preserve policy information.
+Since not every policy will have a claim, we will be using left join to preserve policy information. The policy table is our **base**: whatever we join to it, it keeps its rows and only grows in columns - some rows get information from the joined table, some get `NA`. This is also how we would add other sources later (e.g. vehicle or customer info), as long as each has at most one row per key.
+
+![left join chain](/cloud/project/Support/img_C1_left_join_chain.png)
 
 ```{r}
 dt_pol_w_claims <- dt_Policy |>
@@ -163,14 +237,17 @@ Perfect! So what now? Hmm...
 
 ### Quality Assurance of Join
 
-Let's look how successful we have been in finding out about our customer's losses.
+Let's look how successful we have been in finding out about our customer's losses. Two things should hold: the base table did not change its granularity, and no claims were lost on the way.
 
 ```{r}
-dt_pol_w_claims |> nrow()
-dt_pol_w_claims |>
-  filter(!is.na(ClmYr)) |>
-  nrow()
-dt_Claims |> nrow()
+# structural checks: same number of rows as the policy data, key still unique
+nrow(dt_Policy)
+nrow(dt_pol_w_claims)
+check_primary_key(dt_pol_w_claims, c("NrPolicy", "NrObject"))
+
+# how many rows got a claim vs. how many claims we had to place
+join_summary(dt_pol_w_claims)
+nrow(dt_Claims)
 ```
 
 Does it look good or bad? Two sets of questions should arise in your head:
@@ -178,14 +255,57 @@ Does it look good or bad? Two sets of questions should arise in your head:
   - Is there any better way to join that information together? Am I missing anything? Does the IT provide good data pull?
   - Let's suppose everything looks good in your join. Does it make sense to you to have such number of claims for the portfolio you are analysing? If you are not sure, you should ask your business or claims department.
 
-Take a minute to think about them, then let's investigate.
+The number of claims is plausible: about 1 900 claims on roughly 25 000 years of insurance means roughly **8 claims per 100 cars per year**, which is a reasonable claim frequency for motor insurance.
+
+> Takeaway: always check your join **structurally** (keys, granularity, number of rows before and after) and **logically** (does the result make business sense - e.g. can the loss happen outside of the cover?).
+
+Let's save the dataset for next exercise
+```{r}
+saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
+```
+
+---
+
+# Bonus (optional): why did we filter claims by the period of cover?
+
+> The saved dataset above is final - this section only investigates *what would have happened without the filter* and which claims did not find their policy. It uses separate variables and does not change `dt_pol_w_claims`. Do it if you have time, or at home.
+
+Let's redo the join **without** the period-of-cover filter, and compare.
+
+```{r}
+dt_Claims_naive <- dt_Claims_raw |>
+  group_by(NrPolicy, NrObject, ClmYr) |>
+  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
+  ungroup()
+
+dt_pol_w_claims_naive <- dt_Policy |>
+  left_join(dt_Claims_naive, by = c("NrPolicy", "NrObject"))
+
+# without the filter
+join_summary(dt_pol_w_claims_naive)
+
+# with the filter (our saved dataset)
+join_summary(dt_pol_w_claims)
+
+# naive join: how many rows have a claim from a different year than the policy year?
+dt_pol_w_claims_naive |>
+  filter(!is.na(ClmYr), ClmYr != Year) |>
+  nrow()
+
+# and in our final dataset
+dt_pol_w_claims |>
+  filter(!is.na(ClmYr), ClmYr != Year) |>
+  nrow()
+```
+
+Without the filter the join looks *fine* structurally (the same number of policy rows) - the problem is only logical. We removed less than 40 claims (about 2% of the loss), but they included one of the largest claims in the portfolio.
 
 #### Which claims did not find their policy?
 
 `anti_join()` is the tool for this - it returns the rows of the claims data without a matching policy.
 
 ```{r}
-claims_unmatched <- dt_Claims |>
+claims_unmatched <- dt_Claims_naive |>
   anti_join(dt_Policy, by = c("NrPolicy", "NrObject"))
 
 claims_unmatched |> nrow()
@@ -208,9 +328,7 @@ claims_unmatched |>
 
 The rest are claims whose policy (or policy + object) is not in our policy data. That is a question for IT - is the policy data pull complete?
 
-#### Did the loss happen while the policy was active?
-
-We joined only on policy and object, but **not on time**. Let's also check that the claims actually fit their policies. A claim should only count against the policy if the loss happened between `Dt_Exp_Start` and `Dt_Exp_End`.
+#### Which claims happened outside of the cover?
 
 ```{r}
 claims_timing <- dt_Claims_raw |>
@@ -233,50 +351,8 @@ claims_timing |>
 
 A small number of claims happened **outside** the period of cover - some shortly after it ended, some even a year before it started. Look at the first one: a loss of more than 40 000 from 2013 attached to a policy which started in 2014. The policy could not have covered it. If we left it there, this client would look like one of the riskiest in the whole portfolio!
 
-These claims most likely belong to another (earlier or later) policy of the same client, which is not in our data. Ideally we would ask IT / claims department, but we can already fix our join.
+These claims most likely belong to another (earlier or later) policy of the same client, which is not in our data. Ideally we would ask IT / claims department.
 
-#### Fixing the join
+#### Negative payments
 
-A claim belongs to a policy only if the loss happened while the policy was active. So let's keep only those claims, aggregate them again to *policy + object + claim year* and redo the join.
-
-```{r}
-# number of rows with a claim and total loss before the fix
-dt_pol_w_claims |>
-  summarize(
-    rows_with_claim = sum(!is.na(ClmYr)),
-    loss = sum(Paid + Reserves, na.rm = TRUE)
-  )
-
-# keep only claims that happened during the period of cover
-dt_Claims <- claims_timing |>
-  filter(loss_in_cover) |>
-  group_by(NrPolicy, NrObject, ClmYr) |>
-  summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
-  ungroup()
-
-dt_pol_w_claims <- dt_Policy |>
-  left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
-
-# and after the fix
-dt_pol_w_claims |>
-  summarize(
-    rows_with_claim = sum(!is.na(ClmYr)),
-    loss = sum(Paid + Reserves, na.rm = TRUE)
-  )
-
-# check: every claim now falls in the year of its policy
-dt_pol_w_claims |>
-  filter(!is.na(ClmYr), ClmYr != Year) |>
-  nrow()
-```
-
-We removed less than 40 claims - about 2% of the loss. Small numbers, but they included one of the largest claims in the portfolio, which would have distorted our view of the riskiest clients.
-
-> Takeaway: always check your join **structurally** (keys, granularity, number of rows before and after) and **logically** (does the result make business sense - e.g. can the loss happen outside of the cover?).
-
-Back to the second question - is the number of claims plausible? About 1 900 claims on roughly 25 000 years of insurance means roughly **8 claims per 100 cars per year**, which is a reasonable claim frequency for motor insurance.
-
-Let's save the dataset for next exercise
-```{r}
-saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
-```
+Have a look at the `summary()` output of the claims: the minimum of `Paid` is negative. Negative payments are usually **recoveries** - money the insurer gets back, e.g. from the at-fault party's insurer (subrogation) or from selling the wreck (salvage). There are only a few of them, so we keep them as they are.
