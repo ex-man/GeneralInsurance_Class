@@ -71,7 +71,6 @@ glm(
 Further reading:
 
 - GLM Short Video - https://youtu.be/ddCO2714W-o?feature=shared
-- GLM Short Article - https://towardsdatascience.com/generalized-linear-models-9cbf848bb8ab
 - CAS Monograph 5: Generalized Linear Models for Insurance Rating (free) - https://www.casact.org/monograph/cas-monograph-no-5
 
 ## Appendix: GLM vs linear regression in detail
