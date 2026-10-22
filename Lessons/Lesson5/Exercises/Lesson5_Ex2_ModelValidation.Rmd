@@ -23,7 +23,7 @@ A few methods to split the data:
 2.  Out of time validation (split into two pieces using some time variable, e.g. years 2012-2016 vs. year 2017)
 3.  Cross validation (randomly split into k pieces (folds); k-1 folds together are used for training and the remaining fold for validation, and this is repeated so that every fold is the validation fold once)
 
-![validation methods](/cloud/project/Support/img_D_validation_methods_L2.png)
+![validation methods](/cloud/project/Support/img_D_validation_methods.png)
 
 Once you split your data into training and validation parts, you fit the GLM on the training data only, and then use the validation data to get an idea about the performance on unseen data.
 
@@ -86,9 +86,13 @@ Since we do not expect everybody to have a claim, we neither expect nor desire t
 
 We will therefore sort our dataset by increasing predictions (risk) from the least risky to the most risky, then divide it into N groups of roughly equal size (weight). We then make sure that the actual and predicted values of losses match in these groups, rather than on every single observation.
 
-![grouped RMSE](/cloud/project/Support/img_E_grouped_rmse_L2.png)
+Step 1 - sort the data by the prediction, cut it into groups and average the actual and predicted values within each group:
 
-The same idea can be drawn as a chart of actual vs. predicted values per group - a **lift chart**, which we will use in the next exercise.
+![grouped RMSE step 1](/cloud/project/Support/img_E1_group_the_data.png)
+
+Step 2 - compare the group means. The same idea can be drawn as a chart of actual vs. predicted values per group - a **lift chart**, which we will use in the next exercise. The noise of individual policies is averaged out and the signal becomes visible. The RMSE is then computed over the groups only:
+
+![grouped RMSE step 2](/cloud/project/Support/img_E2_compare_groups.png)
 
 ```{r}
 # improved RMSE metric computed on an ordered and grouped data
