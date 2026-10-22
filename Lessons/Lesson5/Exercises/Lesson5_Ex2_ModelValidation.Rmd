@@ -7,28 +7,30 @@ output:
   pdf_document: default
 ---
 
-In the previous Lesson you have learnt on how to create very simple design for GLM model to improve insurance portfolio. The model is truly simple and almost not usable for real life application, as its results are very similar to one-way analysis.
+In the previous exercise you have learnt how to create a very simple GLM. The model is truly simple and almost not usable for real-life applications, as its results are very similar to one-way analysis.
 
-We need to improve it to its best by adding other variables and their using the best data we have available. So we will try to iterate using many combination of features and theirs mutation to improve the model
+We need to improve it by adding other variables and using the best data we have available. So we will iterate over many combinations of features and their transformations to improve the model.
 
 `But how do we know model is performing well?`
 
-There are several method on how to asses the model performance, but we will focus on a few only. Using these methods you split your data into **training** and **validation** subsets to ensure model is robust and doesn't overfit on current data, but prepared to work on future data we have not seen yet.
+There are several methods to assess the model performance, but we will focus on a few only. Using these methods you split your data into **training** and **validation** subsets to ensure the model is robust and doesn't overfit the current data, but is prepared to work on future data we have not seen yet.
 
 ### Validation Methods
 
-A few methods on how to split data:
+A few methods to split the data:
 
-1.  Out of sample Validation (randomly split into two pieces, e.g. 80% vs. 20% of data)
-2.  Out of time Validation (split into two pieces, using some time variable, e.g. Years 2012-2016 vs. Year 2017)
-3.  Cross Validation (randomly split into k pieces and combination of k-1 folds define one part vs. remaining part)
+1.  Out of sample validation (randomly split into two pieces, e.g. 80% vs. 20% of data)
+2.  Out of time validation (split into two pieces using some time variable, e.g. years 2012-2016 vs. year 2017)
+3.  Cross validation (randomly split into k pieces (folds); k-1 folds together are used for training and the remaining fold for validation, and this is repeated so that every fold is the validation fold once)
 
-Once you split your data into training and validation part you start creating GLM model on training data and you can use the validation dataset to get an idea about the performance on unseen data later on.
+![validation methods](/cloud/project/Support/img_D_validation_methods_L2.png)
+
+Once you split your data into training and validation parts, you fit the GLM on the training data only, and then use the validation data to get an idea about the performance on unseen data.
 
 ```{r}
 library(dplyr)
 library(purrr)
-# load data, this are data from Lesson 5 where we prepared Claims with Policies into one dataset
+# load data, this is the dataset from Lesson 4 where we prepared Claims with Policies into one dataset
 dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds")
 ```
 
@@ -48,22 +50,22 @@ nrow(valid)
 
 ### Validation Metric
 
-When you have predictions, now you can compare actual values with prediction and asses on how to model performs.
+When you have predictions, you can compare actual values with predictions and assess how the model performs.
 
-And once again there are couple of **metrics** to use and its usage depends on type of the model you are trying to create.
+Once again there are a couple of **metrics** to choose from, and the choice depends on the type of the model you are trying to create.
 
-A few metrics to evaluate performance of the regression model:
+A few metrics to evaluate the performance of a regression model:
 
 1.  Root Mean Squared Error $$RMSE = \sqrt{\frac{\sum_{i=1}^{N}(x_i-\hat{x_i})^2}{N}}$$
 2.  Mean Absolute Error
 3.  Median Absolute Error
 4.  R2 Score
 
-Btw, for inspiration here is a nice summary of the metric functions: <http://scikit-learn.org/stable/modules/model_evaluation.html> created in python.
+For inspiration, here is a nice summary of the metric functions (created for Python): <http://scikit-learn.org/stable/modules/model_evaluation.html>. See also `Support/Metrics.Rmd`.
 
-All of those methods and metrics can be implemented very easily in R and we will create a simple methodology to do that.
+All of those metrics can be implemented very easily in R and we will create a simple methodology to do that.
 
-For the future I would like to mention package `caret` or `tidymodels`, which automatize some of the actions we need to do manually here.
+For the future, I would like to mention the packages `caret` and `tidymodels`, which automate some of the actions we need to do manually here.
 
 ```{r}
 # definition of the RMSE metric
@@ -78,11 +80,15 @@ predicted <- c(3.7, 1.8, 2.2, 10, 3.6, 6.5, 1.2, -0.6, 1.8, 11.9, 3.1, 2.2)
 rmse(actuals, predicted)
 ```
 
-Let's think for a second how insurance works. In the early lessons we mentioned that insurance is a risk pooling. Many people will pay a small amount of money (premium) so that the insurance company is able to pay out few people that have claims (high amount of money).
+Let's think for a second about how insurance works. In the early lessons we mentioned that insurance is risk pooling. Many people pay a small amount of money (premium) so that the insurance company is able to pay out the few people that have claims (a high amount of money).
 
-Since we do not expect everybody to have a claim, we do not expect nor desire to predict every observation correctly, since a lot of them have and will have zero losses. Rather we want to make sure that bigger groups / segments of our dataset are predicted correctly.
+Since we do not expect everybody to have a claim, we neither expect nor desire to predict every observation correctly - a lot of them have and will have zero losses. Rather, we want to make sure that bigger groups / segments of our dataset are predicted correctly.
 
-We will therefore sort our dataset by increasing predictions (risk) from least risky to most risky, then divide it into N roughly equal groups. We then make sure that the actual and predicted values of losses match in these groups, rather than on every single observation.
+We will therefore sort our dataset by increasing predictions (risk) from the least risky to the most risky, then divide it into N groups of roughly equal size (weight). We then make sure that the actual and predicted values of losses match in these groups, rather than on every single observation.
+
+![grouped RMSE](/cloud/project/Support/img_E_grouped_rmse_L2.png)
+
+The same idea can be drawn as a chart of actual vs. predicted values per group - a **lift chart**, which we will use in the next exercise.
 
 ```{r}
 # improved RMSE metric computed on an ordered and grouped data
@@ -119,7 +125,9 @@ predicted <- c(3.7, 1.8, 2.2, 10, 3.6, 6.5, 1.2, -0.6, 1.8, 11.9, 3.1, 2.2)
 weight <- c(3L, 1L, 3L, 4L, 2L, 5L, 1L, 4L, 3L, 1L, 2L, 3L)
 
 rmse(actuals, predicted)
-rmse_group(actuals, predicted, n_groups=0)
-rmse_group(actuals, predicted, n_groups=3)
-rmse_group(actuals, predicted, weight, n_groups=5)
+rmse_group(actuals, predicted, n_groups=0)  # no grouping - same as rmse()
+rmse_group(actuals, predicted, n_groups=3)  # 12 observations in 3 groups of 4
+rmse_group(actuals, predicted, weight, n_groups=5)  # weighted group means
 ```
+
+Averaging within groups cancels out much of the noise of individual observations: with 3 groups the RMSE drops from about 0.97 to 0.39. (With the weights and 5 groups the groups are different, so the value, about 0.63, is not directly comparable.) The same function is stored in `Support/rmse_group.R`, so in the next exercise we will just load it with `source()`.

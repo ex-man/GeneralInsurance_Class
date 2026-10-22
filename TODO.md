@@ -27,14 +27,14 @@ TODO
           the BLOCKING section below).
 
 ## Lesson 5 — follow-ups from Lesson 4 review
-- [ ] L5 Ex3: port the Lift Chart section from the Class 2025 Posit Cloud export
+- [x] L5 Ex3: port the Lift Chart section from the Class 2025 Posit Cloud export
       (Lesson5_Ex3_InsuranceModeling.Rmd l.378-424 in the 2025 version, placed after the model4 RMSE chunk).
       Also add "plotly", "ggplot2" to `libs` (l.17), as in 2025.
       Keep the repo's homework info block, Student1..N names and
       `dt_pol_w_claims[complete.cases(dt_pol_w_claims[all_vars]), ]` - the 2025 version
       `filter(complete.cases(.[all_vars]))` does not work with the native pipe |>.
-- [ ] L5 Ex2:31, Ex3:29 — text says "data from Lesson 5", should be "data from Lesson 4".
-- [ ] L5 Ex1 / Ex2 / Ex3 — state the units once (e.g. in Ex1 intro): Time_Exposure = fraction of a year in (0, 1],
+- [x] L5 Ex2:31, Ex3:29 — text says "data from Lesson 5", should be "data from Lesson 4".
+- [x] L5 Ex1 / Ex2 / Ex3 — state the units once (done in Ex1) (e.g. in Ex1 intro): Time_Exposure = fraction of a year in (0, 1],
       Burning_Cost = loss per policy-year, Ult_Loss = Paid + Reserves (incurred, no IBNR). All prepared in Lesson 4 Ex2.
 - [ ] L5 Data/data_dictionary.txt — already synced with Lesson 4 (Capacity cm3, Nr_payments, Settlement_date,
       Time_Exposure / Ult_Loss / Burning_Cost definitions). Keep the two files identical going forward.
@@ -67,16 +67,16 @@ L6 Support/02_data_prep.Rmd (data_gbm.rds) -> L6 01_GBM_Intro_Training -> 02_GBM
 (grid_search.rds, data_part_03.rds, oneway_baseline.RDS) -> 03_GLM_Improvement_Evaluation -> 04_Final_Model_Fit.
 
 Lesson 5
-- [ ] L5 Ex1:129-131 (basic_model, Veh_type2 multipliers) — MOTORBIKE 0.540 -> 0.552 ("46% less risky" -> "45% less
+- [x] L5 Ex1:129-131 (basic_model, Veh_type2 multipliers) — MOTORBIKE 0.540 -> 0.552 ("46% less risky" -> "45% less
       risky"), TRUCK 1.647 -> 1.672 ("64% riskier" -> "67% riskier"). PICKUP 0.973 -> 0.955, intercept 246 -> 241.
-- [ ] L5 Ex3 model1-model4 (seed 58742, 80/20 split) — valid RMSE old -> new:
+- [x] L5 Ex3 model1-model4 (seed 58742, 80/20 split) — valid RMSE old -> new:
       model1 34.5 -> 32.8, model2 76.7 -> 79.0, model3 79.4 -> 71.4, model4 70.5 -> 70.1.
       NOTE: merging Veh_type2 (model2 -> model3) now clearly IMPROVES valid RMSE (before it was slightly worse).
       Text does not comment on the direction, but consider adding a sentence ("merging helped") and check slides.
-- [ ] L5 Ex3:207-208 — Construct_year is no longer significant at 5% (p 0.045 -> 0.065; multiplier 1.041 -> 1.036
+- [x] L5 Ex3:207-208 — Construct_year is no longer significant at 5% (p 0.045 -> 0.065; multiplier 1.041 -> 1.036
       per year). Text justifies it via A/E chart so still OK; optionally mention it is borderline significant.
       The conclusion after model4 ("not the best variable") is even better supported now.
-- [ ] L5 Ex3 model1 multipliers (l.~117 "how risky are trucks") — TRUCK 1.32 -> 1.34, MOTORBIKE 0.63 -> 0.65.
+- [x] L5 Ex3 model1 multipliers (l.~117 "how risky are trucks") — TRUCK 1.32 -> 1.34, MOTORBIKE 0.63 -> 0.65.
 - [ ] L5 Ex3 — re-run end to end to regenerate Lesson5/Data/glm_models.rds (and copy to Lesson6/Data/).
 - [ ] L5 Homework hw1-hw8 — single-variable directions unchanged (Time_on_book down, D_age weakly up, Capacity up,
       Sum_insured up, BonusMalus down, Nr_of_seats / VEH_brand / D_ZIP noisy as before). homework_hints.md still
@@ -97,6 +97,9 @@ Lesson 6
       conclusions in 03:181+.
 
 DONE
+- Lesson 5 review: Ex1 rewritten (categorical predictors / banding intuition, CAS monograph), Ex2 images
+  (validation methods, grouped RMSE; L2 versions used, L1/L3 kept for comparison), Ex3 lift chart + text fixes; all
+  three knit. Still open: regenerate glm_models.rds (needs Ex3 saving step), students versions, slides check.
 - In all lessons, update pipe from %>% to |>
 - Lesson 1: introduce magrittr %>% first, show comparison with native |>, add pipe history comment
 - Lesson 2: update support materials and homework info

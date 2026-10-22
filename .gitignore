@@ -11,3 +11,6 @@ packrat/src/*
 
 # image generation tool output (copy chosen images to the lesson Support folders)
 tools/image_generation/out/
+
+# local notes for image generation (names of env variables with the proxy credentials)
+tools/image_generation/LOCAL_NOTES.md

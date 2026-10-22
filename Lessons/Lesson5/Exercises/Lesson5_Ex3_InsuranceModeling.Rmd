@@ -14,7 +14,7 @@ editor_options:
 - Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})
 
 ```{r, include=FALSE}
-libs <- c("tidyverse", "reshape2", "patchwork", "statmod")
+libs <- c("tidyverse", "reshape2", "patchwork", "statmod", "plotly", "ggplot2", "lazyeval")
 lapply(libs, function(lib) {
   if (!lib %in% installed.packages()) install.packages(lib)
 })
@@ -26,7 +26,7 @@ library(plotly)
 options(scipen = 5)
 ```
 
-Load the data from Lesson 5 where we prepared Claims and Policy
+Load the data from Lesson 4 where we prepared Claims and Policy
 information in one dataset.
 
 ```{r}
@@ -72,7 +72,8 @@ dim(dt_pol_w_claims)
 ```
 
 Let's repeat the setup for model validation methodology from the
-previous exercise and load the previously defined 'rmse_group' function.
+previous exercise (80/20 out of sample split) and load the previously
+defined 'rmse_group' function.
 
 ```{r}
 source("/cloud/project/Support/rmse_group.R")
@@ -125,21 +126,29 @@ the natural exponentiation.
 round(exp(summary(model1)$coef[, 1]), 2)
 ```
 
+Trucks are about 34% riskier than personal cars (multiplier 1.34), motorbikes about 35% less risky (0.65).
+
 We now know the basic structure model attributes (distribution, link,
 weight) and we will proceed to add more variables to the model. Let's
 review the model building and feature engineering actions we can take.
 
-List of model building actions: 1. Add a new variable - If you bring
-more information in a model, it is becoming much more accurate as it is
-able to catch many more various situations 2. Remove some variable -
-Although adding a new variable brings new information to the model, it
-brings also the noise. You need to find a balance between this. Model
-should be robust and not overfit.
+List of model building actions:
 
-List of some feature engineering approaches: 1. Grouping of Categorical
-variable 2. Capping strategy to keep only trending part of the variable
-3. Variable transformation (polynomial, log, exp, ...) 4. Creating
-interactions
+1.  Add a new variable - if you bring more information into a model, it
+    becomes more accurate as it is able to catch more various
+    situations.
+2.  Remove a variable - although adding a new variable brings new
+    information to the model, it also brings noise. You need to find a
+    balance. The model should be robust and not overfit.
+
+List of some feature engineering approaches:
+
+1.  Grouping (merging) of categories of a categorical variable
+2.  Capping strategy to keep only the trending part of a variable
+3.  Banding of a numeric variable into categories, so that each band
+    gets its own multiplier (as discussed in Exercise 1)
+4.  Variable transformation (polynomial, log, exp, ...)
+5.  Creating interactions
 
 ### Add a new variable
 
@@ -150,8 +159,10 @@ glimpse(train[, all_vars])
 ```
 
 We can use a helper function that is prepared in the `Support` folder.
-It can help us to: - Assess how our fitted variables perform - Assess
-which unfitted variables might provide extra information
+It can help us to:
+
+-   Assess how our fitted variables perform
+-   Assess which unfitted variables might provide extra information
 
 ```{r}
 source("/cloud/project/Support/emb_chart_plotly.R")
@@ -162,7 +173,7 @@ Let's look at our fitted variable first.
 
 One line should represent the actual mean - Time_Exposure weighted mean
 of Burning_Cost over different vehicle types. The other line should
-represented the fitted (predicted) mean - Time_Exposure weighted mean of
+represent the fitted (predicted) mean - Time_Exposure weighted mean of
 Burning_Cost model predictions over different vehicle types.
 
 We can't even see the second line, since they're identical. This happens
@@ -204,9 +215,9 @@ for (var_nm in unfitted_vars) {
 }
 ```
 
-Let's say we decide to add `Construct_year` variable, because the
-difference between actual mean and fitted mean are pretty significant on
-both sides of the exposure distribution.
+Let's say we decide to add the `Construct_year` variable, because the
+difference between the actual mean and the fitted mean is pretty
+significant on both sides of the exposure distribution.
 
 ```{r}
 model2 <- glm(
@@ -222,6 +233,12 @@ print("Valid RMSE:")
 valid_predict <- predict(model2, valid, type = "response")
 rmse_group(valid_actual, valid_predict, valid_weight)
 ```
+
+Notice two things. `Construct_year` is only borderline significant
+(p-value about 0.07) and the validation RMSE got much worse compared to
+the first model. A better in-sample story does not automatically mean
+a better model - this is exactly why we validate on data the model has
+not seen.
 
 Let's review the fitted variables visually. We can see that the first
 variable is fit almost perfectly - the lines are aligned. This is caused
@@ -253,11 +270,14 @@ which is a feature engineering adjustment that can be done with
 categorical types of variables.
 
 With merging, we usually merge categories based on the following rules
-of thumb: - Categories with low exposure (weight) can be merged with the
-base category (most frequently ocurring) - Categories with zero target
-values can be merged with the base category - Categories with enough
-exposure but very similar coefficient / multiplier can be merged
-together
+of thumb:
+
+-   Categories with low exposure (weight) can be merged with the base
+    category (most frequently occurring)
+-   Categories with zero target values can be merged with the base
+    category
+-   Categories with enough exposure but very similar coefficient /
+    multiplier can be merged together
 
 Let's try to do the merging operation with the `Veh_type2` variable and
 refit the model.
@@ -287,7 +307,9 @@ valid_predict <- predict(model3, valid, type = "response")
 rmse_group(valid_actual, valid_predict, valid_weight)
 ```
 
-Let's take a look at the adjustment
+Let's take a look at the adjustment. The validation RMSE improved
+after merging (the rare categories had unreliable multipliers, e.g.
+zero for OTHER and TRACTOR).
 
 ```{r}
 this_model <- model3
@@ -306,7 +328,7 @@ As a next step, we can try capping the `Construct_year` variable. This
 means setting a cap (floor or ceiling) on the minimum, maximum (or both)
 value.
 
-For example, we'll limit the `Construct_year` between 2006 and 2015, and
+For example, we'll limit the `Construct_year` between 2005 and 2015, and
 we'll set the higher or lower values to be equal to the bounds of our
 selected interval.
 
@@ -367,13 +389,59 @@ creating a new model.
 Finally, there's a third useful group of feature engineering
 adjustments - changing units, rounding or truncating (selecting for
 example first 2 digits of a 4 digit code). This might be especially
-useful when dealing with variables such as `D_zip`, `Capacity` or
+useful when dealing with variables such as `D_ZIP`, `Capacity` or
 `VEH_brand`.
 
 We could also theoretically consider variable transformations, such as
 polynomials, square roots, logs or interactions, but these often make
 the model more complex and difficult to understand (especially for
 business partners). These are unfortunately out of scope of this lesson.
+
+### Lift Chart
+
+The lift chart helps us to evaluate the fit of the model and to check
+that the model is not over-fitted. It is the visual version of the
+grouped RMSE from the previous exercise: the portfolio is sorted by
+predicted risk, split into several groups of equal size (exposure), and
+the actual and predicted values are compared in each group.
+
+The fit is good when there are no large overestimated or underestimated
+areas in the chart. Pay special attention to the tails - the lowest and
+the highest risk groups.
+
+Note: in a real-world project we would use the validation set to check
+that the model generalizes well to new, unseen data. For illustration we
+show the training data here; you can replace `train` with `valid` and
+compare.
+
+```{r}
+# Predict Burning Cost on the training set using the last model
+train$pred <- predict(model4, newdata = train, type = "response")
+
+# Sort by predicted risk and assign to groups of equal exposure
+n_groups <- 5
+train_sorted <- train |>
+  arrange(pred) |>
+  mutate(
+    cum_expo_pct = cumsum(Time_Exposure) / sum(Time_Exposure),
+    LiftGroup = cut(
+      cum_expo_pct,
+      breaks = seq(0, 1, length.out = n_groups + 1),
+      labels = FALSE,
+      include.lowest = TRUE
+    )
+  )
+
+# Weighted averages per group, plotted as a lift chart
+emb_chart_plotly(
+  model = NULL,
+  x_var = "LiftGroup",
+  target = "Burning_Cost",
+  weight = "Time_Exposure",
+  prediction = "pred",
+  dt.frm = train_sorted
+)
+```
 
 ### Homework assignment
 

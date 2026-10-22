@@ -3,8 +3,8 @@ title: "Basic GLM"
 output:
   html_document:
     df_print: paged
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
 ---
 
@@ -12,47 +12,57 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Bonus -\> Kvíz: 1.miesto=5b, 2.miesto=3b, 3.miesto=2b, 4.miesto=1b,
-5.miesto=1b
+Further reading (optional):
 
-GLM Short Video - <https://youtu.be/ddCO2714W-o?feature=shared> GLM
-Short Article -
-<https://towardsdatascience.com/generalized-linear-models-9cbf848bb8ab>
+-   GLM Short Video - <https://youtu.be/ddCO2714W-o?feature=shared>
+-   CAS Monograph 5: Generalized Linear Models for Insurance Rating
+    (free) - <https://www.casact.org/monograph/cas-monograph-no-5>
 
-One-Way analysis is definitely good and useful, but there can sometimes
-be certain problems: - There could be correlation between variables used
-in one-way analysis. - How do you determine which variables are best
-used to describe / predict target? - How do you quantify the independent
-influence of correlated variables on target?
+### From one-way analysis to GLM
 
-This is where Multi-Way approach comes in. Multi-Way analysis is usually
-done using a statistical or machine learning model. In insurance, when
-we want to create a very transparent and easily interpretable model, we
-usually used Generalized Linear Models - GLM.
+One-way analysis is definitely useful, but it has its limits:
 
-GLM is a generalization of well-known linear regression, which can be
-used for statistical inference when the target or error distribution is
-not Gaussian. Some insurance events, like frequency of claims or their
-payments have been highly studied and associated with some empirical
-distributions: - Frequency of claims (claim count / exposure) does
-approximately follow Poisson distribution. - Severity of claims (claim
-loss / claim count) does approximately follow Gamma distribution. -
-Burning cost (claim loss / exposure) does approximately follow Tweedie
-distribution.
+-   Variables used in one-way analysis can be correlated (e.g. young
+    drivers tend to drive powerful cars), so their one-way effects
+    partly count the same risk twice.
+-   It does not tell us which variables are the best to describe /
+    predict the target.
+-   It cannot quantify the independent influence of correlated
+    variables on the target.
 
-You can read more about GLM in the wikipedia article:
-<https://en.wikipedia.org/wiki/Generalized_linear_model>
+This is where the multi-way approach comes in. Multi-way analysis looks
+at all the variables **at the same time** and is usually done with a
+statistical or machine learning model. In insurance, when we want a very
+transparent and easily interpretable model, we usually use the
+Generalized Linear Model - **GLM**. It was introduced in the Lesson 4
+support material (`Lesson4/Support/02_glm_motivation.md`), here is a
+short recap.
 
-Since we are using Burning cost (riskiness per unit of exposure) our
-target will roughly follow Tweedie distribution (a lot of zeros and then
-skewed with long tail). If you are interested, you can read more in the
-wikipedia article: <https://en.wikipedia.org/wiki/Tweedie_distribution>
+A GLM generalizes the well-known linear regression in two ways:
 
-Tweedie distribution is a generalization and compound of multiple
-different distributions. This is controlled with the Tweedie 'power
-parameter' or 'p'. If p \> 1 and p \< 2 then the distribution is a
-compound of Poisson and Gamma and therefore suitable to model the
-Burning Cost target. Let's use p=1.5 as a good default parameter.
+1.  **Distribution** - the target does not have to be normal. Typical
+    choices in insurance are Poisson for claim counts (frequency), Gamma
+    for claim amounts (severity) and Tweedie for amounts with many zeros
+    (burning cost). The Tweedie distribution is controlled by the power
+    parameter `p`; for `1 < p < 2` it is a compound of Poisson and Gamma
+    (a random number of claims, each with a Gamma-distributed size).
+    Our target is the burning cost (loss per unit of exposure) - it has
+    a lot of zeros and a long right tail - so we use Tweedie with
+    `p = 1.5` as a good default.
+2.  **Link function** - the linear combination of variables is connected
+    to the expected target through a link function. We use the **log
+    link**, so the effects of the variables get **multiplied**: base
+    price x multiplier of variable 1 x multiplier of variable 2 ...
+
+More details on Wikipedia: [GLM](https://en.wikipedia.org/wiki/Generalized_linear_model),
+[Tweedie distribution](https://en.wikipedia.org/wiki/Tweedie_distribution).
+
+A reminder of the units we prepared in Lesson 4:
+
+-   `Time_Exposure` - length of the policy as a fraction of a year, in
+    (0, 1]
+-   `Burning_Cost` - loss per policy-year (`Ult_Loss / Time_Exposure`)
+-   `Ult_Loss` - `Paid + Reserves` (incurred loss, without IBNR)
 
 ```{r}
 # install.packages(c("statmod", "tweedie"))
@@ -65,6 +75,57 @@ dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds") |>
 
 table(dt_pol_w_claims$Veh_type2)
 ```
+
+### Categorical predictors
+
+A GLM works with numbers, so how does it use a category like the vehicle
+type? A category has no order or distance (a TRUCK is not "3 x CAR"), so
+we cannot just put numbers 1, 2, 3 ... into the model. Instead, each
+category becomes its own 0/1 **indicator (dummy) variable** - "is this
+vehicle a MOTORBIKE?", "is it a TRUCK?" ... One category is left out as
+the **baseline** - it is the case when all the indicators are 0 and it is
+absorbed by the intercept. This is what the model actually sees:
+
+```{r}
+head(model.matrix(~ Veh_type2, data = dt_pol_w_claims), 6)
+```
+
+Each indicator gets its own coefficient - its own multiplier relative to
+the baseline - so the model does not assume any shape across the
+categories. Every category can have any riskiness. That is also why a
+categorical variable usually fits the data very well.
+
+#### Banding of numeric variables
+
+A numeric variable (e.g. driver age) gets only **one** coefficient. With
+the log link this means a constant percentage change per unit, for
+example "+1% risk with every additional year of age" - the relationship
+is forced to be a smooth, one-directional curve. Real relationships are
+often not like that, e.g. both very young and very old drivers can be
+riskier than the middle-aged ones.
+
+That is why numeric variables are often **banded** first - cut into
+intervals which are then treated as categories, with one multiplier per
+band. This lets the model follow a non-linear (even non-monotonic)
+pattern. The data already contain such a variable, `D_age_banded`. This
+is how banding looks like:
+
+```{r}
+dt_pol_w_claims |>
+  filter(!is.na(D_age)) |>
+  mutate(D_age_band = cut(D_age, breaks = c(0, 30, 40, 50, 60, Inf))) |>
+  group_by(D_age_band) |>
+  summarize(
+    exposure = sum(Time_Exposure),
+    burning_cost = weighted.mean(Burning_Cost, Time_Exposure)
+  )
+```
+
+Banding has its price: more parameters and less data in every band, so
+the multipliers get noisier. We have to find a balance - and we will
+come back to banding and merging of categories in Exercise 3.
+
+### Basic GLM
 
 Let's fit a basic GLM using a single variable - Veh_type2. This will get
 results very similar to the one-way analysis.
@@ -82,36 +143,36 @@ summary(basic_model)
 
 The most basic information we want to get from the model are the
 coefficients. Since vehicle type is a categorical variable, each of its
-category is fitted as a separate variable and we get a separate
-coefficient.
+categories is fitted as a separate variable (the indicators from above)
+and we get a separate coefficient for each of them.
 
 ```{r}
 summary(basic_model)$coef
 summary(basic_model)$coef[, 1]
 ```
 
-These coefficients are little bit hard to interpret as they are now.
+These coefficients are a little bit hard to interpret as they are now.
 Linear regression's coefficients are expressed in the units of the
-target variable. They represent average increase/decrease of the target
-given 1 unit change in the input variable.
+target variable. They represent the average increase / decrease of the
+target given 1 unit change in the input variable.
 
-On the other hand, GLM uses a link function - which is a transformation,
-to be able to use linear combination of predictors to estimate
+On the other hand, GLM uses a link function - a transformation which
+allows us to use a linear combination of predictors to estimate a
 non-linear target. This transformation is not applied on the target but
 on the linear combination of predictors.
 
 We defined the target distribution as
 `statmod::tweedie(var.power = 1.5, link.power = 0)` and used
-`link.power=0` which represents logarithmic link function. Now that we
-know the link function, we can use the inverse link function
+`link.power = 0`, which represents the logarithmic link function. Now
+that we know the link function, we can use the inverse link function
 (exponential function in our case) to obtain more interpretable
 coefficients.
 
 While the coefficients don't signify the average increase or decrease,
 their interpretation is even better. The intercept gets translated to
-average target (similar to linear regression intercept), but the
-variable coefficients get translated into average multipliers -
-signifying how much riskier a category is than the average.
+the expected target (burning cost) of the baseline category, and the
+variable coefficients get translated into multipliers - signifying how
+much riskier a category is than the baseline.
 
 ```{r}
 weighted.mean(dt_pol_w_claims$Burning_Cost, dt_pol_w_claims$Time_Exposure)
@@ -121,15 +182,24 @@ summary(basic_model)$coef[, 1] |>
   round(3)
 ```
 
-As you can see, the CAR category is gone, this is because the most
+As you can see, the CAR category is gone. This is because the most
 populated category gets designated as the baseline category, which is
-included within intercept.
+included within the intercept. The intercept (about 241) is therefore
+the expected burning cost of a personal CAR, which is close to, but not
+the same as, the overall weighted mean above.
 
 The other coefficients (multipliers) represent how much each vehicle
-type category is riskier than personal car. For example the MOTORBIKE
-vehicle type is 46% less risky than the personal CAR. On the other hand
-the TRUCK category is 64% riskier than the personal CAR.
+type category is riskier than a personal car. For example, the MOTORBIKE
+vehicle type is about 45% less risky than the personal CAR (multiplier
+0.55). On the other hand, the TRUCK category is about 67% riskier than
+the personal CAR (multiplier 1.67).
+
+You may also notice multipliers of exactly 0 for OTHER and TRACTOR.
+These categories have a very small exposure (only 5 and 21 policies) and
+no losses at all, so the model happily says "zero risk", which is
+obviously not credible. We will deal with such categories in Exercise 3
+by merging them.
 
 Did you expect this kind of result or are you surprised? Don't forget
 the riskiness includes not only the aspect of claim loss payments but
-also how often do these claims occur.
+also how often these claims occur.

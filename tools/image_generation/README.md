@@ -27,6 +27,8 @@ uv run --no-project python tools/image_generation/generate_images.py [regex] [--
 ## Contents
 - `image_prompts.md` - prompts for the Lesson 4 Exercise 1 pictures (keys, summarize vs mutate, left joins, granularity),
   with the example data and colour code they share, and which generated version is used in the lesson.
+- `image_prompts_lesson5.md` - prompts for the Lesson 5 Exercise 2 pictures (validation methods, grouped RMSE / lift
+  chart), each in three levels of visual complexity (`_L1` minimal, `_L2` medium, `_L3` detailed).
 
 ## Tips learned
 - Image models garble text and misplace arrows; state exact table contents and where each arrow starts and ends.
