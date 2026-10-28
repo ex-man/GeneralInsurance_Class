@@ -20,10 +20,10 @@ We prefer linear models because they are quite understandable in terms of what i
 
 ### Why GLM instead of linear regression?
 
-The linear model (linear regression) is a good starting point, but insurance data break three of its assumptions:
+The linear model (linear regression) is a good starting point, but insurance data fit it poorly in three ways:
 
 1. **Constant variance.** Linear regression assumes that policies with the same characteristics have the same spread of residuals. In insurance, policies with higher expected losses also have higher variability: a high-risk policy can produce a very large claim, while a low-risk policy almost never does.
-2. **Impossible predictions.** Observed burning costs are zero or positive, and linear regression can handle such values. But its predictions can be negative, which makes no sense for a price. A GLM with a log link turns the linear predictor back into a value with e (exp), which is always positive.
+2. **Impossible predictions.** Burning costs are never negative, but linear regression can predict negative values, which makes no sense for a price. A GLM with a log link turns the linear predictor into a value with e (exp), which is always positive.
 3. **Additive effects.** Linear regression adds effects to the target. Pricing systems work with multipliers: base price times a relativity for each factor. With the log link the coefficients are additive on the log scale, and after exp they become multipliers.
 
 GLMs generalize the linear model in two ways:
@@ -34,11 +34,11 @@ GLMs generalize the linear model in two ways:
    - **Tweedie** for amounts with many exact zeros, e.g. burning cost (*pure premium* model). It is a compound Poisson-Gamma distribution: a random number of claims, each with a Gamma-distributed size. The power parameter p (between 1 and 2) sets the balance between the two parts; p = 1.5 is a common default.
 2. **Link function** - the linear combination of variables is connected to the expected target through a link function. In pricing we almost always use the **log link**:
 
-$$\log(\text{expected Burning Cost}) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots$$
+$$\log(\text{expected burning cost}) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots$$
 
 which means that
 
-$$\text{expected Burning Cost} = e^{\beta_0} \cdot e^{\beta_1 x_1} \cdot e^{\beta_2 x_2} \cdots$$
+$$\text{expected burning cost} = e^{\beta_0} \cdot e^{\beta_1 x_1} \cdot e^{\beta_2 x_2} \cdots$$
 
 So the effects of variables are **multiplied**, not added. Every variable gives a **multiplier** (relativity) to the base price. For example:
 
@@ -49,14 +49,16 @@ So the effects of variables are **multiplied**, not added. Every variable gives 
 | Driver age 18-25 (vs. 40-50) | x 1.5 |
 | Bonus-Malus class with no claims | x 0.7 |
 
-A young driver with a truck and a clean history would pay $250 \cdot 1.3 \cdot 1.5 \cdot 0.7 \approx 341$. This is exactly how most motor insurance tariffs look.
+A young driver with a truck and a clean history would pay $250 \cdot 1.3 \cdot 1.5 \cdot 0.7 \approx 341$. This is how many motor tariffs are built.
 
 ### And what about exposure?
 
 A policy insured for half a year should have half of the expected loss of a full year. There are two common ways to tell the GLM about it:
 
-- model the burning cost (loss per year) and use the exposure as a **weight** - policies with longer exposure are more credible. Weights also work in linear regression, but there the variance is constant divided by the weight. In a GLM the weights act together with the variance that depends on the mean. This is what we will do in the next lesson,
-- model the loss (or number of claims) directly and use log(exposure) as an **offset** - a variable with the coefficient fixed to 1.
+1. **Model the burning cost (loss per year) and use exposure as a weight.** Each policy's target is its loss divided by its exposure. Policies with longer exposure get more weight in the fit, because their burning cost rests on more information. The model predicts loss per year, so new policies need no exposure input.
+2. **Model the total loss (or number of claims) and use log(exposure) as an offset.** The offset is a term in the linear predictor with its coefficient fixed at 1, so the model predicts the expected total loss for the exposure period. This works, but the offset must be supplied for every prediction.
+
+**We prefer the first option (weights).** The target is a rate, which is what we compare across risk groups. Predictions need no extra input, whereas the offset adds a step to every prediction and is easy to forget.
 
 ### What's next
 
@@ -104,7 +106,7 @@ The dispersion φ is a constant scale factor on the variance. It sets how spread
 | Variance | Constant, σ² | φ·V(μ), varies with the mean |
 | Link | Identity | Log (or other) |
 | Effect of a variable | Additive | Multiplicative |
-| Zero and negative values | Observed zeros allowed; predictions can be negative | Observed zeros allowed; predictions stay positive with log link |
+| Zero and negative values | Observed zeros allowed; predictions can be negative | Zeros allowed for Poisson and Tweedie, not Gamma; predictions stay positive with log link |
 | Weights | Constant variance / weight | Weight enters with the mean-dependent variance |
 | Estimation | Least squares, closed form | Maximum likelihood, iterative (IRLS) |
 | Dispersion | σ², estimated | φ: fixed at 1 for Poisson; estimated for Gamma and Tweedie |
