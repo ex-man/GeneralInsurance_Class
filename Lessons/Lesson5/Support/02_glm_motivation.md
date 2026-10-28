@@ -1,3 +1,5 @@
+<!-- NOTE: this file exists in two places - Lessons/Lesson4/Support/ and Lessons/Lesson5/Support/ (the GLM intro is taught at the end of L4 or at the start of L5, depending on pacing). Keep both copies identical. -->
+
 ## GLM Motivation
 
 In the last exercise we saw that in our data there are some factors that have a trend in terms of our prediction target. That means it is worth checking them when we try to underwrite some new risk.
