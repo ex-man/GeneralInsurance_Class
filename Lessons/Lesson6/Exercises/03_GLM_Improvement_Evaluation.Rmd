@@ -7,7 +7,7 @@ output:
 
 *Before running chunks within this markdown file, run all chunks in 01_GBM_Basic.Rmd and 02_GBM_Tuning.Rmd.*
 
-```{r load setup}
+```{r cell_01}
 # Load all required files. function, packages
 libs <- c("Ckmeans.1d.dp")
 lapply(libs, function(lib) {
@@ -47,7 +47,7 @@ In this script, we will then compare the GLM model created using insights from t
 
 Let's look at the tuned GBM model. We can see that there are still some overestimated or underestimated areas on the lift curve, but overall, the model fits well. (However, there is still room for improvement, and you can try to improve the model at home by adjusting the hyperparameters or feature engineering.)
 
-```{r lift chart}
+```{r cell_02}
 # Overall model performance
 lift_curve(
   data = test,
@@ -61,7 +61,7 @@ lift_curve(
 
 The feature importance chart shows which variables are the most important in our model. The most important variables are BonusMalus, Sum_insured, Constructed_year, Capacity, D_age, etc. These are the variables we will include in our final GLM model.
 
-```{r feature importance}
+```{r cell_03}
 # The most important variables
 xgb_fi <- xgb.importance(model = xgb_final)
 xgb.ggplot.importance(xgb_fi)
@@ -71,7 +71,7 @@ Let's also look at the trends of these important variables. For example, on the 
 
 We can see that the most important variables are numeric. Now, we will adjust them, band or cap them by PDP, and change the variable type of some variables to categorical ones to improve the model.
 
-```{r oneway}
+```{r cell_04}
 # One way plot with PDP 
 
 # important_vars <- xgb_fi$Feature[1:7]
@@ -93,7 +93,7 @@ oneway_plots
 
 Firstly load the data and models from Lesson 5, adjust the most important variables on these data, and create a new GLM model using the adjusted most important variables.
 
-```{r}
+```{r cell_05}
 # Load models and data from lesson 5
 glm_models <- readRDS(file = "/cloud/project/Data/glm_models.rds")
 
@@ -103,7 +103,7 @@ train_weight <- train$Time_Exposure
 valid <- glm_models$valid
 ```
 
-```{r}
+```{r cell_06}
 # Adjust the most important variables by PDP 
 
 # Train 
@@ -159,7 +159,7 @@ Let's create a GLM model using insights from GBM and include the variables ident
 
 Let's fit two models: the first with the 7 most important variables, and the second with the 3 most important variables.
 
-```{r}
+```{r cell_07}
 # Enhancing GLM with GBM
 # 7 most important variables by GBM
 final_glm1 <- glm(
@@ -180,7 +180,7 @@ final_glm2 <- glm(
 
 Now, let's compare the models from Lesson 5 with our enhanced GLM models using insights from GBM to see if the new models are better than the previous ones.
 
-```{r}
+```{r cell_08}
 # Create list of models
 model_list <- list(
   "model1 \n add \n Veh_Type2" = glm_models$model1,
@@ -197,7 +197,7 @@ compare_models(model_list)
 
 We'll create a small visualization on top of the table with metrics.
 
-```{r}
+```{r cell_09}
 # Plot model comparison
 compare_models(model_list) |>
   ggplot(aes(x = model_nm, y = train_rmse, group = 1)) +

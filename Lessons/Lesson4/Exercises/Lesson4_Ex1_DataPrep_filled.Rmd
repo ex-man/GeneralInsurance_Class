@@ -24,7 +24,7 @@ Let's look at them separately first, and then merge them together. Our roadmap:
 
 ### Load and inspect Policy Info
 
-```{r}
+```{r cell_01}
 # install.packages('tidyverse')
 # install.packages("ggplot2")
 library(dplyr)
@@ -34,7 +34,7 @@ library(ggplot2)
 
 Policy data are at *policy + object* level, represented by policy number and object number columns. Object represents an insured car. A description of all columns is in `Data/data_dictionary.txt`.
 
-```{r}
+```{r cell_02}
 dt_Policy <- read.csv("/cloud/project/Data/lesson4_PolicyHistory.csv")
 
 dim(dt_Policy)
@@ -57,7 +57,7 @@ We join tables by matching a foreign key to a primary key, so the first thing to
 
 ![summarize vs mutate](/cloud/project/Support/img_B_summarize_vs_mutate.png)
 
-```{r}
+```{r cell_03}
 # OVERVIEW: group_by + summarize -> one row per group.
 # Which keys are duplicated and how many times? (sorted by n)
 dt_Policy |>
@@ -83,7 +83,7 @@ Careful with the `n` in the second table: it is a number **copied to every row o
 
 We will repeat these checks on every table in this lesson, so let's write them once. Each function gets a data frame `df` and a character vector of column names `cols`. `across(all_of(cols))` is how we pass a vector of column names to `group_by()` / `arrange()`.
 
-```{r}
+```{r cell_04}
 # TRUE if the columns `cols` uniquely identify each row of `df`
 check_primary_key <- function(df, cols) {
   nrow(distinct(df, across(all_of(cols)))) == nrow(df)
@@ -121,7 +121,7 @@ join_summary <- function(df) {
 
 Now use them - is `NrPolicy` a primary key of the Policy data? What about policy + object?
 
-```{r}
+```{r cell_05}
 check_primary_key(dt_Policy, "NrPolicy")
 check_primary_key(dt_Policy, c("NrPolicy", "NrObject"))
 
@@ -135,7 +135,7 @@ Some policies cover more than one car, but each *policy + object* combination ap
 
 Claims data are at *claims* level, represented by the claims number column.
 
-```{r}
+```{r cell_06}
 dt_Claims <- read.csv("/cloud/project/Data/lesson4_Claims.csv")
 
 dim(dt_Claims)
@@ -147,7 +147,7 @@ summary(dt_Claims)
 
 Let's inspect the granularity of the dataset. Is `NrClaim` a primary key?
 
-```{r}
+```{r cell_07}
 check_primary_key(dt_Claims, "NrClaim")
 
 # overview and detail of the duplicated claim numbers
@@ -161,7 +161,7 @@ Surprise - the claim number is *not* unique. A few claim numbers appear on two d
 
 We want to add claims to the policy data, whose primary key is *policy + object*. Is it also unique in the claims?
 
-```{r}
+```{r cell_08}
 check_primary_key(dt_Claims, c("NrPolicy", "NrObject"))
 show_duplicate_info(dt_Claims, c("NrPolicy", "NrObject"))
 ```
@@ -176,7 +176,7 @@ The cleaner way is to fix the granularity of the table we are joining **before**
 
 Let's introduce a new field that will become part of our level of granularity - Claim Year - so that all the claims within the same calendar year are summed up together.
 
-```{r}
+```{r cell_09}
 # Extract claim year
 dt_Claims <- dt_Claims |>
   mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) |>
@@ -188,7 +188,7 @@ dt_Claims_raw <- dt_Claims
 
 One more thing: a claim belongs to a policy only if the loss happened **while the policy was active**, i.e. between `Dt_Exp_Start` and `Dt_Exp_End`. A few claims in our data do not fit - so we keep only the claims that happened during the period of cover. (Why this matters is shown in the *Bonus* section at the end.)
 
-```{r}
+```{r cell_10}
 dt_Claims_in_cover <- dt_Claims |>
   inner_join(
     dt_Policy |> select(NrPolicy, NrObject, Dt_Exp_Start, Dt_Exp_End),
@@ -222,7 +222,7 @@ Since not every policy will have a claim, we will be using left join to preserve
 
 ![left join chain](/cloud/project/Support/img_C1_left_join_chain.png)
 
-```{r}
+```{r cell_11}
 dt_pol_w_claims <- dt_Policy |>
   left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
 
@@ -239,7 +239,7 @@ Perfect! So what now? Hmm...
 
 Let's look how successful we have been in finding out about our customer's losses. Two things should hold: the base table did not change its granularity, and no claims were lost on the way.
 
-```{r}
+```{r cell_12}
 # structural checks: same number of rows as the policy data, key still unique
 nrow(dt_Policy)
 nrow(dt_pol_w_claims)
@@ -260,7 +260,7 @@ The number of claims is plausible: about 1 900 claims on roughly 25 000 years of
 > Takeaway: always check your join **structurally** (keys, granularity, number of rows before and after) and **logically** (does the result make business sense - e.g. can the loss happen outside of the cover?).
 
 Let's save the dataset for next exercise
-```{r}
+```{r cell_13}
 saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
 ```
 
@@ -272,7 +272,7 @@ saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
 
 Let's redo the join **without** the period-of-cover filter, and compare.
 
-```{r}
+```{r cell_14}
 dt_Claims_naive <- dt_Claims_raw |>
   group_by(NrPolicy, NrObject, ClmYr) |>
   summarize(Paid = sum(Paid), Reserves = sum(Reserves)) |>
@@ -304,7 +304,7 @@ Without the filter the join looks *fine* structurally (the same number of policy
 
 `anti_join()` is the tool for this - it returns the rows of the claims data without a matching policy.
 
-```{r}
+```{r cell_15}
 claims_unmatched <- dt_Claims_naive |>
   anti_join(dt_Policy, by = c("NrPolicy", "NrObject"))
 
@@ -319,7 +319,7 @@ dt_Policy |> count(Year)
 
 Most of the unmatched claims happened in **2016**, but our policy data only cover years 2012 - 2015. These claims belong to policies we did not receive, so they are simply **out of scope** - no problem with the join.
 
-```{r}
+```{r cell_16}
 # unmatched claims whose policy number exists, just with a different object number
 claims_unmatched |>
   filter(ClmYr <= 2015, NrPolicy %in% dt_Policy$NrPolicy) |>
@@ -330,7 +330,7 @@ The rest are claims whose policy (or policy + object) is not in our policy data.
 
 #### Which claims happened outside of the cover?
 
-```{r}
+```{r cell_17}
 claims_timing <- dt_Claims_raw |>
   inner_join(
     dt_Policy |> select(NrPolicy, NrObject, Year, Dt_Exp_Start, Dt_Exp_End),

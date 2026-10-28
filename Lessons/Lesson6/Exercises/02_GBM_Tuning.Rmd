@@ -5,7 +5,7 @@ output:
     df_print: paged
 ---
 
-```{r setup, include=FALSE}
+```{r cell_01, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -27,7 +27,7 @@ However, both of these techniques share a common problem---they don't take previ
 
 For our model tuning, we will use *grid search*. Although it can be time-consuming, it is straightforward and ensures that we explore all predefined combinations of hyperparameters to find the best one for our model.
 
-```{r}
+```{r cell_02}
 # Check whether required packages are installed. If not, install them
 libs <- c("xgboost", "dplyr")
 lapply(libs, function(lib) {
@@ -39,7 +39,7 @@ library(dplyr)
 library(xgboost)
 ```
 
-```{r source support functions}
+```{r cell_03}
 # source support functions
 functions_path <- file.path("/cloud/project/Support/functions")
 functions_files <- list.files(
@@ -60,7 +60,7 @@ Setting values within the grid search can be challenging because we do not know 
 
 So now let's set up the random grid search.
 
-```{r define grid}
+```{r cell_04}
 # Defines the grid of parameters to search over
 param_grid <- expand.grid(
   max_depth = c(3,6),
@@ -89,7 +89,7 @@ In the following code, we will create a list to store the results and update it 
 
 **Note**: We will not run this grid search within this lesson as it may take a considerable amount of time, and we do not want to lose time on it. However, we have run it before, and found the best combination of parameters (at the end of the markdown). If you want to try it by yourself, you can run the grid search at home.
 
-```{r execute random grid search}
+```{r cell_05}
 # Initialize variables to store results
 ntrees <- c()
 tweedie_nloglik <- c()
@@ -136,7 +136,7 @@ param_grid <- param_grid |> cbind(ntrees, tweedie_nloglik, rmse_10groups)
 
 *The best combination of parameters* is as follows:
 
-```{r best parameters}
+```{r cell_06}
 # load the precalculated grid search
 param_grid <- readRDS("/cloud/project/Data/grid_search.rds")
 
@@ -156,7 +156,7 @@ best_param_comb
 
 So, let's run the GBM model using the best parameters found using grid search.
 
-```{r final model}
+```{r cell_07}
 xgb_final <- xgb.train(
   params = best_params,
   data = dmodel,
@@ -165,7 +165,7 @@ xgb_final <- xgb.train(
 )
 ```
 
-```{r lift chart}
+```{r cell_08}
 lift_curve(
   data = test,
   target_variable = "Burning_Cost",

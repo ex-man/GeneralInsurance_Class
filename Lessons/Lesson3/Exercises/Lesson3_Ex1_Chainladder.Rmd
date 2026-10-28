@@ -8,7 +8,7 @@ date: "2024-10-27"
 
 Load all necessary packages for the lesson
 
-```{r, message=FALSE}
+```{r cell_01, message=FALSE}
 # install.packages("ChainLadder")
 library(dplyr)
 library(ggplot2)
@@ -17,7 +17,7 @@ library(ChainLadder)
 
 *As we will be working with ChainLadder library, explore it a little bit.* To understand what it is doing run the example below (demo from ChainLadder library). But do not just run it! Think about what it is doing!
 
-```{r}
+```{r cell_02}
 ChainLadder::RAA
 plot(ChainLadder::RAA)
 plot(ChainLadder::RAA, lattice = TRUE)
@@ -27,7 +27,7 @@ Before you continue, answer this for yourself: 1) What am I looking at? (What ar
 
 *Think about some math, that could project the future for the "unfinished lines" (e.g. liner models?)* To explore a bit of math, we will go through two simple examples. We'll focus on understanding the development from the first to the second year.
 
-```{r}
+```{r cell_03}
 RAA[, 1:2]
 x <- RAA[1:9, 1]
 y <- RAA[1:9, 2]
@@ -40,12 +40,12 @@ However, the result might be highly impacted by origin years which didn't have e
 
 We can balance this by using weighted mean, where the same payment numbers also serve as weights. As we can see the result is quite different as the impact of years with less data is now smaller.
 
-```{r}
+```{r cell_04}
 weighted.mean(y / x, x)
 ```
 We can use this average 'development multiplier' from the first year to second year to compute the missing value in the last origin year. We obtain an estimate
 
-```{r}
+```{r cell_05}
 RAA[, 1:2]
 2063 * 2.999359
 ```
@@ -54,7 +54,7 @@ We can easily obtain all the development multipliers, or as we call them 'age-to
 
 Now the missing triangle is populated and we have a full matrix. We now also have full time series in all origin years.
 
-```{r}
+```{r cell_06}
 # prediction and visualization
 pred <- RAA |>
   chainladder() |>

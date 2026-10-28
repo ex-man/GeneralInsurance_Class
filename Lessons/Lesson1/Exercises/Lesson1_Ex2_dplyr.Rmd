@@ -5,7 +5,7 @@ output: html_notebook
 
 > Run following command in R console to link to `dplyr` library:
 
-```{r}
+```{r cell_01}
 library(dplyr)
 ```
 
@@ -13,13 +13,13 @@ library(dplyr)
 ### Piping
 > Now let's try to calculate simple thing using multiple encapsulated functions.
 
-```{r}
+```{r cell_02}
 abs(min(c(1, 4, 2, 8, -5, -1000)))
 ```
 > Can you understand what this command does? Is the result what you've expected?  
 > With `dplyr` we can code the same thing using *piping*
 
-```{r}
+```{r cell_03}
 c(1, 4, 2, 8, -5) %>% 
   min(-1000, .) %>% 
   abs
@@ -36,19 +36,19 @@ c(1, 4, 2, 8, -5) |>
 > In this exercise let's practice `dplyr` and *piping* on simple dataset. Firstly let's `read` some data in:  
 
 
-```{r}
+```{r cell_04}
 dt_KPI <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
 ```
 
 > We can select top 6 rows using `head` function. 
 
-```{r}
+```{r cell_05}
 dt_KPI |> head()
 ```
 
 > OK, now let's create additonal column *Combined* by `mutate` and showing first 6 rows right away.  
 
-```{r}
+```{r cell_06}
 dt_KPI |>
   mutate(Combined = Losses + Expenses) |>
   head()
@@ -56,7 +56,7 @@ dt_KPI |>
 
 > What if we want to see only *Region* and *Losses*? Let's `select` it to output:
 
-```{r}
+```{r cell_07}
 dt_KPI |>
   select(Region, Losses) |>
   head()
@@ -64,7 +64,7 @@ dt_KPI |>
 
 > We can also `filter` data using condition on one (or more) columns, for instance returning *Criminals* only:
 
-```{r}
+```{r cell_08}
 dt_KPI |>
   filter(Business == "Criminals") |>
   head()
@@ -72,7 +72,7 @@ dt_KPI |>
 
 > In some cases it is good to `arrange` the data to have a better picture about it (eg order data by *Premium*):
 
-```{r}
+```{r cell_09}
 dt_KPI |>
   arrange(Losses, desc(Premium)) |>
   head()
@@ -80,14 +80,14 @@ dt_KPI |>
 
 > Or we may want to `summarise` data to see some basic statistic about it, like average losses.
 
-```{r}
+```{r cell_10}
 dt_KPI |>
   summarise(Loss_avg = mean(Losses))
 ```
 
 > We can see the summary split by one (or more) of columns - in this case average losses per Region
 
-```{r}
+```{r cell_11}
 dt_KPI |>
   group_by(Region) |>
   summarise(Loss_avg = mean(Losses))

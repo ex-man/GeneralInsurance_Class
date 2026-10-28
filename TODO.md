@@ -96,6 +96,34 @@ Lesson 6
       (BonusMalus, Sum_insured, Veh_type2) in 03:158-178, best hyperparameters quoted in 02, and model comparison
       conclusions in 03:181+.
 
+## AFTER THE COURSE — rename "Burning Cost" -> "Loss Cost"
+Decision: "burning cost" is odd terminology for students (it is a UK/reinsurance term). Use **loss cost** instead and
+mention once in Lesson 4 Ex2 that it is usually called *pure premium*, and that we use the synonym "loss cost" so it
+is not confused with premium. Do this only after Lessons 5-6 have been taught (it touches saved RDS files).
+Steps (in order):
+- [ ] 1. Prose only (grep -i "burning" outside renv/): Lesson4 README.md, Support/01_model_motivation.md,
+      Support/02_glm_motivation.md (also the "pure premium" wording), Exercises/Lesson4_Ex2_TargetAnalysis*.Rmd
+      (student + filled), Lesson5 Ex1/Ex3, Lesson6 Exercises 01-04, Lesson6 Support/01_gbm_motivation.md and
+      02_data_prep.Rmd, root README.md, tools/image_generation/image_prompts_lesson5.md, and the three
+      Data/data_dictionary.txt (L4/L5/L6 — keep identical). Also check slides and Support/img_*.png for the old name.
+- [ ] 2. Column rename `Burning_Cost` -> `Loss_Cost` in code (26 files): the Rmd files above plus
+      Lesson5/Support/emb_chart_plotly.R, Lesson6/Support/functions/emb_chart_plotly.R, compare_models.R and
+      Lesson5/Homework/zadanie/hw_zadanie1-8.R (and homework_hints.md if it mentions it). Also `BC_avg`/`BC_weighted`
+      /`BC_total`/`BC_simple` helper names in Ex2 if you want them consistent (-> `LC_*`).
+- [ ] 3. Saved data that contain the column or the old name in a stored formula: Lesson4|5|6/Data/
+      dt_pol_w_claims_target.rds, Lesson6/Data/data_gbm.rds, data_part_03.rds, Lesson5|6/Data/glm_models.rds,
+      Lesson6/Data/grid_search.rds, oneway_baseline.RDS. Order: rename in L4 Ex2 and re-save the target RDS -> copy
+      to L5/L6 -> regenerate with the "Regeneration order" from the BLOCKING section above (L5 Ex3 -> L6
+      02_data_prep -> 01 -> 02 -> 03 -> 04). Combine with that open regeneration item so models are refitted once.
+- [ ] 4. Final check: case-insensitive grep for "burning" outside renv/ returns nothing; knit all Exercises.
+
+## Rmd chunk labels and folding (tooling notes)
+- Every chunk in Lessons/*/Exercises/*.Rmd is labelled `cell_01`, `cell_02`, ... (numbering restarts per file; the
+  student and `_filled` versions share numbers). After inserting/removing a chunk re-run `Rscript tools/label_chunks.R`
+  from the repo root (it replaces existing labels, keeps chunk options and CRLF/LF line endings).
+- Folding pilot: Lesson4_Ex2_TargetAnalysis.Rmd (heading levels normalised, `#### Background...` sub-sections that
+  students can fold with the gutter arrow). If it works in RStudio, roll out to the other Rmd files.
+
 DONE
 - Lesson 5 review: Ex1 rewritten (categorical predictors / banding intuition, CAS monograph), Ex2 images
   (validation methods, grouped RMSE; L2 versions used, L1/L3 kept for comparison), Ex3 lift chart + text fixes; all

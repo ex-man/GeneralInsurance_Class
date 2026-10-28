@@ -13,7 +13,7 @@ date: "2026-10-08"
 
 Now that we have some idea about the methodology, we'll load our own data. The dataset has information for 2 different lines of business, as well as two different claim sizes. On top of that, we have both paid claims, as well as case reserves. The rest of the dataset should contain information similar to what we've seen in triangles earlier.
 
-```{r}
+```{r cell_01}
 library(dplyr)
 library(ggplot2)
 library(ChainLadder)
@@ -23,7 +23,7 @@ dt_PaidCase <- read.csv("/cloud/project/Data/lesson3_PaidCase.csv")
 
 We'll start with paid claims and come back to case reserves later.
 
-```{r}
+```{r cell_02}
 head(dt_PaidCase)
 summary(dt_PaidCase)
 glimpse(dt_PaidCase)
@@ -37,14 +37,14 @@ After we are done with the exploratory analysis, we can filter the data and conv
 
 *STEP 1: As an example, take paid data for House business and Small claim size*
 
-```{r}
+```{r cell_03}
 Paid_HH_sml <- dt_PaidCase |>
   filter(Business == "House", ClaimSize == "Small", dataset_type == "PAID")
 ```
 
 *STEP 2: Now convert the standard table into a triangle* Hint: %\>% as.triangle(...)
 
-```{r}
+```{r cell_04}
 # ?as.triangle
 
 Paid_HH_sml_triangle <- Paid_HH_sml |>
@@ -55,7 +55,7 @@ Paid_HH_sml_triangle
 
 *STEP 3: Now start plotting things to see more information. Then predict the future values and visualize again.*
 
-```{r}
+```{r cell_05}
 ___(Paid_HH_sml_triangle)
 ___(Paid_HH_sml_triangle, ___ = TRUE)
 
@@ -66,7 +66,7 @@ ___(pred_paid, ___ = TRUE)
 
 *STEP 4: And get the aging factors and some other stat's out to see more details* Hint: ata(...)
 
-```{r}
+```{r cell_06}
 pred_paid
 ata(pred_paid)
 ```
@@ -75,7 +75,7 @@ ata(pred_paid)
 HINT1: You can use str() function to get a hint about potential extraction of 'vwtd' 
 HINT2: attr() can be used to extract attributes from an object..
 
-```{r}
+```{r cell_07}
 # str(ata(pred_paid))
 ultimate_ata_factor <- pred_paid |>
   ata() |>
@@ -88,7 +88,7 @@ ultimate_ata_factor
 
 This represents the expected cumulative payment of claims in the year 2025.
 
-```{r}
+```{r cell_08}
 Paid_HH_sml_triangle["2016", "1"]
 Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
 # pred_paid
@@ -100,7 +100,7 @@ Paid_HH_sml_triangle["2016", "1"] * ultimate_ata_factor
 
 Do you expect case reserves to behave differently through time than paid values?
 
-```{r}
+```{r cell_09}
 Case_HH_sml_triangle <- dt_PaidCase |>
   ___(Business == "House", ClaimSize == "Small", dataset_type == "CASE") |> 
   ___(origin = ___, dev = ___, value = ___)
@@ -128,7 +128,7 @@ ___(pred_case) |>
 
 This will help us understand how well were the claims developed in the past and whether the case reserves were accurate. How should the lines in the plots look like in ideal scenario?
 
-```{r}
+```{r cell_10}
 Incurred_HH_sml_triangle <- dt_PaidCase |>
   ___(Business == "House", ClaimSize == "Small") |>
   group_by(Business, ClaimSize, ay, dy) |>
@@ -147,7 +147,7 @@ In insurance this means how fast is the data fully developed. The age-to-age fac
 
 At the end of the exercise, we'll save two variables for later usage in Exercises 3 and 4.
 
-```{r}
+```{r cell_11}
 save(Paid_HH_sml_triangle, ultimate_ata_factor, file="/cloud/project/Data/exercise2_variables.RData")
 ```
 
@@ -155,7 +155,7 @@ This will be your homework (for some of you). Make sure to review this lesson's 
 
 ### Homework assignment
 
-```{r}
+```{r cell_12}
 set.seed(124)
 students <- c(
   "Student1",

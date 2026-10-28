@@ -44,7 +44,7 @@ So once again...
 
 Hmm. `Paid` losses might be a good start.
 
-```{r}
+```{r cell_01}
 library(dplyr)
 library(ggplot2)
 
@@ -58,13 +58,13 @@ dt_pol_w_claims |>
   ___(5)
 ```
 
-### Exposure
+## Exposure
 > Is it enough? Can we say that clients with a similar loss amount have a similar risk?
 
 Well...it might be not enough. Let's look at a slightly longer list, and we will add some more information.
 Specifically, we will show when the policy started and when it ended.
 
-```{r}
+```{r cell_02}
 # TODO : Get Top 6 highest values of Paid and their Dt_Exp_Start and Dt_Exp_End
 
 ```
@@ -73,11 +73,9 @@ Specifically, we will show when the policy started and when it ended.
 
 The first five clients were insured for the whole year. The sixth client was insured only for about **half a year** (185 days) and yet had a loss of a similar size. Per day of insurance, this client was therefore about **twice(!) as risky** as the others. And there are clients with even shorter cover - we will meet one insured for just 15 days in a moment.
 
-What we described here is the term `exposure`. The exposure can be different for different portfolios we analyse. E.g. it can be sum insured for property business or mileage for truck insurance. We often talk about exposure as a unit of insurance cover. There are many definitions.
+What we described here is the term `exposure` - a unit of insurance cover. So let's create our exposure based on the time a client was covered.
 
-So let's create our exposure based on time a client was covered.
-
-```{r}
+```{r cell_03}
 # tip: lubridate is great for manipulation of dates
 library(lubridate)
 
@@ -93,13 +91,17 @@ dt_pol_w_claims |>
 
 Did you realize for some years there are 365 and for some 366 days? `lubridate` knows which year is a leap year. Cool, right?
 
-#### Incurred Losses and Burning Cost
+#### Background: what is exposure?
+
+The exposure can be different for different portfolios we analyse. E.g. it can be sum insured for property business or mileage for truck insurance. We often talk about exposure as a unit of insurance cover. There are many definitions.
+
+## Incurred Losses and Burning Cost
 
 Ultimate Losses are what we end up with after all the individual claims are fully paid. They can include various parts of the claim e.g. (Losses, Reserves, Inflation, Expenses to arrange the claim, ...).
 
 In our data we only know what has been **paid** so far and what the claims handlers expect still to pay on the **known** claims (case **reserves**). Their sum is called **incurred loss**. It is not yet the ultimate loss - remember from Lesson 3 that recent claims still develop and that some claims are not even reported yet (IBNR). Look at the `Reserves` of the most recent claims (2015) and compare them with older years - the latest year is still far from being settled:
 
-```{r}
+```{r cell_04}
 dt_pol_w_claims |>
   filter(!is.na(ClmYr)) |>
   group_by(ClmYr) |>
@@ -111,7 +113,7 @@ To keep things simple, we will use the incurred loss (`Paid + Reserves`) as an a
 
 Burning Cost is what we call the overall cost per some metric of exposure, in our case we are talking about _dollar loss per day insured_.
 
-```{r}
+```{r cell_05}
 # TODO : Compute Burning_Cost as Ult_Loss per day
 # Hint: use as.integer(Time_Exposure) to get the number of days
 dt_pol_w_claims <- dt_pol_w_claims |>
@@ -127,11 +129,11 @@ dt_pol_w_claims |>
   head(5)
 ```
 
-#### Burning Cost per Year
+### Burning Cost per Year
 
 While we discussed Burning Cost per day, in insurance practice it is more common to use Burning Cost per year (in our case _dollar loss per year insured_). The yearly figure is also directly comparable with the premium, which is charged per year. By converting `Time_Exposure` to a fraction of a year using the exact number of days in each year, Burning Costs become comparable on a per-year basis and `Time_Exposure` values are in the range (0, 1]. A policy covering the whole year then counts as exactly 1 **policy-year** (also called *earned car-year*).
 
-```{r}
+```{r cell_06}
 # TODO: Normalize Time_Exposure to a fraction of a year. Compute Burning_Cost as Ult_Loss per year.
 # Hint: Use the `leap_year` function from lubridate to determine the number of days in the year.
 dt_pol_w_claims <- dt_pol_w_claims |>
@@ -157,17 +159,25 @@ dt_pol_w_claims |>
 summary(dt_pol_w_claims$Time_Exposure)
 ```
 
-### Frequency, Severity and Loss Ratio
+## Frequency, Severity and Loss Ratio
 
 Before we start looking for the reasons of riskiness, let's get a feel for the portfolio as a whole. Burning cost can be split into two parts, which tell two different stories:
 
-- **Frequency** - how often a claim happens: number of claims / exposure
-- **Severity** - how expensive a claim is on average: loss / number of claims
-- **Burning cost** = loss / exposure = frequency x severity
+With $N$ = number of claims, $L$ = loss, $E$ = exposure and $P$ = premium:
+
+$$\text{Frequency} = \frac{N}{E} \qquad \text{Severity} = \frac{L}{N} \qquad \text{Burning Cost} = \frac{L}{E}$$
+
+- **Frequency** - how often a claim happens per unit of exposure
+- **Severity** - how expensive a claim is on average
+- **Burning cost** - the loss per unit of exposure
+
+The burning cost is the product of the two parts. The number of claims $N$ appears once in the numerator and once in the denominator, so it cancels out:
+
+$$\text{Frequency} \times \text{Severity} = \frac{N}{E} \times \frac{L}{N} = \frac{\color{red}{N}}{E} \times \frac{L}{\color{red}{N}} = \frac{L}{E} = \text{Burning Cost}$$
 
 And because burning cost is now a yearly figure, we can compare it with the yearly premium we charge. Their ratio is the **loss ratio** you already know from Lesson 2 - just computed from policy level data this time.
 
-```{r}
+```{r cell_07}
 portfolio_kpi <- function(dt) {
   dt |>
     summarize(
@@ -192,6 +202,15 @@ dt_pol_w_claims |> portfolio_kpi()
 dt_pol_w_claims |>
   ___(___) |>
   portfolio_kpi()
+```
+
+Check that the claim count really cancels out - the product of frequency and severity equals the burning cost:
+
+```{r cell_08}
+dt_pol_w_claims |>
+  portfolio_kpi() |>
+  mutate(Freq_x_Sev = Frequency * Severity) |>
+  select(Frequency, Severity, Freq_x_Sev, Burning_Cost)
 ```
 
 On average, roughly 8 out of 100 cars have a claim during a year, and such a claim costs a bit over 3 000. That gives a burning cost of about 245 per car per year, while we charge about 310 on average. (Strictly speaking we count *policy-years with a claim*, as we summed claims of the same year together in the previous exercise. Close enough for us.)
@@ -223,7 +242,7 @@ One-Way analysis is a good starting point, where we look at each potential varia
 
 Let's use ggplot2 to draw a box plot of burning cost per each value/category of a variable - for example `Veh_type1`.
 
-```{r}
+```{r cell_09}
 dt_pol_w_claims |>
   ___(___(x = Veh_type1, y = Burning_Cost)) +
   ___()
@@ -240,13 +259,50 @@ Let's solve these problems one by one.
 
 ### Average target instead of plotting whole distribution
 
-Instead of plotting the whole distribution, let's just compute the average of the target (burning cost). We have to be a little careful here, a simple average could be misleading. It's better to compute a weighted average, where the time exposure serves as a weight or **credibility** measure. This intuitively makes sense: if you have 2 customers with the same burning cost (loss per 1 year of insurance), the one with longer exposure (length of insurance) gives us **more reliable** information - a client insured for 2 weeks with no claim tells us much less than a client insured for a whole year with no claim.
+Instead of plotting the whole distribution, let's just compute the average of the target (burning cost). We have to be a little careful here, a simple average could be misleading. It's better to compute a weighted average, where the time exposure serves as a weight.
+
+#### Why a weighted average? Ratios are not additive
+
+Quantities like loss $L$, number of claims $N$, exposure $E$ or premium $P$ are **additive**: the total of a group is simply the sum of its records. A ratio such as burning cost $L/E$ is **not additive** - you cannot add or average the ratios of the parts to get the ratio of the whole:
+
+$$\frac{L_1}{E_1} + \frac{L_2}{E_2} \neq \frac{L_1 + L_2}{E_1 + E_2} \qquad\qquad \text{mean of ratios} \neq \text{ratio of sums}$$
+
+The simple mean gives every record the same vote, no matter how large its denominator is. Take two policies: A is insured for a full year (E = 1) without a claim, B is insured for 0.1 year (E = 0.1) and has a loss of 100.
+
+| Policy | Loss $L$ | Exposure $E$ | Burning cost $L/E$ |
+|--------|---------:|-------------:|-------------------:|
+| A      |        0 |          1.0 |                  0 |
+| B      |      100 |          0.1 |               1 000 |
+
+The simple mean of the burning costs is (0 + 1 000) / 2 = **500**. But together the two policies had a loss of 100 over 1.1 years of exposure, i.e. a burning cost of 100 / 1.1 = **90.9**. Policy B counted as much as policy A, although it carries only a tenth of the exposure.
+
+The way out is to go back to the additive world. Multiplying each ratio by its own denominator recovers the additive numerator ($E_i \cdot L_i / E_i = L_i$), so the weighted mean with exposure as the weight is exactly the ratio of the totals:
+
+$$\text{weighted mean} = \frac{\sum_i E_i \cdot \frac{L_i}{E_i}}{\sum_i E_i} = \frac{\sum_i L_i}{\sum_i E_i}$$
+
+> **Rule of thumb:** to aggregate a ratio, sum the numerator and the denominator separately, then divide. A weighted mean is the same thing, where the weight is the ratio's own denominator: exposure for frequency and burning cost, number of claims for severity, premium for loss ratio.
+
+```{r cell_10}
+policies <- data.frame(Loss = c(0, 100), Exposure = c(1, 0.1)) |>
+  mutate(Burning_Cost = Loss / Exposure)
+
+policies |>
+  summarize(
+    simple_mean = mean(Burning_Cost),
+    weighted_mean = weighted.mean(Burning_Cost, Exposure),
+    ratio_of_sums = sum(Loss) / sum(Exposure)
+  )
+```
+
+#### Credibility
+
+The exposure weight also has a second meaning, **credibility**. This intuitively makes sense: if you have 2 customers with the same burning cost (loss per 1 year of insurance), the one with longer exposure (length of insurance) gives us **more reliable** information - a client insured for 2 weeks with no claim tells us much less than a client insured for a whole year with no claim.
 
 The weighted average also weakens the effect of outliers, which are often high losses that occurred during a very short exposure period.
 
 And there's one more nice property: the exposure-weighted average of burning cost is exactly the **total loss divided by total exposure** - i.e. the burning cost of the whole group, the same number we computed for the portfolio above.
 
-```{r}
+```{r cell_11}
 dt_pol_w_claims |>
   summarize(
     BC_weighted = weighted.mean(Burning_Cost, Time_Exposure),
@@ -255,7 +311,7 @@ dt_pol_w_claims |>
   )
 ```
 
-```{r}
+```{r cell_12}
 bc_avg <- dt_pol_w_claims |>
   ___(Veh_type1) |>
   ___(
@@ -274,7 +330,7 @@ We can make another two adjustments to make the plot more legible - we can filte
 
 Note that we compute the exposure share on **all** categories first and only then filter. We also keep the categories with zero burning cost - a well populated category with no claims is a valuable piece of information too.
 
-```{r}
+```{r cell_13}
 bc_avg <- bc_avg |>
   mutate(exposure_pct = exposure_sum / sum(exposure_sum)) |>
   filter(exposure_pct > 0.01)
@@ -289,14 +345,14 @@ bc_avg |>
 
 Some of our variables are numeric with many distinct values (`Capacity`, `Sum_insured`, `D_age`, ...) or categorical with hundreds of levels (`D_ZIP`). When every value becomes its own group, each group is tiny, most of them get filtered out and the plot shows nothing useful.
 
-```{r}
+```{r cell_14}
 dt_pol_w_claims |>
   summarize(across(c(Capacity, Sum_insured, D_age, Construct_year, D_ZIP), n_distinct))
 ```
 
 The solution is **banding** - grouping the values into a few intervals (or shorter codes) with enough exposure in each. We create the banded versions in a separate dataset just for the analysis, so our modelling dataset stays unchanged. You will use the same tricks when building models in the next lesson.
 
-```{r}
+```{r cell_15}
 dt_oneway <- dt_pol_w_claims |>
   mutate(
     # numeric variables cut into intervals
@@ -314,7 +370,7 @@ dt_oneway <- dt_pol_w_claims |>
 
 Now that we finally reached our final version of the plot, we can try to visualize all variables in the dataset. Do you see trends in some variables? Which ones would you expect to be important for the price of motor insurance?
 
-```{r}
+```{r cell_16}
 all_vars <- c(
   "Year", "Time_on_book", "Customer_Type", "D_age", "D_age_banded", "D_age_banded2",
   "BonusMalus", "D_ZIP", "VEH_type", "Veh_type1", "Veh_type2",
@@ -342,6 +398,6 @@ for (var_nm in all_vars) {
 ```
 
 Let's save the dataset for next exercise
-```{r}
+```{r cell_17}
 saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims_target.rds")
 ```

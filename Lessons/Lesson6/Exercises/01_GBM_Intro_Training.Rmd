@@ -69,11 +69,11 @@ output:
 
 # Fitting a baseline XGBoost burning cost model
 
-```{r setup, include=FALSE}
+```{r cell_01, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r install and load packages, warning=FALSE}
+```{r cell_02, warning=FALSE}
 # Check whether required packages are installed. If not, install them
 libs <- c("xgboost", "dplyr", "ggplot2", "caret", "plotly")
 lapply(libs, function(lib) {
@@ -88,7 +88,7 @@ library(caret)
 library(plotly)
 ```
 
-```{r source support functions}
+```{r cell_03}
 # source support functions
 functions_path <- file.path("/cloud/project/Support/functions")
 functions_files <- list.files(
@@ -119,19 +119,19 @@ Data preparation and exploratory data analysis (EDA) are crucial for our analysi
 
 Without these steps, the model might under perform or produce misleading results due to poor quality or misunderstood data. For more details on these steps, have a look at Support/02_data_prep.Rmd
 
-```{r import prepared data}
+```{r cell_04}
 data <- readRDS("/cloud/project/Data/data_gbm.rds")
 ```
 
 Let's check the distribution of the target variable:
 
-```{r check distribution of burning costs}
+```{r cell_05}
 summary(data$Burning_Cost)
 ```
 
 Capping large or extreme values in the target variable can be beneficial because it reduces the influence of outliers, improves model stability, enhances performance metrics, prevents overfitting, normalizes data distribution, and leads to more interpretable models. This helps in building models that generalize better to new data.
 
-```{r check distribution of burning costs 2}
+```{r cell_06}
 data |>
   group_by(Burning_Cost) |>
   count() |>
@@ -141,14 +141,14 @@ data |>
 
 Let's calculate what is the theoretical maximum loss we should observe in our data with a 99.5% probability
 
-```{r cap large losses 1}
+```{r cell_07}
 prob_max_bc <- quantile(subset(data$Burning_Cost, data$Burning_Cost > 0), 0.995)
 prob_max_bc
 ```
 
 We will cap all losses above this value. In our case it's just two observations:
 
-```{r cap large losses 2}
+```{r cell_08}
 data <- data |>
   mutate(
     Burning_Cost = ifelse(Burning_Cost >= prob_max_bc, prob_max_bc, Burning_Cost)
@@ -165,7 +165,7 @@ In machine learning, the dataset is typically split into three parts:
 2.  **Validation Set**: Used to tune hyperparameters and evaluate performance during training (10-20%). Ensures the model doesn't overfit.
 3.  **Test Set**: Used only after training is complete to evaluate final performance on unseen data (10-20%).
 
-```{r data sampling}
+```{r cell_09}
 # split the dataset into modeling and testing part
 set.seed(58742) # to fix randomizer
 
@@ -192,13 +192,13 @@ nrow(test)
 
 Machine learning algorithms can't process string values, therefore all categorical variables have to be encoded to numbers. For ordered categorical variables this is straightforward - we encode them to integer values (label encoding).
 
-```{r data structure}
+```{r cell_10}
 str(data)
 ```
 
 Convert ordered factors Year, Nr_of_seats to integer levels:
 
-```{r}
+```{r cell_11}
 train <- train |>
   mutate(across(where(is.ordered), ~ as.numeric(.)))
 
@@ -219,7 +219,7 @@ Nominal categorical variables are more tricky because the attributes don't have 
 
 These are categorical variables which we need to encode: Customer_Type, D_ZIP, VEH_type, Veh_type2, VEH_brand.
 
-```{r}
+```{r cell_12}
 train_encoded <- apply_onehot(feature_set = train)
 valid_encoded <- apply_onehot(feature_set = valid)
 model_encoded <- apply_onehot(feature_set = model)
@@ -230,14 +230,14 @@ train_encoded |> select(starts_with("D_ZIP")) |> distinct()
 
 ## Train XGBoost
 
-```{r}
+```{r cell_13}
 train_mat <- train_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
 valid_mat <-  valid_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
 model_mat <-  model_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
 test_mat <- test_encoded |> select(-Burning_Cost, -Time_Exposure) |> as.matrix()
 ```
 
-```{r}
+```{r cell_14}
 # Create xgboost input objects from data, weights and labels
 dtrain <- xgb.DMatrix(
   data = train_mat,
@@ -258,7 +258,7 @@ dmodel <- xgb.DMatrix(
 )
 ```
 
-```{r}
+```{r cell_15}
 # Create the watchlist
 watchlist <- list(train = dtrain, test = dvalid)
 
@@ -296,7 +296,7 @@ By using these techniques, we can gain valuable insights into our XGBoost model 
 
 The lift chart shows us how accurate our model is. It helps us understand whether the model is underestimating or overestimating in some areas. By comparing the predicted values to the actual values, we can assess the model's performance across different segments of the data. We can see that there are some bins which are overestimated or underestimated.
 
-```{r lift chart}
+```{r cell_16}
 lc <- lift_curve(
   data = valid,
   target_variable = "Burning_Cost",
@@ -318,7 +318,7 @@ Gain-based feature importance evaluates the importance of features in decision t
 3.  Normalization: The total gain for each feature is divided by the total gain across all features to get relative importance scores.
 4.  Feature Importance Score: Features are ranked based on these normalized gain values.
 
-```{r feature importance}
+```{r cell_17}
 xgb_fi <- xgb.importance(model = xgb_baseline)
 xgb.ggplot.importance(xgb_fi)
 ```
@@ -331,7 +331,7 @@ These plots help us understand the relationship between the target variable and 
 
 Oneway analysis provides a similar insight by exploring the model's performance per variable levels, helping us identify any overestimation or underestimation for specific levels.
 
-```{r oneway}
+```{r cell_18}
 fitted_vars <- colnames(data |> select(-Time_Exposure,-Burning_Cost))
 
 # plots <- list()

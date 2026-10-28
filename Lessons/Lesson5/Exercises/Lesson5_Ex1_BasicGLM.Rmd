@@ -8,7 +8,7 @@ editor_options:
     wrap: 72
 ---
 
-```{r setup, include=FALSE}
+```{r cell_01, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -64,7 +64,7 @@ A reminder of the units we prepared in Lesson 4:
 -   `Burning_Cost` - loss per policy-year (`Ult_Loss / Time_Exposure`)
 -   `Ult_Loss` - `Paid + Reserves` (incurred loss, without IBNR)
 
-```{r}
+```{r cell_02}
 # install.packages(c("statmod", "tweedie"))
 library(statmod)
 library(tweedie)
@@ -86,7 +86,7 @@ vehicle a MOTORBIKE?", "is it a TRUCK?" ... One category is left out as
 the **baseline** - it is the case when all the indicators are 0 and it is
 absorbed by the intercept. This is what the model actually sees:
 
-```{r}
+```{r cell_03}
 head(model.matrix(~ Veh_type2, data = dt_pol_w_claims), 6)
 ```
 
@@ -110,7 +110,7 @@ band. This lets the model follow a non-linear (even non-monotonic)
 pattern. The data already contain such a variable, `D_age_banded`. This
 is how banding looks like:
 
-```{r}
+```{r cell_04}
 dt_pol_w_claims |>
   filter(!is.na(D_age)) |>
   mutate(D_age_band = cut(D_age, breaks = c(0, 30, 40, 50, 60, Inf))) |>
@@ -130,7 +130,7 @@ come back to banding and merging of categories in Exercise 3.
 Let's fit a basic GLM using a single variable - Veh_type2. This will get
 results very similar to the one-way analysis.
 
-```{r}
+```{r cell_05}
 basic_model <- glm(
   data = dt_pol_w_claims,
   formula = Burning_Cost ~ Veh_type2,
@@ -146,7 +146,7 @@ coefficients. Since vehicle type is a categorical variable, each of its
 categories is fitted as a separate variable (the indicators from above)
 and we get a separate coefficient for each of them.
 
-```{r}
+```{r cell_06}
 summary(basic_model)$coef
 summary(basic_model)$coef[, 1]
 ```
@@ -174,7 +174,7 @@ the expected target (burning cost) of the baseline category, and the
 variable coefficients get translated into multipliers - signifying how
 much riskier a category is than the baseline.
 
-```{r}
+```{r cell_07}
 weighted.mean(dt_pol_w_claims$Burning_Cost, dt_pol_w_claims$Time_Exposure)
 
 summary(basic_model)$coef[, 1] |>

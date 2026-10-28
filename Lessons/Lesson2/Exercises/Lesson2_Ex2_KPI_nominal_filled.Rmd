@@ -11,7 +11,7 @@ output:
 
 ## Load libraries
 
-```{r}
+```{r cell_01}
 # libraries
 # install.packages("tidyr")
 library(dplyr)
@@ -21,7 +21,7 @@ library(tidyr)
 
 ## Load data
 
-```{r}
+```{r cell_02}
 dt_KPI_clean <- readRDS("/cloud/project/Data/lesson2_KPI_clean.rds")
 ```
 
@@ -29,7 +29,7 @@ dt_KPI_clean <- readRDS("/cloud/project/Data/lesson2_KPI_clean.rds")
 
 We talked about three basic insurance metrics - Premium, Losses and Expenses. We can sum these up to see the overall statistics of our dataset (insurance company).
 
-```{r}
+```{r cell_03}
 dt_KPI_clean |>
   summarize(
     Premium = sum(Premium),
@@ -46,7 +46,7 @@ dt_KPI_clean |>
 
 ### Which Unit has collected the most Premium?
 
-```{r}
+```{r cell_04}
 dt_KPI_clean |>
   group_by(Unit) |>
   summarize(Premium = sum(Premium)) |>
@@ -55,7 +55,7 @@ dt_KPI_clean |>
 
 ### Which Unit has the lowest Expenses?
 
-```{r}
+```{r cell_05}
 dt_KPI_clean |>
   group_by(Unit) |>
   summarize(Expenses = sum(Expenses)) |>
@@ -64,7 +64,7 @@ dt_KPI_clean |>
 
 ### Which Business from Unit found in the previous task had the highest Expenses?
 
-```{r}
+```{r cell_06}
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
@@ -80,7 +80,7 @@ Visualize your findings on simple bar charts - ggplot2::geom_col()
 
 ### Which Unit has collected the most Premium?
 
-```{r}
+```{r cell_07}
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
@@ -105,7 +105,7 @@ dt_KPI_clean |>
 
 ### Which Unit has the lowest Expenses?
 
-```{r}
+```{r cell_08}
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
@@ -126,7 +126,7 @@ dt_KPI_clean |>
 
 ### Which Business from Unit found in the previous task had the highest Expenses?
 
-```{r}
+```{r cell_09}
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
@@ -145,7 +145,7 @@ dt_KPI_clean |>
 
 Summarize Expenses and Losses at Unit level:
 
-```{r}
+```{r cell_10}
 
 dt_by_unit <- dt_KPI_clean |>
   group_by(Unit) |>
@@ -159,7 +159,7 @@ dt_by_unit
 
 Pivot summarized data to long form: (if you are getting an error, you might need to install the tidyr package using `install.packages("tidyr")`)
 
-```{r}
+```{r cell_11}
 dt_by_unit_longer <- dt_by_unit |>
   tidyr::pivot_longer(-Unit, names_to = "Type", values_to = "Value")
 
@@ -168,7 +168,7 @@ dt_by_unit_longer
 
 Visualise as stacked bar chart:
 
-```{r}
+```{r cell_12}
 dt_by_unit_longer |>
   ggplot(aes(x = Unit, y = Value, fill = Type)) +
   geom_col()
@@ -176,7 +176,7 @@ dt_by_unit_longer |>
 
 We can use the argument `position` of `geom_col` function to arrange the bars to be side by side.
 
-```{r}
+```{r cell_13}
 dt_by_unit_longer |>
   ggplot(aes(x = Unit, y = Value, fill = Type)) +
   geom_col(position = "dodge")
@@ -184,7 +184,7 @@ dt_by_unit_longer |>
 
 We can also use a different value for this argument to normalize values to [0.0, 1.0] within each x-axis category (Unit).
 
-```{r}
+```{r cell_14}
 dt_by_unit_longer |>
   ggplot(aes(x = Unit, y = Value, fill = Type)) +
   geom_col(position = "fill")

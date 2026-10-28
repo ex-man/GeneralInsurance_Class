@@ -7,7 +7,7 @@ output:
 
 When you are satisfied with the variables that you used and the adjustments you applied, it is now time to use both training and validation dataset together to fit the final model and obtain the most accurate coefficients / multipliers that will be used for pricing use case. 
 
-```{r set up}
+```{r cell_01}
 # Load the required packages
 library(tidyverse)
 library(plotly)
@@ -29,7 +29,7 @@ valid <- glm_models$valid
 ```
 
 
-```{r data prep}
+```{r cell_02}
 # Bind train and valid data
 final_data <- rbind(train, valid)
 
@@ -41,7 +41,7 @@ final_data <- final_data |>
   )
 ```
 
-```{r fit final model}
+```{r cell_03}
 final_glm <- glm(
   data = final_data,
   formula = Burning_Cost ~ BonusMalus_capped + Sum_insured_capped + Veh_type2_merged,
@@ -50,11 +50,11 @@ final_glm <- glm(
 )
 ```
 
-```{r explore model}
+```{r cell_04}
 summary(final_glm)
 ```
 
-```{r one-way analysis}
+```{r cell_05}
 fitted_vars <- get_vars(final_glm)
 
 for (var_nm in fitted_vars) {
@@ -68,7 +68,7 @@ for (var_nm in fitted_vars) {
 
 Applying the inverse log link function will result in multipliers, that can now be used in pricing context.
 
-```{r}
+```{r cell_06}
 # Print estimated coefficients (betas) 
 round(summary(final_glm)$coef[, 1], 5)
 # Print multipliers used in pricing context
@@ -102,7 +102,7 @@ An example:
   
 This pricing structure is then implemented/updated in an IT system that is used by employees of insurance company when setting prices for insurance policies for next year.
 
-```{r}
+```{r cell_07}
 exp(summary(final_glm)$coef[, 1])
 
 # Vehicle Type

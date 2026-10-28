@@ -10,7 +10,7 @@ output: html_notebook
 
 # Portfolio performance
 
-```{r}
+```{r cell_01}
 # install.packages('tidyverse')
 # library(tidyverse)
 library(dplyr)
@@ -24,7 +24,7 @@ So far we have looked at the absolute numbers. Now we will start looking more at
 
 Now from what you have learned so far, try to create expense ratio for the whole dataset (single number for the whole insurance company).
 
-```{r}
+```{r cell_02}
 dt_KPI_clean |>
   summarise(
     LR = sum(Losses) / sum(Premium),
@@ -35,7 +35,7 @@ dt_KPI_clean |>
 
 Now create loss ratio, combined ratio and underwriting result for each data record. Every row of the dataset represents a combination of Region, Unit, Segment, Business and Year.
 
-```{r}
+```{r cell_03}
 # Replace the '___' with missing code
 
 dt_KPI_clean |>
@@ -62,7 +62,7 @@ Now we will have a look at the performance of our insurance company by regions.
 
 Which region is performing the best when we look at the individual KPIs?
 
-```{r}
+```{r cell_04}
 dt_KPI_clean |>
   group_by(Region) |>
   summarize(
@@ -80,7 +80,7 @@ Let's see how the single regions perform in time. Create a chart that shows a pa
 
 Pick KPI of your choice.
 
-```{r}
+```{r cell_05}
 dt_KPI_clean |>
   ___(Region, Year) |>
   ___(KPI = ___) |>
@@ -94,7 +94,7 @@ How would you describe what you see in the chart? What can it mean what you see 
 
 Let's have a look at the analysis on a different level. Let's see how the units are performing. Prepare KPIs for each unit (i.e. prepare expense ratio, loss ratio, combined ratio and underwriting result). Which unit performs the best?
 
-```{r}
+```{r cell_06}
 dt_KPI_clean |>
   group_by(Unit) |>
   summarize(
@@ -110,7 +110,7 @@ Now prepare a chart that shows you how the separate units perform in time. Let's
 
 You can also try using `geom_point` in addition to the `geom_line`
 
-```{r}
+```{r cell_07}
 # Write this code from scratch
 
 dt_KPI_clean |>
@@ -119,7 +119,7 @@ dt_KPI_clean |>
 
 Looking at the overall unit performance, we can check how well did the units fulfilled their plans. Create a variable where you calculate to what extent a single unit achieved to meet its plan.
 
-```{r}
+```{r cell_08}
 dt_KPI_clean |> 
   rename(UWR_Plan = UWR.Plan.) |>
   mutate(
@@ -145,7 +145,7 @@ This will be your homework (for some of you). Make sure to review this lesson's 
 
 ### Homework assignment
 
-```{r}
+```{r cell_09}
 set.seed(124)
 students <- c(
   "Student1",

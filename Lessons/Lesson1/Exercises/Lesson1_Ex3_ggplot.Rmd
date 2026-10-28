@@ -5,13 +5,13 @@ output: html_notebook
 
 > Run following command in R console to link to `ggplot2` library:
 
-```{r}
+```{r cell_01}
 library(ggplot2)
 ```
 
 > Load data if you have not done so yet:
 
-```{r}
+```{r cell_02}
 dt_KPI <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
 ```
 
@@ -19,7 +19,7 @@ dt_KPI <- read.csv("/cloud/project/Data/lesson2_KPI.csv")
 ### First Plot - Scatter
 > Now let's try to show our data on simple scatter plot
 
-```{r}
+```{r cell_03}
 ggplot(data = dt_KPI, aes(x = Premium, y = Expenses)) +
   geom_point()
 ```
@@ -32,7 +32,7 @@ ggplot(data = dt_KPI, aes(x = Premium, y = Expenses)) +
 > In previous example we set *data* and *aesthetics* on global level, setting axes in *geoms* to *Premium* and *Expenses*. We will do the same now but specifying it for geom `geom_points` only. This is usefull when you want to show multiple measures on same chart having their own axes.  
 > In addition we will also specify colour of dots varying colour by *Region*.  
 
-```{r}
+```{r cell_04}
 ggplot(data = dt_KPI) +
   geom_point(mapping = aes(x = Premium, y = Expenses, colour = Region))
 ```
@@ -41,7 +41,7 @@ ggplot(data = dt_KPI) +
 ### Geometric Objects and iheritance of aesthetics
 > Now let's add new *geom* for smoothed regresion line. We will do so by adding new *geom* using `+` sign and function `geom_smooth`.
 
-```{r}
+```{r cell_05}
 ggplot(data = dt_KPI) +
   geom_point(mapping = aes(x = Premium, y = Expenses, colour = Region)) +
   geom_smooth(mapping = aes(x = Premium, y = Expenses))
@@ -51,7 +51,7 @@ ggplot(data = dt_KPI) +
 > This happens when we specify `aes` on global (`ggplot`) level:
 ggplot(data = dt_KPI,
 
-```{r}
+```{r cell_06}
 ggplot(data = dt_KPI, mapping = aes(x = Premium, y = Expenses, colour = Region)) +
   geom_point() +
   geom_smooth()

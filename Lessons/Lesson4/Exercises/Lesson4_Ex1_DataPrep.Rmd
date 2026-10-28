@@ -18,7 +18,7 @@ Let's look at them separately first, and then later merge them together.
 
 ### Load and inspect Policy Info
 
-```{r}
+```{r cell_01}
 # install.packages('tidyverse')
 # install.packages("ggplot2")
 library(dplyr)
@@ -28,7 +28,7 @@ library(ggplot2)
 
 Policy data are at *policy + object* level, represented by policy number and object number columns. Object represents an insured car. A description of all columns is in `Data/data_dictionary.txt`.
 
-```{r}
+```{r cell_02}
 dt_Policy <- read.csv("/cloud/project/Data/lesson4_PolicyHistory.csv")
 
 dim(dt_Policy)
@@ -40,7 +40,7 @@ summary(dt_Policy)
 
 Let's inspect the granularity of the dataset.
 
-```{r}
+```{r cell_03}
 # with aggregation
 dt_Policy |>
   group_by(NrPolicy) |>
@@ -67,7 +67,7 @@ Some policies cover more than one car, but each *policy + object* combination ap
 
 Claims data are at *claims* level, represented by the claims number column.
 
-```{r}
+```{r cell_04}
 dt_Claims <- read.csv("/cloud/project/Data/lesson4_Claims.csv")
 
 # Look at number of rows and columns
@@ -85,7 +85,7 @@ ___(dt_Claims)
 
 Let's inspect the granularity of the dataset.
 
-```{r}
+```{r cell_05}
 # Is 'NrClaim' (Claim Number/ID unique?)
 dt_Claims |>
   group_by(___) |>
@@ -109,7 +109,7 @@ Also have a look at the `summary()` output above: the minimum of `Paid` is negat
 
 To properly bring the claims info on `policy + object` level, we need to ensure claims data are also on that level. Let's check it and if they are not, roll them up to that level. (The claims could for example be on a transactional level).
 
-```{r}
+```{r cell_06}
 dt_Claims |>
   group_by(NrPolicy, NrObject) |>
   mutate(n = n()) |>
@@ -118,7 +118,7 @@ dt_Claims |>
 
 It looks like one policy can have multiple claims during its coverage period. Let's introduce a new field that will become part of our level of granularity - Claim Year. We want to ensure all the claims within the same Claim Year (calendar year) are summed up together, before merging with policy data.
 
-```{r}
+```{r cell_07}
 # Extract claim year
 dt_Claims <- dt_Claims |>
   mutate(Date_of_loss = lubridate::dmy(Date_of_loss)) |>
@@ -156,7 +156,7 @@ To join one table to another based on some variable(s), we can use the `___join(
 
 Since not every policy will have a claim, we will be using left join to preserve policy information.
 
-```{r}
+```{r cell_08}
 dt_pol_w_claims <- dt_Policy |>
   left_join(dt_Claims, by = c("NrPolicy", "NrObject"))
 
@@ -173,7 +173,7 @@ Perfect! So what now? Hmm...
 
 Let's look how successful we have been in finding out about our customer's losses.
 
-```{r}
+```{r cell_09}
 # Look at number of rows in merged (policy+claims) dataset
 
 # Look at number of rows in merged (policy+claims) dataset - with valid claims
@@ -192,7 +192,7 @@ Take a minute to think about them, then let's investigate.
 
 `anti_join()` is the tool for this - it returns the rows of the claims data without a matching policy.
 
-```{r}
+```{r cell_10}
 claims_unmatched <- dt_Claims |>
   anti_join(dt_Policy, by = c("NrPolicy", "NrObject"))
 
@@ -207,7 +207,7 @@ dt_Policy |> count(Year)
 
 Most of the unmatched claims happened in **2016**, but our policy data only cover years 2012 - 2015. These claims belong to policies we did not receive, so they are simply **out of scope** - no problem with the join.
 
-```{r}
+```{r cell_11}
 # unmatched claims whose policy number exists, just with a different object number
 claims_unmatched |>
   filter(ClmYr <= 2015, NrPolicy %in% dt_Policy$NrPolicy) |>
@@ -220,7 +220,7 @@ The rest are claims whose policy (or policy + object) is not in our policy data.
 
 We joined only on policy and object, but **not on time**. Let's also check that the claims actually fit their policies. A claim should only count against the policy if the loss happened between `Dt_Exp_Start` and `Dt_Exp_End`.
 
-```{r}
+```{r cell_12}
 claims_timing <- dt_Claims_raw |>
   inner_join(
     dt_Policy |> select(NrPolicy, NrObject, Year, Dt_Exp_Start, Dt_Exp_End),
@@ -247,7 +247,7 @@ These claims most likely belong to another (earlier or later) policy of the same
 
 A claim belongs to a policy only if the loss happened while the policy was active. So let's keep only those claims, aggregate them again to *policy + object + claim year* and redo the join.
 
-```{r}
+```{r cell_13}
 # number of rows with a claim and total loss before the fix
 dt_pol_w_claims |>
   summarize(
@@ -285,6 +285,6 @@ We removed less than 40 claims - about 2% of the loss. Small numbers, but they i
 Back to the second question - is the number of claims plausible? About 1 900 claims on roughly 25 000 years of insurance means roughly **8 claims per 100 cars per year**, which is a reasonable claim frequency for motor insurance.
 
 Let's save the dataset for next exercise
-```{r}
+```{r cell_14}
 saveRDS(dt_pol_w_claims, "/cloud/project/Data/dt_pol_w_claims.rds")
 ```

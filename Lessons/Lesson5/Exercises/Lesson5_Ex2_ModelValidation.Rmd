@@ -27,14 +27,14 @@ A few methods to split the data:
 
 Once you split your data into training and validation parts, you fit the GLM on the training data only, and then use the validation data to get an idea about the performance on unseen data.
 
-```{r}
+```{r cell_01}
 library(dplyr)
 library(purrr)
 # load data, this is the dataset from Lesson 4 where we prepared Claims with Policies into one dataset
 dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds")
 ```
 
-```{r}
+```{r cell_02}
 # split the dataset into Modeling and Validation part
 set.seed(58742) # to fix randomizer
 
@@ -67,7 +67,7 @@ All of those metrics can be implemented very easily in R and we will create a si
 
 For the future, I would like to mention the packages `caret` and `tidymodels`, which automate some of the actions we need to do manually here.
 
-```{r}
+```{r cell_03}
 # definition of the RMSE metric
 rmse <- function(actual, prediction){
   se <- (prediction-actual)^2
@@ -94,7 +94,7 @@ Step 2 - compare the group means. The same idea can be drawn as a chart of actua
 
 ![grouped RMSE step 2](/cloud/project/Support/img_E2_compare_groups.png)
 
-```{r}
+```{r cell_04}
 # improved RMSE metric computed on an ordered and grouped data
 rmse_group <- function(actual, prediction, weight=NULL, n_groups=5) {
   if(is.null(weight)) {
