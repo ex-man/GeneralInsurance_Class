@@ -1,0 +1,348 @@
+---
+title: "Improving the GLM"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+In Lesson 5 we built a GLM step by step: we added variables, merged
+categories and capped numeric variables, and we checked every step on
+validation data. In this exercise we finish the job. We will choose a
+set of predictors, prepare them in **one place** so that training and
+validation data are treated identically, and compare the resulting
+models with the ones from Lesson 5.
+
+```{r cell_01, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cell_02, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(statmod)
+options(scipen = 5)
+
+source("/cloud/project/Support/enforce_data_types.R")
+source("/cloud/project/Support/rmse_group.R")
+source("/cloud/project/Support/emb_chart_plotly.R")
+source("/cloud/project/Support/get_vars.R")
+source("/cloud/project/Support/compare_models.R")
+```
+
+### Data and the train / validation split
+
+This is exactly the setup from Lesson 5 (same data, same predictors, same
+seed), so we get the same training and validation rows as before.
+
+```{r cell_03}
+dt_pol_w_claims <- readRDS("/cloud/project/Data/dt_pol_w_claims_target.rds")
+
+var_types <- c(
+  Year = "category", Time_on_book = "number", Customer_Type = "category",
+  D_age = "number", D_age_banded = "category", BonusMalus = "number",
+  D_ZIP = "category", VEH_type = "category", Veh_type1 = "category",
+  Veh_type2 = "category", VEH_brand = "category", Construct_year = "number",
+  Capacity = "number", Nr_of_seats = "category", Sum_insured = "number"
+)
+
+dt_pol_w_claims <- dt_pol_w_claims |>
+  enforce_data_types(var_types)
+
+dt_pol_w_claims <- dt_pol_w_claims[complete.cases(dt_pol_w_claims[names(var_types)]), ]
+
+set.seed(58742) # same seed as in Lesson 5
+
+n_rows <- nrow(dt_pol_w_claims)
+train_idx <- sample(n_rows, round(0.80 * n_rows)) # 80/20 split between train and valid
+
+train <- dt_pol_w_claims[train_idx, ]
+valid <- dt_pol_w_claims[-train_idx, ]
+```
+
+### Extreme losses in the target
+
+The burning cost is the average loss per policy-year, so a single large
+claim on a short policy produces a huge value. Let's look at the highest
+values:
+
+```{r cell_04}
+train |>
+  arrange(desc(Burning_Cost)) |>
+  select(Time_Exposure, Ult_Loss, Burning_Cost) |>
+  head(5)
+
+summary(train$Burning_Cost)
+```
+
+A handful of such values can dominate the fit and the validation
+metric. A common remedy is to **cap the large losses** at a high
+percentile of the positive losses. We compute the cap on the **training**
+data only and then apply the same cap to both datasets - validation data
+must not influence how we prepare the training data.
+
+```{r cell_05}
+target_cap <- quantile(train$Burning_Cost[train$Burning_Cost > 0], 0.995)
+target_cap
+
+# how many rows are affected
+sum(train$Burning_Cost > target_cap)
+sum(valid$Burning_Cost > target_cap)
+```
+
+### One function for all feature engineering
+
+In Lesson 5 we repeated every transformation twice (once for `train`,
+once for `valid`). That is easy to get wrong - if the two copies differ
+even slightly (a different cap, an extra band boundary), the model is
+validated on a differently prepared dataset than the one it was trained
+on. A safer pattern is to write the transformations **once**, as a
+function, and apply it to both datasets.
+
+We will start with what we already know from Lesson 5 (merging
+vehicle types). The remaining variables are added in the following
+sections, we just keep extending this function.
+
+```{r cell_06}
+add_features <- function(df) {
+  df |>
+    mutate(
+      # cap the extreme losses in the target
+      Burning_Cost = pmin(Burning_Cost, target_cap),
+      # Lesson 5: merge vehicle types with (almost) no exposure with the base category
+      Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2),
+      # Lesson 5: cap the construction year
+      Construct_year_capped = pmin(pmax(Construct_year, 2005), 2015)
+    )
+}
+
+train <- add_features(train)
+valid <- add_features(valid)
+```
+
+Our starting point is the final model from Lesson 5 and its simpler
+version with the vehicle type only:
+
+```{r cell_07}
+model_l5 <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged + Construct_year_capped,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+model_veh <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+compare_models(list("L5 final" = model_l5, "Vehicle type" = model_veh), train, valid)
+```
+
+### Which variable next? BonusMalus
+
+Let's look at one of the unfitted variables, `BonusMalus`. It is a
+bonus-malus level of the driver: the lower the number, the worse the
+claims history. The picture shows the actual burning cost against the
+prediction of our model that does not include it yet.
+
+```{r cell_08}
+train$pred_veh <- predict(model_veh, train, type = "response")
+
+emb_chart_plotly(
+  model = NULL,
+  x_var = "BonusMalus",
+  dt.frm = train |> rename(pred = pred_veh)
+) |>
+  show()
+```
+
+The actual burning cost drops steeply as the BonusMalus level goes up,
+but the fitted line is flat - the model has no information about the
+bonus-malus history. This is exactly the situation where adding a
+variable should help.
+
+The first idea is to add `BonusMalus` as a number, which means one
+multiplier per level:
+
+```{r cell_09}
+model_bm_num <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged + BonusMalus,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+emb_chart_plotly(model = model_bm_num, x_var = "BonusMalus") |>
+  show()
+```
+
+The actual burning cost does not fall by a constant percentage per
+level. It falls from level 1 onward, but the negative levels (the worst
+claims history) are risky too, and level 0 has surprisingly *low* risk -
+it breaks the trend completely. A single coefficient is a straight line
+on the log scale and cannot follow this shape. This is the situation from
+Lesson 5 where **banding** a numeric variable into categories helps. We
+choose the bands from the shape of the actual line (each band should
+contain levels with a similar actual burning cost) and make sure that
+every band has reasonable exposure. Negative levels and level 0 get their
+own bands, because their risk is very different from their neighbours.
+
+We put the banding into our function, so that it is applied to both
+datasets in the same way. To keep the code simple, `add_features()` now
+contains all the transformations we need in this exercise (they are
+explained step by step below):
+
+```{r cell_10}
+add_features <- function(df) {
+  df |>
+    mutate(
+      # cap the extreme losses in the target
+      Burning_Cost = pmin(Burning_Cost, target_cap),
+      # Lesson 5: merge vehicle types with (almost) no exposure with the base category
+      Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2),
+      # Lesson 5: cap the construction year
+      Construct_year_capped = pmin(pmax(Construct_year, 2005), 2015),
+      # BonusMalus: banded, negative levels and level 0 are separate bands
+      BonusMalus_banded = cut(
+        BonusMalus,
+        breaks = c(-Inf, -1, 0, 2, 5, 8, 11, 13, Inf),
+        labels = c("<0", "0", "1-2", "3-5", "6-8", "9-11", "12-13", "14+")
+      ),
+      # Sum insured: increasing trend up to about 30000, little data above (in thousands)
+      Sum_insured_capped = pmin(Sum_insured, 30000) / 1000,
+      # Driver age: both the youngest and the oldest drivers are riskier
+      D_age_banded = cut(D_age, breaks = c(-Inf, 30, 40, 50, 60, 70, Inf), dig.lab = 6)
+    )
+}
+
+train <- add_features(train)
+valid <- add_features(valid)
+```
+
+```{r cell_11}
+model_bm_band <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged + BonusMalus_banded,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+emb_chart_plotly(model = model_bm_band, x_var = "BonusMalus_banded") |>
+  show()
+```
+
+Now the fitted line follows the actual one. Banding captured a pattern
+the numeric version could not.
+
+### Adding more variables
+
+In the same way (look at the actual vs fitted chart of a variable that
+is not in the model, prepare it, add it) we add two more variables:
+
+-   `Sum_insured` - the risk grows with the insured value up to roughly
+    30 000, and there is very little exposure above, so we cap it. We
+    express it in thousands, so the coefficient is easier to read.
+-   `D_age` - banded into 30-and-younger, 30-40, ... 70+. (The youngest
+    drivers have little exposure, so we merge them into one band.)
+
+```{r cell_12}
+model_si <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged + BonusMalus_banded + Sum_insured_capped,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+
+model_age <- glm(
+  data = train,
+  formula = Burning_Cost ~ Veh_type2_merged + BonusMalus_banded + Sum_insured_capped + D_age_banded,
+  family = statmod::tweedie(var.power = 1.5, link.power = 0),
+  weights = Time_Exposure
+)
+```
+
+```{r cell_13}
+for (var_nm in get_vars(model_age)) {
+  emb_chart_plotly(model = model_age, x_var = var_nm) |>
+    show()
+}
+```
+
+### Comparing the models
+
+```{r cell_14}
+model_list <- list(
+  "1 L5 final" = model_l5,
+  "2 Vehicle type" = model_veh,
+  "3 + BonusMalus numeric" = model_bm_num,
+  "4 + BonusMalus banded" = model_bm_band,
+  "5 + Sum insured" = model_si,
+  "6 + Driver age" = model_age
+)
+
+model_comparison <- compare_models(model_list, train, valid)
+model_comparison
+```
+
+```{r cell_15}
+model_comparison |>
+  tidyr::pivot_longer(c(train_rmse, valid_rmse), names_to = "dataset", values_to = "rmse") |>
+  ggplot(aes(x = model, y = rmse, colour = dataset, group = dataset)) +
+  geom_line() +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+How to read this table? Be careful with it:
+
+-   The **training** RMSE falls with every sensible variable we add -
+    this is expected, the model has more information to fit the data it
+    sees.
+-   The **validation** RMSE is what matters, but it is a noisy number:
+    the validation set has only a few hundred policies with a claim, and
+    the grouped RMSE is computed from just 5 groups. Differences of a few
+    points between models are not reliable.
+-   Notice what the validation RMSE says about **BonusMalus used as a
+    number** - it is clearly the worst model, much worse than the same
+    variable banded. A variable can easily hurt when it is used in the
+    wrong form.
+
+This is why the decision about a model should not rest on a single number.
+We combine it with what the actual vs fitted charts show, with whether the
+multipliers make business sense, and with the stability of the effects.
+There is no single "correct" model - we need to be able to explain why we
+chose it.
+
+### The model for the next step
+
+We continue with model 6: the vehicle type, BonusMalus (banded), the sum
+insured (capped) and the driver age (banded). It has the lowest validation
+RMSE in the table, but be honest about how much that proves: the gain over
+the vehicle-type-only model is small and, with 10 groups instead of 5, it
+would disappear. What really supports the choice is the following:
+
+-   BonusMalus clearly carries the most information - the actual burning
+    cost falls from about 960 to 24 across its bands and the fitted line
+    follows it closely.
+-   Sum insured and driver age show a weaker, noisier trend (look at the
+    oldest and youngest drivers, where the fitted line overshoots) - they
+    are the first candidates to drop or to merge further if we wanted a
+    simpler tariff.
+-   All multipliers have a direction that can be explained to a business
+    partner.
+
+In the next exercise we refit this model on all the data and turn it into
+a pricing tariff.
+
+```{r cell_16}
+saveRDS(
+  list(train = train, valid = valid, target_cap = target_cap),
+  "/cloud/project/Data/lesson6_train_valid.rds"
+)
+```

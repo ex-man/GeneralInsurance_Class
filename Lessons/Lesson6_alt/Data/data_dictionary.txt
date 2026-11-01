@@ -1,0 +1,33 @@
+Data, ktore v sebe obsahuju informacie o poistkach motorovych vozidiel a zaroven o poistnych udalostiach, ktore sa na niektorych z nich stali. Tieto data pouzivame na hodinach 4-6.
+
+Year - Rok zacatia platnosti poistky
+NrPolicy - Cislo poistky
+NrObject - Cislo objektu (vozidla)
+Dt_Exp_Start - Datum zacatia platnosti poistky
+Dt_Exp_End - Datum skoncenia platnosti poistky
+Time_Exposure - Dlzka trvania poistky ako podiel roka v intervale (0, 1], napr. 0.5 = pol roka (miera vystavenia sa riziku pre poistovnu). V lekcii 4 ho najprv pocitame v dnoch a potom prevedieme na podiel roka.
+Premium_earned - Zarobene poistne za obdobie trvania poistky
+
+Time_on_book - Ako dlho je poistenec klientom poistovne (ako dlho je v poistnom portfoliu)
+Customer_Type - Typ zakaznika, napr. poistovna moze ponukat nejaky priplatok za dalsie sluzby a teda napr. zakaznik C moze byt obycajny a zakaznik S moze byt specialny (premiovy) typ zakaznika, ktory si nejake sluzby dokupil
+D_age - Vek vodica poisteneho vozidla
+D_age_banded - Vek vodica poisteneho vozidla (kategoricka verzia)
+BonusMalus - System kde pridavame body dobrym vodicom (ktori nemali poistne udalosti) a uberame body menej sikovnym vodicom (ktori mali poistne udalosti).
+D_ZIP - PSC regionu vodica
+VEH_type, VEH_type1, Veh_type2 - rozne kategorizacie typu vozidla
+VEH_brand - anonymizovana kategorizacia znacky vozidla
+Construct_year - rok vyroby vozidla
+Capacity - objem motora vozidla v kubickych centimetroch (cm3)
+Nr_of_seats - pocet sedadiel vozidla
+Sum_insured - Hodnota na, ktoru je v ramci poistky vozidlo poistene
+Nr_payments - Pocet splatok poistneho za rok (1 = rocne, 2 = polrocne, 4 = stvrtrocne, 12 = mesacne). V modeloch ho nepouzivame.
+
+NrClaim - Cislo poistnej udalosti (ak nejaka bola)
+Date_of_loss - Datum nastatia poistnej udalosti (ak nejaka bola)
+Paid - Vyplatena hodnota v ramci poistnej udalosti (ak nejaka bola); zaporna hodnota = regres alebo ina navratka penazi poistovni
+Reserves - Odhady buducich vyplatenych skod v ramci poistnej udalosti (ak nejaka bola)
+Settlement_date - Datum uzavretia (vybavenia) poistnej udalosti; prazdne = poistna udalost este nie je uzavreta
+ClmYr - Rok nastatia poistnej udalosti (ak nejaka bola)
+
+Ult_Loss - Paid + Reserves (tzv. incurred skoda). V kurze ju pouzivame ako aproximaciu ultimatnej (finalnej) hodnoty skod - nezahrna IBNR ani dalsi vyvoj skod (vid lekcia 3)
+Burning_Cost - Priemerna skoda na jeden rok poistenia (Ult_Loss / Time_Exposure); 0 ak poistka nemala poistnu udalost
