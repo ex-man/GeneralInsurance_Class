@@ -43,6 +43,15 @@ TODO
 - [ ] L5 Homework — hw5 (VEH_brand) and hw8 (BonusMalus) predictors are swapped compared to Class 2025.
       Repo version is consistent (high-cardinality HINT sits on the VEH_brand task) — keep it, just be aware
       when comparing with 2025 materials / submissions.
+- [ ] L5 Ex3 `libs` (l.17) — check the purpose of `reshape2`, `patchwork` and `lazyeval`. None are called directly in
+      Ex3; likely needed by the sourced Support helpers (emb_chart_plotly.R, get_vars.R, rmse_group.R) or leftovers.
+      If a helper needs them, add a comment in cell_01 saying why; if not, consider removing them from `libs`.
+- [ ] L5 + L6 `emb_chart_plotly.R` (Lesson5/Support/ and Lesson6/Support/functions/) — fails when the model's embedded
+      data already has a `pred` column (e.g. a student added one). When `dt.frm` is NULL the function builds the data
+      with `cbind(model$data, data.frame(pred = predict(model, model$data, type = "response")))`. `cbind` keeps the
+      existing `pred` and adds a second one, so the duplicate name breaks the later `pred` references. Fix: use
+      `dplyr::mutate(model$data, pred = predict(...))` (or overwrite the column) so an existing `pred` is replaced, and
+      check the same pattern in any other helper (e.g. `rmse_group.R`, `compare_models.R`).
 
 ## Lesson 6 — follow-ups from Lesson 4 review
 - [ ] L6 Support/02_data_prep.Rmd:34 — "Load the data from Lesson 5" -> "Lesson 4".
@@ -54,6 +63,110 @@ TODO
       (no material change expected; data_gbm.rds is already in year units).
 - [ ] L6 README.md:10 and Exercises/04_Final_Model_Fit.Rmd:139 — feedback form URL differs:
       repo `0pijTdVZSR` vs Class 2025 `ry1by313PH`. Confirm the current one before the class.
+- [ ] L6 (or L5 Ex3 as a short note) — investigate how to interpret a numeric coefficient in a GLM with log link.
+      Example: if exp(Beta) = 0.86 for a numeric variable, is the target (riskiness) 14% lower per one-unit increase,
+      or is the interpretation different? Check the exact wording: the multiplier applies to the expected mean of the
+      target, per unit of the variable, and is constant on the log scale (same relative effect at every level), unlike
+      a linear model where the effect is additive. Also check whether "14% lower" is the right phrasing versus
+      "multiplied by 0.86", and whether the target is "riskiness" or the expected loss cost. Decide whether this fits
+      as L6 content or as a point in an existing lesson.
+- [ ] L6 — variable selection as a natural continuation of the L5 homework. Students struggle with choosing variables
+      in L5 and mostly do it by hand, so L6 could cover three approaches:
+      1. Programmatic forward selection using RMSE (validation) as the criterion. Start from the base model, try each
+         remaining candidate, keep the best, repeat until no candidate improves RMSE. Optionally show exhaustive
+         search over all combinations and explain why it becomes infeasible quickly.
+      2. Filter/shrinkage method (L1 / lasso, or L2 / ridge, whichever suits the GLM best) to let the penalty drop
+         weak variables. Compare the selected set with the forward selection result.
+      3. Visual screening that builds on the L5 "unfitted variables" visuals (see `homework_hints.md` and the main
+         Lesson 5 material for why unfitted variables are plotted). A helper computes, for each unfitted variable,
+         the exposure-weighted mismatch in burning cost (actual vs fitted) by category, then:
+         - ranks variables by the highest exposure-weighted mismatch and plots them in that order,
+         - flags mismatches that also show a trend (visually, or with a simple exposure-weighted trend measure
+           such as a weighted correlation or slope of actual minus fitted against the variable's level).
+         This extends the L5 visual check to many variables at once and lets students look only at the plots
+         that matter.
+      Open questions: whether the helper belongs in `Support/` (shared by L5 and L6) and how much code is acceptable
+      for students to read in class.
+- [ ] L6 — build an "ideal" feature-engineered dataset as the starting point for the variable selection section.
+      Variable selection works better on well-prepared features, so:
+      - review the most reasonable adjustment for each variable (banding or capping of categoricals and numerics,
+        rare-level grouping, e.g. D_ZIP, Capacity, Construct_year, Sum_insured, Nr_of_seats, VEH_brand),
+      - consider numeric transforms where they help, e.g. log transform for skewed variables (Sum_insured,
+        Capacity) and squared / polynomial terms for non-linear shapes (e.g. Construct_year, Time_on_book, D_age),
+      - create the final dataset in a Support script (or Data/ RDS) with every adjustment documented in comments and
+        a short table listing variable, transform, reason and the L5 visual that motivated it,
+      - L6 starts with a short section on feature engineering, then loads the improved dataset, so students can
+        inspect it if they wish, and continues to variable selection on it.
+      Open questions: how many transforms to include (keep it teachable), whether to keep the raw variables alongside
+      the transformed ones, and whether the L5 homework should be aligned with the same adjustments (or deliberately
+      left on raw data so the difference is visible).
+
+## Class 2026 feedback — pacing and visuals
+- [ ] L4 — potentially shorten the data prep, or at least cover it in a more streamlined way. Class 2026 spent one
+      whole lesson on L4 data prep and another whole lesson on L4 target analysis.
+- [ ] L4 — related: to streamline the target analysis exercise, maybe don't iterate on the visuals so much (e.g. the
+      x-axis label rotation, or other cosmetic tweaks).
+- [ ] L5 — add visuals that explain what actual vs fitted differences mean, for both fitted and unfitted variables.
+      Reuse the new image generation approach in `tools/image_generation/` for this, and use the same images in
+      L5 Ex3 and `Lesson5/Homework/homework_hints.md`.
+- [ ] L5 — explicitly teach turning a numeric variable into a categorical one as a feature engineering option. It is
+      currently only implicit (banding, truncating or rounding). Explain the reasoning with visuals: when the actual
+      mean goes up and down with no clear trend, or follows a non-linear (e.g. exponential) trend rather than a
+      linear one, a linear term fits poorly and banding into categories captures it better.
+      Concrete case for L5 Ex3: after capping `Construct_year` (cell_16-17), the fitted vs actual lines show that a
+      monotonic numeric trend does not fit well. Add a comment in the text mentioning that it could be split into
+      three bands (early, middle and later years) as a second example of the same idea. No need to implement the
+      banding or refit.
+- [ ] L5 `Homework/homework_hints.md` — add a hint: if the project/environment restarts repeatedly right after fitting
+      a GLM, which often happens for categorical variables with many distinct values in their original unadjusted
+      form (e.g. `D_ZIP`), students should increase the computational resources of their environment, following the
+      Posit documentation (link: https://docs.posit.co/cloud/guide/projects/#resources-settings).
+- [ ] L5 — before the class, increase the Posit Cloud project resources for the homework project so students fitting
+      a GLM with the original D_ZIP don't struggle (restarts / out-of-memory). Check what the resource limits are and
+      what they cost. Alternative or complement: give students an option to fit on a smaller sample of rows with the
+      original D_ZIP, and document that trade-off in the homework hints.
+- [ ] L5 — verify how the GLM picks the baseline (reference) level for categorical variables. Check whether R's default
+      is alphabetical (first level after sorting, or the factor's level order), or whether our code/data sets it by
+      highest exposure or another rule. A student suspects Nr_of_seats uses level 1 rather than level 5 as the
+      baseline. Confirm by inspecting `levels()` / `contrasts()` and the coefficient names in the fitted model, and
+      check how the homework and Ex3 code create the factors. Then note in the lesson or hints how the baseline is
+      chosen and how to change it (e.g. `relevel()` or ordering factor levels by exposure).
+- [ ] L4/L5 — consider capping the target (burning cost / Ult_Loss per policy-year) at the 99th percentile before
+      L5 modelling and homework, so a few extreme outliers don't dominate RMSE. Investigate thoroughly first:
+      - how many policies are above the 99th percentile, and how much of total loss and of RMSE they account for
+        (compare RMSE with and without the cap, and check whether model ranking changes),
+      - whether the cap belongs in the data (Lesson 4 Ex2 / saved RDS) or in the L5 modelling code,
+      - whether capping hides real risk (the cap removes large losses from the fitted model, so the expected loss
+        cost is understated; check the exposure-weighted total before and after),
+      - what changes in material: L4 Ex2 text and KPIs, L5 Ex1-Ex3 numbers, homework RMSE references and
+        homework_hints.md, data_dictionary.txt, and the BLOCKING regeneration list.
+- [ ] L5 Homework / Ex3 — some variables (e.g. D_ZIP, VEH_brand) have levels present in train but not in valid, or the
+      reverse. Investigate how often this happens and how the GLM predict step handles unseen levels (error, NA, or
+      silent drop). Then add updates or snippets to `Homework/homework_hints.md` on how to deal with it (e.g. collapse
+      rare levels, group into an "other" category, or align factor levels between train and valid before predicting).
+- [ ] L5 Homework — some assignments say to "read the end of the insurance modeling exercise" (Ex3). The hint is
+      vague. Investigate: point it to the specific part of the exercise or to `Homework/homework_hints.md`, or drop
+      it. The D_ZIP and Capacity info (truncating, rounding) is now in both the Ex3 Rmd and the homework hints, so the
+      hint may not be needed at all.
+- [ ] L5 `Homework/homework_hints.md` — add guidance on interpreting GLM coefficients. Most students read them like
+      linear regression coefficients, which is wrong with a log link:
+      - categorical: each coefficient is a multiplier relative to the baseline level (exp(Beta)), not an additive
+        shift, and the baseline is the level in the intercept (link to the open "baseline level" item above),
+      - numeric: exp(Beta) is the multiplier for a one-unit increase, applied to the expected mean; a value of 0.86
+        means about 14% lower, and the effect is the same at every level of the variable (see the open "numeric
+        coefficient interpretation" item in L6),
+      - add one worked example per type, using a variable from the homework, and a short "do not read it like linear
+        regression" warning. Material coverage in L5 is thin, so the hints may be the main place for this.
+
+## Class 2027 research — automated homework review on Posit Cloud
+- [ ] Research whether we can programmatically interact with the student projects in the Posit Cloud workspace
+      (where the homework is done), so we can systematically suggest ratings, write comments, and spot patterns and
+      bugs across submissions. Check: what the Posit Cloud API / Posit Cloud Enterprise offers for listing projects,
+      reading files and exporting content; whether we have the right permissions in our workspace; and any
+      terms or privacy limits on reading student work.
+- [ ] Related: write a short skill / rating guide so an automatic AI rater understands the rating criteria for each
+      lesson's applicable homework (what a good answer looks like, which errors matter, how to weigh them, and what
+      feedback tone to use). Start with L5 homework as the pilot.
 
 ## BLOCKING before teaching Lesson 5 — align L5/L6 with corrected Lesson 4 data
 Lesson 4 Ex1 now removes claims whose loss date lies outside the policy's period of cover (37 claims,
