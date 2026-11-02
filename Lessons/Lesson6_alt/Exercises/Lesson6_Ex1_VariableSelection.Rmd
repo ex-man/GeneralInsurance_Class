@@ -1,0 +1,286 @@
+---
+title: "Variable selection"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+In Lesson 5 you chose variables mostly by hand: look at a chart, add a
+variable, check the result. That works for a few variables, but how do you
+decide when there are 13 candidates and each can be added in a different
+order? In this exercise we look at three ways to do it:
+
+1.  **Forward selection** - try every variable, keep the best, repeat.
+2.  **Chart ranking** - the "actual vs fitted" check from Lesson 5, but
+    sorted so that you look at the most promising variables first.
+3.  **Lasso** - let a penalty switch off the weak variables.
+
+We use a dataset where every variable is already prepared (capped, merged,
+banded, transformed). How it was prepared and why is explained in
+`Support/feature_engineering.Rmd` - you can read it, you do not need to run it.
+
+```{r cell_01, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cell_02, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(statmod)
+library(glmnet)
+options(scipen = 5)
+
+source("/cloud/project/Support/rmse_group.R")
+source("/cloud/project/Support/tweedie_deviance.R")
+source("/cloud/project/Support/emb_chart_plotly.R")
+source("/cloud/project/Support/compare_models.R")
+source("/cloud/project/Support/mismatch_rank.R")
+source("/cloud/project/Support/selection_helpers.R")
+```
+
+### Data
+
+The training and validation rows are exactly the ones from Lesson 5 (same
+split). Two things are different from Lesson 5:
+
+-   the **target is capped** at the 99.5th percentile (the original is kept in
+    `Burning_Cost_raw`), so a handful of extreme values does not decide the
+    comparison,
+-   the predictors are the **engineered** versions (e.g. `BonusMalus_adj`,
+    `Capacity_band`).
+
+Because of the capped target, RMSE values here are not comparable with the
+ones from Lesson 5.
+
+```{r cell_03}
+l6 <- load_l6_data("/cloud/project/Data/dt_engineered.rds")
+train <- l6$train
+valid <- l6$valid
+
+c(train = nrow(train), valid = nrow(valid))
+candidate_vars
+```
+
+### How do we compare models? Deviance
+
+In Lesson 5 we used the grouped RMSE: sort the policies by predicted risk,
+make 5 groups, compare actual and predicted per group. It is intuitive, but it
+throws away most of the information (5 numbers instead of thousands of rows),
+and with a few hundred claims in the validation data it moves a lot. A better
+number for comparing models is the **deviance**, the loss that the GLM itself
+minimises (`tweedie_deviance()`). Lower is better. We show the grouped RMSE
+next to it so you can compare them.
+
+```{r cell_04}
+model_veh <- glm_tweedie(Burning_Cost ~ Veh_type2_merged, train)
+model_bm <- glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj, train)
+
+compare_models(list("Vehicle type" = model_veh, "+ BonusMalus" = model_bm), train, valid)
+```
+
+`BonusMalus_adj` is a very strong variable, the deviance drops a lot, both on
+the training and on the validation data. Look at the RMSE though: on the
+validation data it gets *worse*. This is the noise of the grouped RMSE, and
+the reason why we decide with the deviance in this lesson.
+
+### Method 1: forward selection
+
+The idea is simple:
+
+1.  Start with the base model (vehicle type).
+2.  Add each remaining variable one at a time, fit, and measure the
+    **training** deviance.
+3.  Keep the variable that gave the lowest training deviance.
+4.  Repeat from step 2.
+
+`forward_select()` does this, and after every step it also scores the model on
+the **validation** data, so that we can look at all the models on the path
+and not only the last one.
+
+```{r cell_05}
+fwd <- forward_select(train, valid, candidate_vars)
+fwd |>
+  mutate(across(where(is.numeric), ~ round(.x, 1)))
+```
+
+```{r cell_06}
+fwd |>
+  tidyr::pivot_longer(c(train_dev, valid_dev), names_to = "data", values_to = "deviance") |>
+  ggplot(aes(x = step, y = deviance, colour = data)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~data, scales = "free_y") +
+  labs(x = "number of variables added")
+```
+
+How to read this:
+
+-   The **training** deviance falls with every variable we add. It has to - a
+    model with more information fits the data it sees better. Used alone it
+    would never tell us when to stop.
+-   The **validation** deviance falls a lot with the first variable, a bit
+    more with the next ones, and then it stops improving and moves up and down.
+    From that point on the new variables are fitting noise.
+-   The best model on the path is the one with the lowest *validation*
+    deviance, but do not trust the exact position of the minimum too much - a
+    couple of steps with a similar value are practically the same model. The
+    shape (a big win at the beginning, then a plateau) is the message.
+
+On our data the lowest validation deviance is at the third variable, and
+that is also where the big gains have ended. We continue with the first 3
+variables:
+
+```{r cell_07}
+fwd$added[2:4]
+```
+
+### Method 2: ranking the charts
+
+In Lesson 5 you looked at the "actual vs fitted" chart of variables that are
+not in the model and looked for the ones where the actual line has a trend
+and the fitted line is flat. With 13 variables it takes a long time to go
+through all the charts. The idea here is to measure that difference and look
+at the variables in the order of how much the model misses.
+
+For each variable, `mismatch_rank()` takes the charts' two lines and computes
+the exposure-weighted average gap between them, as a share of the overall
+average burning cost. A level with a lot of exposure counts more than a level
+with almost none, as when we read the chart by eye.
+
+```{r cell_08}
+fit_and_rank <- function(selected) {
+  model <- glm_tweedie(reformulate(c("Veh_type2_merged", selected), "Burning_Cost"), train)
+  ranked_data <- train
+  ranked_data$pred <- predict(model, train, type = "response")
+
+  not_in_model <- setdiff(candidate_vars, selected)
+  list(
+    model = model,
+    data = ranked_data,
+    ranking = mismatch_rank(ranked_data, "pred", chart_columns[not_in_model])
+  )
+}
+
+step1 <- fit_and_rank(character(0))
+step1$ranking
+```
+
+The top of the ranking is where the model is missing the most. Let's look at
+the first two charts:
+
+```{r cell_09}
+for (var_nm in head(step1$ranking$chart_column, 2)) {
+  emb_chart_plotly(model = NULL, x_var = var_nm, dt.frm = step1$data) |>
+    show()
+}
+```
+
+`BonusMalus_adj` has a clear falling trend of the actual line and a flat
+fitted line, and its mismatch is several times higher than for any other
+variable. We add it, refit and rank again:
+
+```{r cell_10}
+step2 <- fit_and_rank("BonusMalus_adj")
+step2$ranking
+```
+
+```{r cell_11}
+for (var_nm in head(step2$ranking$chart_column, 2)) {
+  emb_chart_plotly(model = NULL, x_var = var_nm, dt.frm = step2$data) |>
+    show()
+}
+```
+
+After the first variable the picture is different: the mismatches are small
+and similar (all of them below 0.25 on this scale). Now you have to decide
+with your eyes and your judgment: is there a visible trend in the
+credible levels (the ones with a lot of exposure)? A high mismatch from one
+level with little exposure is not an argument. Let's take the first variable
+of the ranking and continue one more step:
+
+```{r cell_12}
+chosen_2 <- step2$ranking$variable[1]
+chosen_2
+
+step3 <- fit_and_rank(c("BonusMalus_adj", chosen_2))
+step3$ranking
+```
+
+The advantage of this method is that it is fast and that you *see* every
+variable you add. The disadvantage is that it needs your decision in every
+step, and that the mismatch measures only how large the gap is, not whether
+the new variable would make a model more accurate on new data. That is why we
+check the result against the validation deviance in the comparison below.
+
+### Method 3: lasso
+
+The third approach lets an algorithm do the work. The idea of the **lasso** (L1
+penalty): the model is fitted with a penalty on the size of the coefficients.
+With a strong penalty all coefficients are zero. We then relax the penalty step
+by step, and the variables "enter" the model one after another - the most
+useful ones first, the useless ones last or never.
+
+`lasso_entry_order()` fits this once and reports for each variable the step at
+which its first coefficient became non-zero. The vehicle type is not penalised
+(it is always in).
+
+```{r cell_13}
+lasso_order <- lasso_entry_order(train, candidate_vars)
+lasso_order
+```
+
+A caveat: in a real project we would do this a bit more carefully. We would choose
+the strength of the penalty by cross-validation, the numeric variables would
+be put on one scale first, and the levels of one categorical variable would be
+treated as a group. For a ranking of the variables this simple version is
+good enough.
+
+### Comparing the three methods
+
+```{r cell_14}
+top_n <- 5
+
+comparison <- data.frame(
+  rank = seq_len(top_n),
+  forward_selection = fwd$added[2:(top_n + 1)],
+  chart_ranking = c("BonusMalus_adj", chosen_2, step3$ranking$variable[1:(top_n - 2)]),
+  lasso = lasso_order$variable[1:top_n]
+)
+comparison
+```
+
+All three methods agree on the most important variable. After that the order
+differs, because the later variables have a similar, small value and the
+methods measure it in different ways (training deviance, a visual mismatch,
+a penalty). That is normal and useful: variables that appear in the top of all
+three methods are a safer choice than the ones picked by only one.
+
+Let's check whether the choice matters, on the validation data:
+
+```{r cell_15}
+models <- list(
+  "Vehicle type" = glm_tweedie(Burning_Cost ~ Veh_type2_merged, train),
+  "Forward, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", fwd$added[2:4]), "Burning_Cost"), train),
+  "Chart ranking, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", "BonusMalus_adj", chosen_2, step3$ranking$variable[1]), "Burning_Cost"), train),
+  "Lasso, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", lasso_order$variable[1:3]), "Burning_Cost"), train)
+)
+
+compare_models(models, train, valid)
+```
+
+The chart ranking and the lasso ended with the same three variables, so their
+rows are identical; forward selection took the vehicle brand instead of the
+sum insured. The differences between the three sets are small compared to the
+difference between them and the model without variables - which is the
+expected outcome. Once you have the few variables that matter, which of the
+remaining ones you take hardly changes the quality of the model. Choose the
+one you can explain best.
+
+### Homework
+
+You repeat these three methods in your homework, each from a different
+starting variable. Instructions are in `Homework/my_homework.R`.

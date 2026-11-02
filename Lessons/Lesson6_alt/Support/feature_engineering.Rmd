@@ -1,0 +1,917 @@
+---
+title: "Feature engineering guide: how the Lesson 6 dataset was prepared"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+This is a **support material** for Lesson 6. You do not need to run it in
+the class - the lesson loads the dataset that this document creates
+(`Data/dt_engineered.rds`). Read it if you want to see *why* every variable
+looks the way it does, or if you want to reproduce the decisions on your own
+data.
+
+In Lesson 5 we adjusted variables by hand: merging categories, capping
+numbers, banding. Here we do the same thing for **all** predictors in a
+systematic way. For every variable we ask the same questions:
+
+1.  Should it be a **category** or a **number**? (Numbers get one
+    multiplier for a whole variable, categories one per level.)
+2.  Which **adjustment** makes the signal clearer and the estimate more
+    stable? (capping, merging, banding, transformation, truncating,
+    rounding, replacing invalid values.)
+3.  Does the adjusted variable bring **new information**, or is it noise?
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r cell_01}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(statmod)
+options(scipen = 5)
+
+# on Posit Cloud the project folder is /cloud/project, locally it is the folder above Support
+proj <- if (dir.exists("/cloud/project")) "/cloud/project" else normalizePath("..")
+
+source(file.path(proj, "Support/enforce_data_types.R"))
+source(file.path(proj, "Support/rmse_group.R"))
+source(file.path(proj, "Support/emb_chart_plotly.R"))
+source(file.path(proj, "Support/tweedie_deviance.R"))
+```
+
+### Principles
+
+-   **Decide on the training rows only.** Every choice below (the cap, the
+    bands, the levels we merge) is made by looking at the *training* part of
+    the Lesson 5 split. Validation rows are never used to decide, so they
+    stay an honest test. The choices are then applied to *all* rows.
+-   **Keep the original column, create a new one.** The originals stay in
+    the dataset next to the engineered ones.
+-   **Compare forms with the same yardstick.** Looking at a chart is
+    necessary but not sufficient, so we also measure each form with a
+    cross-validated Tweedie deviance (explained below).
+
+### Data and the train / validation split
+
+This is exactly the setup from Lesson 5: same data, same predictors, same
+complete cases and the same seed, so we get the same training rows.
+
+```{r cell_02}
+dt_pol_w_claims <- readRDS(file.path(proj, "Data/dt_pol_w_claims_target.rds"))
+
+var_types <- c(
+  Year = "category", Time_on_book = "number", Customer_Type = "category",
+  D_age = "number", D_age_banded = "category", BonusMalus = "number",
+  D_ZIP = "category", VEH_type = "category", Veh_type1 = "category",
+  Veh_type2 = "category", VEH_brand = "category", Construct_year = "number",
+  Capacity = "number", Nr_of_seats = "category", Sum_insured = "number"
+)
+
+dt_pol_w_claims <- dt_pol_w_claims |>
+  enforce_data_types(var_types)
+
+n_before <- nrow(dt_pol_w_claims)
+dt_pol_w_claims <- dt_pol_w_claims[complete.cases(dt_pol_w_claims[names(var_types)]), ]
+c(rows_before = n_before, rows_after = nrow(dt_pol_w_claims))
+
+set.seed(58742) # same seed as in Lesson 5
+
+n_rows <- nrow(dt_pol_w_claims)
+train_idx <- sample(n_rows, round(0.80 * n_rows)) # 80/20 split between train and valid
+
+train <- dt_pol_w_claims[train_idx, ]
+valid <- dt_pol_w_claims[-train_idx, ]
+```
+
+Rows with a missing value in any predictor are dropped, as in Lesson 5. It
+is a tiny part of the data, and we do not want to invent values for them.
+
+### The yardstick: cross-validated Tweedie deviance
+
+To compare several forms of one variable we always fit the same model
+`Burning_Cost ~ Veh_type2_merged + <the variable in one form>` and measure how
+much better it predicts than the vehicle-type-only model.
+
+-   We use 5-fold cross-validation **inside the training data**: the model is
+    fitted on 4/5 of the rows and scored on the remaining 1/5, five times.
+-   The score is the **Tweedie deviance**, which is the loss the GLM itself
+    optimises (see `Support/tweedie_deviance.R`). It uses every row. The
+    grouped RMSE from Lesson 5 puts the rows into 5 groups first, which
+    throws a lot of information away - see the last section for why this
+    matters when the number of claims is small.
+-   Reported as **gain in thousands**: deviance of the vehicle-only model
+    minus deviance of the model with the variable. Bigger is better, a value
+    around zero means "no new information", negative means the variable hurts
+    on unseen data. The folds are repeated with 3 different seeds, `sd_k`
+    shows how much the number moves with the fold assignment.
+
+```{r cell_03}
+glm_tweedie <- function(formula, data) {
+  glm(
+    formula = formula,
+    data = data,
+    family = statmod::tweedie(var.power = 1.5, link.power = 0),
+    weights = Time_Exposure
+  )
+}
+
+cv_deviance <- function(formula, data, seed = 1, k = 5) {
+  set.seed(seed)
+  fold <- sample(rep(seq_len(k), length.out = nrow(data)))
+  total <- 0
+  for (i in seq_len(k)) {
+    fit <- glm_tweedie(formula, data[fold != i, ])
+    held_out <- data[fold == i, ]
+    total <- total + tweedie_deviance(
+      held_out$Burning_Cost,
+      predict(fit, held_out, type = "response"),
+      held_out$Time_Exposure
+    )
+  }
+  total
+}
+
+# a named list of formulas -> gain (in thousands) of each over the base formula
+compare_forms <- function(forms, data = tr, base = Burning_Cost ~ Veh_type2_merged, seeds = 1:3) {
+  base_dev <- sapply(seeds, function(s) cv_deviance(base, data, s))
+  n_base <- length(coef(glm_tweedie(base, data)))
+
+  results <- lapply(names(forms), function(nm) {
+    gain <- (base_dev - sapply(seeds, function(s) cv_deviance(forms[[nm]], data, s))) / 1000
+    data.frame(
+      form = nm,
+      cv_gain_k = round(mean(gain), 1),
+      sd_k = round(sd(gain), 1),
+      extra_parameters = length(coef(glm_tweedie(forms[[nm]], data))) - n_base
+    )
+  })
+  bind_rows(results)
+}
+
+# exposure share and exposure-weighted actual burning cost per level of a variable
+level_table <- function(data, var) {
+  data |>
+    group_by(level = .data[[var]]) |>
+    summarise(
+      exposure_pct = round(100 * sum(Time_Exposure) / sum(data$Time_Exposure), 1),
+      actual = round(weighted.mean(Burning_Cost, Time_Exposure)),
+      .groups = "drop"
+    )
+}
+```
+
+### Step 0: the target
+
+The burning cost is `Ult_Loss / Time_Exposure`, so a moderate claim on a very
+short policy turns into an enormous value. Let's look at the highest values
+and at what a cap at a high percentile of the positive losses would do.
+
+```{r cell_04}
+train |>
+  arrange(desc(Burning_Cost)) |>
+  select(Time_Exposure, Ult_Loss, Burning_Cost) |>
+  head(5)
+```
+
+```{r cell_05}
+positive_bc <- train$Burning_Cost[train$Burning_Cost > 0]
+
+cap_candidates <- lapply(c(0.95, 0.98, 0.99, 0.995, 0.999), function(p) {
+  cap <- quantile(positive_bc, p)
+  data.frame(
+    percentile = 100 * p,
+    cap = round(cap),
+    rows_capped_train = sum(train$Burning_Cost > cap),
+    rows_capped_valid = sum(valid$Burning_Cost > cap),
+    loss_removed_pct = round(100 * (1 - sum(pmin(train$Burning_Cost, cap) * train$Time_Exposure) /
+      sum(train$Burning_Cost * train$Time_Exposure)), 1)
+  )
+})
+bind_rows(cap_candidates)
+```
+
+**Decision: cap at the 99.5th percentile of the positive burning cost,
+computed on the training data.** Only a handful of rows are affected and
+about 1% of the total loss is removed, so the nominal level of the target
+(and the price level we compare with later) hardly changes. Such rows,
+however, have a huge influence on squared errors, and they can make a
+variable look good or bad by chance. The cap does not remove them, it just
+limits their weight. A lower cap (95%, 98%) would remove 4-10% of the loss
+and starts to change the risk we are trying to model.
+
+The original column is kept as `Burning_Cost_raw`, the capped one replaces
+`Burning_Cost`, so all helper functions from Lesson 5 work unchanged. A
+caveat: from here on the RMSE values are **not comparable** with the Lesson 5
+numbers, because the target is different.
+
+```{r cell_06}
+target_cap <- quantile(positive_bc, 0.995)
+target_cap
+```
+
+The working copy of the training data `tr` is the one we use for all
+investigations. It gets the capped target and the vehicle-type merge from
+Lesson 5 (categories with almost no exposure go to the base category `CAR`).
+
+```{r cell_07}
+tr <- train |>
+  mutate(
+    Burning_Cost_raw = Burning_Cost,
+    Burning_Cost = pmin(Burning_Cost, target_cap),
+    Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2)
+  )
+
+level_table(tr, "Veh_type2_merged")
+```
+
+Our baseline model is the vehicle type only. Its fitted values are what we
+compare the actual burning cost with in the charts below - the same "unfitted
+variable" charts as in Lesson 5: look for a clear trend of the **Actual**
+line while the **Fitted** line is flat.
+
+```{r cell_08}
+base_model <- glm_tweedie(Burning_Cost ~ Veh_type2_merged, tr)
+tr$pred <- predict(base_model, tr, type = "response")
+
+look <- function(var) emb_chart_plotly(model = NULL, x_var = var, dt.frm = tr)
+```
+
+### BonusMalus
+
+```{r cell_09}
+look("BonusMalus")
+```
+
+```{r cell_10}
+level_table(tr, "BonusMalus") |>
+  filter(level %in% c(-1, 0, 1, 2, 12, 13, 14, 15))
+```
+
+What we see:
+
+-   The actual burning cost falls steeply with the level, roughly by the
+    same percentage per level (a straight line on the log scale) - a good
+    candidate for a **number**.
+-   Levels below zero (the worst claims history) are risky, but have almost
+    no exposure.
+-   **Level 0 is odd.** It holds over 10% of the exposure and its burning
+    cost is tiny, while its neighbour level 1 is among the riskiest. It does
+    not follow the trend at all, so it is most likely a placeholder (for
+    example a default value for customers without a record) and not a
+    "driver with no history". We do not know what it means in the source
+    system.
+
+If we feed `BonusMalus` as it is, level 0 sits at the "risky" end of the
+scale but behaves like a very safe driver, and the single multiplier is
+pulled towards zero. We want to keep **one column** (no extra flag), so we
+replace the odd values with a level that behaves the same way: the burning
+cost of level 0 is similar to the safest levels 12-14, so we recode **0 to
+13**. Negative levels have a tiny exposure and a risk like the worst
+positive levels, so we set them to 1.
+
+```{r cell_11}
+tr <- tr |>
+  mutate(
+    BM_recoded = ifelse(BonusMalus < 0, 1, ifelse(BonusMalus == 0, 13, BonusMalus)),
+    BM_recoded_8 = ifelse(BonusMalus < 0, 1, ifelse(BonusMalus == 0, 8, BonusMalus)),
+    BM_band = cut(
+      BonusMalus,
+      breaks = c(-Inf, -1, 0, 2, 5, 8, 11, 13, Inf),
+      labels = c("<0", "0", "1-2", "3-5", "6-8", "9-11", "12-13", "14+")
+    )
+  )
+
+compare_forms(list(
+  "number as is" = Burning_Cost ~ Veh_type2_merged + BonusMalus,
+  "number, negatives -> 1, 0 -> 13" = Burning_Cost ~ Veh_type2_merged + BM_recoded,
+  "number, negatives -> 1, 0 -> 8" = Burning_Cost ~ Veh_type2_merged + BM_recoded_8,
+  "number, log of the recoded level" = Burning_Cost ~ Veh_type2_merged + log(BM_recoded),
+  "8 bands (0 and negatives separate)" = Burning_Cost ~ Veh_type2_merged + BM_band
+))
+```
+
+**Decision: `BonusMalus_adj` - a number, negatives to 1 and 0 to 13.** The
+raw number is by far the worst numeric form. The recoded one is almost as
+good as the 8 bands, which fit each band separately but need 7 extra
+parameters. The recoded number needs just one and the interpretation is
+simple: *each level up multiplies the expected burning cost by exp(beta)*.
+The log of the level is worse - a log link already means "constant
+percentage per level", a log of the level would mean "constant percentage
+per doubling of the level", which is not what the chart shows.
+
+One honest consequence: the model can no longer tell a 0 from a real 13.
+That is a trade-off we accept to keep a simple numeric variable.
+
+### Time_on_book
+
+```{r cell_12}
+tr <- tr |> mutate(Time_on_book_look = pmin(Time_on_book, 12))
+look("Time_on_book_look")
+```
+
+The burning cost falls with the years with the company, but there are only a
+few years with a decent exposure. Beyond year 10 the exposure is tiny, the
+actual values jump around (and a few tail values are extreme).
+
+```{r cell_13}
+tr <- tr |>
+  mutate(
+    TOB_cap8 = pmin(Time_on_book, 8),
+    TOB_cap10 = pmin(Time_on_book, 10),
+    TOB_band = factor(pmin(Time_on_book, 4)),
+    TOB_cat = factor(pmin(Time_on_book, 11))
+  )
+
+compare_forms(list(
+  "number as is" = Burning_Cost ~ Veh_type2_merged + Time_on_book,
+  "number, capped at 8" = Burning_Cost ~ Veh_type2_merged + TOB_cap8,
+  "number, capped at 10" = Burning_Cost ~ Veh_type2_merged + TOB_cap10,
+  "log, as is" = Burning_Cost ~ Veh_type2_merged + log(Time_on_book),
+  "log, capped at 10" = Burning_Cost ~ Veh_type2_merged + log(TOB_cap10),
+  "bands 1 / 2 / 3 / 4+" = Burning_Cost ~ Veh_type2_merged + TOB_band,
+  "every year 1-10, 11+ separately" = Burning_Cost ~ Veh_type2_merged + TOB_cat
+))
+```
+
+**Decision: `Time_on_book_cap` - a number capped at 8.** Once the tail is
+capped, a linear term, a log and bands are practically indistinguishable, so
+we choose the simplest to explain: one multiplier per extra year. The
+uncapped number is the only form that does not help - the thin tail pulls
+the line. A log is not needed for an integer variable with eight useful
+values; it does the same job as the cap (it squeezes the tail) and makes the
+interpretation harder (a multiplier per *doubling* of the years).
+
+The actual values go up a little between year 2 and 3, so a flexible form
+could follow it. We deliberately choose a monotonic form: it is what a
+business partner expects, and the difference in fit is small.
+
+### Sum_insured
+
+```{r cell_14}
+summary(train$Sum_insured)
+n_distinct(train$Sum_insured)
+```
+
+This variable has more than 20 000 different values in the training data, so
+no value has any real exposure and a chart by value is just noise. To see
+the trend we need to **discretize it first**. Value 0 is not a valid sum
+insured, so we replace it with the median of the positive values.
+
+```{r cell_15}
+si_median <- median(train$Sum_insured[train$Sum_insured > 0])
+si_median
+
+tr <- tr |>
+  mutate(
+    SI_fixed = ifelse(Sum_insured <= 0, si_median, Sum_insured),
+    SI_band = cut(
+      SI_fixed,
+      breaks = c(-Inf, 2000, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000, Inf),
+      labels = c("<=2k", "2-4k", "4-6k", "6-8k", "8-10k", "10-15k", "15-20k", "20-30k", "30-50k", "50k+")
+    )
+  )
+
+look("SI_band")
+```
+
+The burning cost grows with the insured value, fast at the beginning, then
+more slowly. The few policies above 30 000 have almost no exposure. This
+shape (steep first, flat later) is typical for a transformation like a **log**.
+
+```{r cell_16}
+tr <- tr |>
+  mutate(
+    SI_thousand = Sum_insured / 1000,
+    SI_fixed_thousand = SI_fixed / 1000,
+    SI_cap30_thousand = pmin(SI_fixed, 30000) / 1000,
+    SI_log = log(SI_fixed)
+  )
+
+compare_forms(list(
+  "number as is (thousands)" = Burning_Cost ~ Veh_type2_merged + SI_thousand,
+  "number, 0 -> median" = Burning_Cost ~ Veh_type2_merged + SI_fixed_thousand,
+  "number, 0 -> median, capped at 30k" = Burning_Cost ~ Veh_type2_merged + SI_cap30_thousand,
+  "log, 0 -> median" = Burning_Cost ~ Veh_type2_merged + SI_log,
+  "10 bands" = Burning_Cost ~ Veh_type2_merged + SI_band
+))
+```
+
+**Decision: `Sum_insured_log` - the log of the sum insured, with 0 replaced
+by the median.** It is the best form and a single parameter, and the log
+makes a separate cap unnecessary. The interpretation: *doubling the sum
+insured multiplies the expected burning cost by 2^beta*. We keep a banded
+copy, `Sum_insured_band`, only for charts (a numeric column with thousands
+of values cannot be plotted by value).
+
+### Capacity
+
+```{r cell_17}
+summary(train$Capacity)
+n_distinct(train$Capacity)
+```
+
+Engine capacity has 883 values (in cm3), a few are 0 (invalid) and a few are
+extreme. Same approach as before: discretize to see the shape.
+
+```{r cell_18}
+capacity_median <- median(train$Capacity[train$Capacity > 0])
+capacity_median
+
+tr <- tr |>
+  mutate(
+    CAP_fixed = ifelse(Capacity <= 0, capacity_median, Capacity),
+    CAP_look = cut(
+      CAP_fixed,
+      breaks = c(-Inf, 800, 1000, 1200, 1300, 1400, 1500, 1600, 1800, 2000, 2500, 3000, Inf)
+    )
+  )
+
+look("CAP_look")
+```
+
+The shape is **not monotonic**: small engines are cheap, the middle range
+(1300-1500) is relatively risky, then it drops, and the large engines are
+the riskiest. A straight line (or a log) cannot follow this, but a handful of
+bands can.
+
+```{r cell_19}
+cap_labels <- c("<=1000", "1001-1300", "1301-1600", "1601-2000", "2001-3000", "3000+")
+
+tr <- tr |>
+  mutate(
+    CAP_band = cut(CAP_fixed, breaks = c(-Inf, 1000, 1300, 1600, 2000, 3000, Inf), labels = cap_labels),
+    CAP_clipped = pmin(pmax(CAP_fixed, 800), 4000)
+  )
+
+compare_forms(list(
+  "number as is" = Burning_Cost ~ Veh_type2_merged + Capacity,
+  "number, clipped to 800-4000" = Burning_Cost ~ Veh_type2_merged + CAP_clipped,
+  "log, clipped to 800-4000" = Burning_Cost ~ Veh_type2_merged + log(CAP_clipped),
+  "log, as is" = Burning_Cost ~ Veh_type2_merged + log(CAP_fixed),
+  "6 bands" = Burning_Cost ~ Veh_type2_merged + CAP_band
+))
+```
+
+**Decision: `Capacity_band` - 6 bands, with 0 replaced by the median.** The
+bands follow the irregular shape and beat all numeric forms. The log of the
+unclipped value is the only form that clearly hurts: a few extreme capacities
+dominate the single coefficient. If you prefer a number for its simplicity,
+the clipped log is the best numeric alternative.
+
+### Construct_year
+
+```{r cell_20}
+tr <- tr |> mutate(Construct_year_look = pmax(Construct_year, 2000))
+look("Construct_year_look")
+```
+
+Almost all exposure sits in 2007-2015. Older cars have a few percent of the
+exposure and noisy values, and the actual burning cost in the main range
+has no clear trend. That is a weak variable. Let's see whether any form
+rescues it.
+
+```{r cell_21}
+tr <- tr |>
+  mutate(
+    CY_capped = pmin(pmax(Construct_year, 2007), 2015),
+    CY_cat = factor(pmin(pmax(Construct_year, 2006), 2015)),
+    CY_band = factor(
+      ifelse(Construct_year <= 2006, "<=2006", ifelse(Construct_year <= 2010, "2007-2010", "2011+")),
+      levels = c("<=2006", "2007-2010", "2011+")
+    )
+  )
+
+compare_forms(list(
+  "number as is" = Burning_Cost ~ Veh_type2_merged + Construct_year,
+  "number, capped to 2007-2015" = Burning_Cost ~ Veh_type2_merged + CY_capped,
+  "every year 2006-2015 separately" = Burning_Cost ~ Veh_type2_merged + CY_cat,
+  "3 bands" = Burning_Cost ~ Veh_type2_merged + CY_band
+))
+```
+
+**Decision: `Construct_year_band` - 3 bands (up to 2006, 2007-2010, 2011+).**
+No numeric form helps (the trend is not a straight line), every year
+separately is too noisy, and the 3 bands catch the one thing that is there
+- a difference between old and newer cars. The gain is small, so this is a
+candidate that a variable selection should treat with suspicion.
+
+### Nr_of_seats
+
+```{r cell_22}
+level_table(tr, "Nr_of_seats")
+```
+
+The variable contains impossible values (115, 999, 201, ...) with a near
+zero exposure. Most of the exposure is on 5 (the base) and 2 seats. We first
+send the impossible values and everything above 9 to the base category 5.
+
+```{r cell_23}
+tr <- tr |>
+  mutate(
+    NS_clean = ifelse(Nr_of_seats %in% as.character(1:9), Nr_of_seats, "5"),
+    NS_number = as.numeric(NS_clean),
+    NS_group = factor(
+      case_when(
+        NS_clean == "2" ~ "2",
+        NS_clean == "3" ~ "3",
+        NS_clean %in% c("7", "8", "9") ~ "7+",
+        TRUE ~ "1/4/5/6"
+      ),
+      levels = c("2", "3", "1/4/5/6", "7+")
+    )
+  )
+
+compare_forms(list(
+  "number 1-9" = Burning_Cost ~ Veh_type2_merged + NS_number,
+  "every level 1-9 separately" = Burning_Cost ~ Veh_type2_merged + NS_clean,
+  "4 groups: 2 / 3 / 1,4,5,6 / 7+" = Burning_Cost ~ Veh_type2_merged + NS_group
+))
+```
+
+Notice the row for every level separately: the deviance punishes a model that
+predicts (almost) zero for a group where a claim later appears. A level with
+very few policies and no claims gets a coefficient far below the rest, and
+the held-out claim that falls in it ruins the score. This is why levels with
+a tiny exposure must be merged.
+
+**Decision: `Nr_of_seats_grp` - 4 groups (2, 3, 7+, and 1/4/5/6 including the
+cleaned values).** The gain is practically zero. The seat groups overlap with
+the vehicle type (for example 72% of the exposure of 3-seat vehicles are
+pickups), so part of the information is already in the model. Keeping the
+variable in the dataset is useful: a variable selection should not pick it.
+
+### Vehicle type, driver age, brand, ZIP and the rest
+
+Vehicle types are the base of every model, so we keep the merge from Lesson 5
+(`Veh_type2_merged`). The other classifications of the vehicle (`Veh_type1`,
+`VEH_type`) have many tiny levels: we group the levels with less than 1% of
+exposure into `other`.
+
+**D_age** - a first look at the exposure:
+
+```{r cell_24}
+tr |>
+  group_by(D_age) |>
+  summarise(
+    exposure_pct = round(100 * sum(Time_Exposure) / sum(tr$Time_Exposure), 1),
+    actual = round(weighted.mean(Burning_Cost, Time_Exposure)),
+    .groups = "drop"
+  ) |>
+  arrange(desc(exposure_pct)) |>
+  head(6)
+```
+
+Ages 43-46 together hold more than half of the exposure. That is not how real
+driver ages are distributed, so these look like a default or imputed value
+and not true ages - we do not know the source. It limits what any form of this
+variable can achieve, because most of the portfolio sits at one point. The
+oldest and youngest drivers have very little exposure, so we clip the age.
+
+```{r cell_25}
+tr <- tr |>
+  mutate(
+    AGE_clipped = pmin(pmax(D_age, 25), 80),
+    AGE_band = cut(D_age, breaks = c(-Inf, 30, 40, 50, 60, 70, Inf))
+  )
+
+compare_forms(list(
+  "number as is" = Burning_Cost ~ Veh_type2_merged + D_age,
+  "number, clipped to 25-80" = Burning_Cost ~ Veh_type2_merged + AGE_clipped,
+  "number, clipped + squared term" = Burning_Cost ~ Veh_type2_merged + AGE_clipped + I(AGE_clipped^2),
+  "bands 30 / 40 / 50 / 60 / 70" = Burning_Cost ~ Veh_type2_merged + AGE_band
+))
+```
+
+**Decision: `D_age_adj` - the age clipped to 25-80, as a number.** No form
+helps, so this is the "best effort" version: a harmless one, kept so that
+the variable selection has something to reject.
+
+**VEH_brand** has 126 levels and most of them have a tiny exposure. We group
+the brands under a minimum exposure share into `other`; the question is how
+high the threshold should be.
+
+```{r cell_26}
+# the levels that have at least `min_pct` % of the training exposure
+levels_to_keep <- function(x, weight, min_pct) {
+  share <- tapply(weight, x, sum) / sum(weight) * 100
+  names(share)[share >= min_pct]
+}
+
+group_rare <- function(x, keep) ifelse(x %in% keep, x, "other")
+
+tr <- tr |>
+  mutate(
+    BRAND_05 = group_rare(VEH_brand, levels_to_keep(VEH_brand, Time_Exposure, 0.5)),
+    BRAND_1 = group_rare(VEH_brand, levels_to_keep(VEH_brand, Time_Exposure, 1)),
+    BRAND_2 = group_rare(VEH_brand, levels_to_keep(VEH_brand, Time_Exposure, 2))
+  )
+
+c(brands = n_distinct(tr$VEH_brand), levels_05 = n_distinct(tr$BRAND_05),
+  levels_1 = n_distinct(tr$BRAND_1), levels_2 = n_distinct(tr$BRAND_2))
+
+compare_forms(list(
+  "brands under 0.5% -> other" = Burning_Cost ~ Veh_type2_merged + BRAND_05,
+  "brands under 1% -> other" = Burning_Cost ~ Veh_type2_merged + BRAND_1,
+  "brands under 2% -> other" = Burning_Cost ~ Veh_type2_merged + BRAND_2
+))
+```
+
+The more levels we keep, the worse it gets: each brand estimate is noisy, and
+the noise costs more than the real differences between brands gain.
+**Decision: `VEH_brand_grp` - brands under 2% exposure to `other`.** Merging
+by *similar risk* (instead of by exposure) is also possible, but with brands
+of this size we would be fitting noise, so we keep the simple rule.
+
+**D_ZIP** has 554 four-digit codes. The Lesson 5 hint was to **truncate** it:
+
+```{r cell_27}
+tr <- tr |>
+  mutate(
+    ZIP_1 = substr(D_ZIP, 1, 1),
+    ZIP_2 = group_rare(substr(D_ZIP, 1, 2), levels_to_keep(substr(D_ZIP, 1, 2), Time_Exposure, 0.5)),
+    ZIP_3 = group_rare(substr(D_ZIP, 1, 3), levels_to_keep(substr(D_ZIP, 1, 3), Time_Exposure, 0.5))
+  )
+
+compare_forms(list(
+  "first digit" = Burning_Cost ~ Veh_type2_merged + ZIP_1,
+  "first 2 digits (rare -> other)" = Burning_Cost ~ Veh_type2_merged + ZIP_2,
+  "first 3 digits (rare -> other)" = Burning_Cost ~ Veh_type2_merged + ZIP_3
+))
+```
+
+The finer the region, the worse. **Decision: `D_ZIP_1` - the first digit.** The
+region has no visible effect in our data at any level of detail, so the
+coarsest version is the safest.
+
+**The rest:** `Year` and `Customer_Type` are used as they are (4 and 2
+levels); `Veh_type1` and `VEH_type` get the same grouping of levels under 1%
+exposure.
+
+```{r cell_28}
+tr <- tr |>
+  mutate(
+    V1_grp = group_rare(Veh_type1, levels_to_keep(Veh_type1, Time_Exposure, 1)),
+    VT_grp = group_rare(VEH_type, levels_to_keep(VEH_type, Time_Exposure, 1))
+  )
+
+compare_forms(list(
+  "Year" = Burning_Cost ~ Veh_type2_merged + Year,
+  "Customer_Type" = Burning_Cost ~ Veh_type2_merged + Customer_Type,
+  "Veh_type1, levels under 1% -> other" = Burning_Cost ~ Veh_type2_merged + V1_grp,
+  "VEH_type, levels under 1% -> other" = Burning_Cost ~ Veh_type2_merged + VT_grp
+))
+```
+
+None of them adds information beyond the vehicle type.
+
+### The final function and the dataset
+
+All decisions in one place. A single function creates all the columns, so
+that training and validation data (and any future data) are guaranteed to be
+treated in exactly the same way. Everything that was *learned* from the data
+(the cap, the medians, the lists of frequent levels) is computed on the
+training rows and passed in as `fe_params`.
+
+```{r cell_29}
+fe_params <- list(
+  target_cap = target_cap,
+  si_median = si_median,
+  capacity_median = capacity_median,
+  brands_keep = levels_to_keep(train$VEH_brand, train$Time_Exposure, 2),
+  veh1_keep = levels_to_keep(train$Veh_type1, train$Time_Exposure, 1),
+  veh_type_keep = levels_to_keep(train$VEH_type, train$Time_Exposure, 1)
+)
+
+add_features <- function(df, fe) {
+  df |>
+    mutate(
+      # target: keep the original, cap the extreme values
+      Burning_Cost_raw = Burning_Cost,
+      Burning_Cost = pmin(Burning_Cost, fe$target_cap),
+
+      # vehicle type (Lesson 5): categories with (almost) no exposure to the base category
+      Veh_type2_merged = ifelse(Veh_type2 %in% c("", "OTHER", "TRACTOR"), "CAR", Veh_type2),
+
+      # BonusMalus: negatives -> 1 (worst), the odd level 0 -> 13, then used as a number
+      BonusMalus_adj = ifelse(BonusMalus < 0, 1, ifelse(BonusMalus == 0, 13, BonusMalus)),
+
+      # Time_on_book: number, capped at 8 (little exposure above)
+      Time_on_book_cap = pmin(Time_on_book, 8),
+
+      # Sum_insured: invalid 0 -> median, log; the band is for charts only
+      Sum_insured_log = log(ifelse(Sum_insured <= 0, fe$si_median, Sum_insured)),
+      Sum_insured_band = cut(
+        ifelse(Sum_insured <= 0, fe$si_median, Sum_insured),
+        breaks = c(-Inf, 2000, 4000, 6000, 8000, 10000, 15000, 20000, 30000, 50000, Inf),
+        labels = c("<=2k", "2-4k", "4-6k", "6-8k", "8-10k", "10-15k", "15-20k", "20-30k", "30-50k", "50k+")
+      ),
+
+      # Capacity: invalid 0 -> median, then 6 bands (the shape is not monotonic)
+      Capacity_band = cut(
+        ifelse(Capacity <= 0, fe$capacity_median, Capacity),
+        breaks = c(-Inf, 1000, 1300, 1600, 2000, 3000, Inf),
+        labels = c("<=1000", "1001-1300", "1301-1600", "1601-2000", "2001-3000", "3000+")
+      ),
+
+      # Construct_year: 3 bands
+      Construct_year_band = factor(
+        ifelse(Construct_year <= 2006, "<=2006", ifelse(Construct_year <= 2010, "2007-2010", "2011+")),
+        levels = c("<=2006", "2007-2010", "2011+")
+      ),
+
+      # Nr_of_seats: impossible values -> base (5), then 4 groups
+      Nr_of_seats_grp = factor(
+        case_when(
+          !(Nr_of_seats %in% as.character(1:9)) ~ "1/4/5/6",
+          Nr_of_seats == "2" ~ "2",
+          Nr_of_seats == "3" ~ "3",
+          Nr_of_seats %in% c("7", "8", "9") ~ "7+",
+          TRUE ~ "1/4/5/6"
+        ),
+        levels = c("2", "3", "1/4/5/6", "7+")
+      ),
+
+      # D_age: clipped, no form of this variable helps (best effort)
+      D_age_adj = pmin(pmax(D_age, 25), 80),
+
+      # VEH_brand: brands under 2% of the training exposure -> other
+      VEH_brand_grp = ifelse(VEH_brand %in% fe$brands_keep, VEH_brand, "other"),
+
+      # D_ZIP: first digit
+      D_ZIP_1 = substr(D_ZIP, 1, 1),
+
+      # other classifications of the vehicle: levels under 1% -> other
+      Veh_type1_grp = ifelse(Veh_type1 %in% fe$veh1_keep, Veh_type1, "other"),
+      VEH_type_grp = ifelse(VEH_type %in% fe$veh_type_keep, VEH_type, "other")
+    )
+}
+```
+
+```{r cell_30}
+dt_engineered <- dt_pol_w_claims |>
+  mutate(Dataset = ifelse(row_number() %in% train_idx, "train", "valid")) |>
+  add_features(fe_params)
+
+# the function gives the same columns as the step by step investigation above
+train_fe <- dt_engineered[train_idx, ] # same rows and the same order as `tr`
+stopifnot(
+  nrow(train_fe) == nrow(tr),
+  all.equal(train_fe$Burning_Cost, tr$Burning_Cost),
+  all.equal(train_fe$BonusMalus_adj, tr$BM_recoded),
+  all.equal(train_fe$Time_on_book_cap, tr$TOB_cap8),
+  all.equal(train_fe$Sum_insured_log, tr$SI_log),
+  all(as.character(train_fe$Capacity_band) == as.character(tr$CAP_band)),
+  all(as.character(train_fe$Construct_year_band) == as.character(tr$CY_band)),
+  all(as.character(train_fe$Nr_of_seats_grp) == as.character(tr$NS_group)),
+  all.equal(train_fe$D_age_adj, tr$AGE_clipped),
+  all(train_fe$VEH_brand_grp == tr$BRAND_2),
+  all(train_fe$D_ZIP_1 == tr$ZIP_1)
+)
+dim(dt_engineered)
+```
+
+The `Dataset` column stores which rows are training and which validation rows,
+so the lesson uses exactly the split that all the decisions were made on.
+
+#### Summary of the decisions
+
+The gain is again the cross-validated deviance gain on the training data, now
+computed on the final columns of the dataset.
+
+```{r cell_31}
+final_forms <- list(
+  BonusMalus_adj = Burning_Cost ~ Veh_type2_merged + BonusMalus_adj,
+  Time_on_book_cap = Burning_Cost ~ Veh_type2_merged + Time_on_book_cap,
+  Sum_insured_log = Burning_Cost ~ Veh_type2_merged + Sum_insured_log,
+  Capacity_band = Burning_Cost ~ Veh_type2_merged + Capacity_band,
+  Construct_year_band = Burning_Cost ~ Veh_type2_merged + Construct_year_band,
+  Nr_of_seats_grp = Burning_Cost ~ Veh_type2_merged + Nr_of_seats_grp,
+  D_age_adj = Burning_Cost ~ Veh_type2_merged + D_age_adj,
+  VEH_brand_grp = Burning_Cost ~ Veh_type2_merged + VEH_brand_grp,
+  D_ZIP_1 = Burning_Cost ~ Veh_type2_merged + D_ZIP_1,
+  Year = Burning_Cost ~ Veh_type2_merged + Year,
+  Customer_Type = Burning_Cost ~ Veh_type2_merged + Customer_Type,
+  Veh_type1_grp = Burning_Cost ~ Veh_type2_merged + Veh_type1_grp,
+  VEH_type_grp = Burning_Cost ~ Veh_type2_merged + VEH_type_grp
+)
+
+decision_table <- data.frame(
+  form = names(final_forms),
+  type = c(
+    "number", "number", "number (log)", "category", "category", "category", "number",
+    "category", "category", "category", "category", "category", "category"
+  ),
+  adjustment = c(
+    "negatives -> 1, odd level 0 -> 13",
+    "capped at 8",
+    "invalid 0 -> median, log",
+    "invalid 0 -> median, 6 bands",
+    "3 bands",
+    "impossible values -> base, 4 groups",
+    "clipped to 25-80",
+    "brands under 2% exposure -> other",
+    "first digit only",
+    "as is",
+    "as is",
+    "levels under 1% -> other",
+    "levels under 1% -> other"
+  )
+)
+
+decision_table |>
+  left_join(compare_forms(final_forms, data = train_fe), by = "form") |>
+  rename(column = form) |>
+  arrange(desc(cv_gain_k))
+```
+
+Reading the table:
+
+-   **BonusMalus** carries by far the most information, then a group of
+    clearly useful but much weaker variables: Time_on_book, Sum_insured,
+    Capacity and Construct_year.
+-   The rest is at or below zero even in the best form we found. We keep these
+    variables in the dataset on purpose: a variable selection method should be
+    able to leave them out, and a student should see what "no information"
+    looks like.
+-   The **numeric** variables - BonusMalus, Time_on_book and Sum_insured - are
+    the ones where a single multiplier describes the effect, which is what makes
+    a simple rating formula possible.
+
+### Save the dataset
+
+```{r cell_32}
+saveRDS(dt_engineered, file.path(proj, "Data/dt_engineered.rds"))
+```
+
+### Appendix: why deviance and not the grouped RMSE?
+
+The grouped RMSE from Lesson 5 compares the average actual and predicted
+burning cost in 5 groups of the validation data. With about 360 claims in the
+validation set it is a very noisy number, and it can even prefer a model
+without a variable we know is useful. Let's see it on 20 random 80/20 splits
+of the data: we add `BonusMalus_adj` (the strongest variable) to the
+vehicle-type-only model and check how often each metric says "better", with
+and without the cap on the target.
+
+```{r cell_33}
+splits <- lapply(1:20, function(s) {
+  set.seed(1000 + s)
+  idx <- sample(nrow(dt_engineered), round(0.8 * nrow(dt_engineered)))
+  tr_s <- dt_engineered[idx, ]
+  va_s <- dt_engineered[-idx, ]
+
+  bind_rows(lapply(c("no cap", "cap at 99.5%"), function(cap_nm) {
+    if (cap_nm == "cap at 99.5%") {
+      cap_s <- quantile(tr_s$Burning_Cost_raw[tr_s$Burning_Cost_raw > 0], 0.995)
+      tr_s$Burning_Cost <- pmin(tr_s$Burning_Cost_raw, cap_s)
+      va_s$Burning_Cost <- pmin(va_s$Burning_Cost_raw, cap_s)
+    } else {
+      tr_s$Burning_Cost <- tr_s$Burning_Cost_raw
+      va_s$Burning_Cost <- va_s$Burning_Cost_raw
+    }
+
+    m_base <- glm_tweedie(Burning_Cost ~ Veh_type2_merged, tr_s)
+    m_bm <- glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj, tr_s)
+    p_base <- predict(m_base, va_s, type = "response")
+    p_bm <- predict(m_bm, va_s, type = "response")
+
+    data.frame(
+      split = s,
+      target = cap_nm,
+      rmse_base = rmse_group(va_s$Burning_Cost, p_base, va_s$Time_Exposure, 5),
+      rmse_with_bm = rmse_group(va_s$Burning_Cost, p_bm, va_s$Time_Exposure, 5),
+      dev_base = tweedie_deviance(va_s$Burning_Cost, p_base, va_s$Time_Exposure),
+      dev_with_bm = tweedie_deviance(va_s$Burning_Cost, p_bm, va_s$Time_Exposure)
+    )
+  }))
+})
+
+bind_rows(splits) |>
+  group_by(target) |>
+  summarise(
+    rmse_base_mean = round(mean(rmse_base), 1),
+    rmse_base_sd = round(sd(rmse_base), 1),
+    splits_where_grouped_rmse_improves_pct = round(100 * mean(rmse_with_bm < rmse_base)),
+    splits_where_deviance_improves_pct = round(100 * mean(dev_with_bm < dev_base))
+  )
+```
+
+What to take from the table:
+
+-   The **cap** reduces the spread of the validation RMSE only a little - it
+    is a cheap safeguard, not a cure.
+-   **BonusMalus** is by far the best variable in the data, yet the grouped RMSE
+    says that adding it makes the model *worse* in almost every split. The
+    deviance says "better" in every split.
+-   That is why Lesson 6 compares and selects variables with the deviance, and
+    why a single validation RMSE should never be the only argument in a model
+    decision. The RMSE still has its use as an intuitive, visual number (the
+    lift chart), just not for picking between close models.
