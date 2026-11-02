@@ -14,3 +14,6 @@ tools/image_generation/out/
 
 # local notes for image generation (names of env variables with the proxy credentials)
 tools/image_generation/LOCAL_NOTES.md
+
+# Claude Code handoff summaries (session artifacts)
+.claude/handoffs/
