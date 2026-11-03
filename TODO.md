@@ -158,6 +158,107 @@ TODO
       - add one worked example per type, using a variable from the homework, and a short "do not read it like linear
         regression" warning. Material coverage in L5 is thin, so the hints may be the main place for this.
 
+## Lesson 6 alt — blocking items for today (new)
+Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
+- [ ] Bottom-line prose per variable — add a short prose summary of each candidate variable and its final adjustment
+      (one paragraph or bullet each, plus Veh_type2_merged as the base). Decide where it goes: `Support/feature_engineering.Rmd`
+      (next to the "Summary of the decisions" table, cell_31) and/or `Exercises/Lesson6_Ex1_VariableSelection.Rmd`
+      (students read this, the FE file is "read, do not run"). Ex1 intro currently only says "every variable is already
+      prepared". Cover all 13 `candidate_vars`; the content should match `decision_table` so the two do not diverge.
+- [ ] Deviance vs row-level RMSE for the selections — test whether row-level RMSE (no 5-group aggregation) would make the
+      same decisions as the deviance in the three methods. Leave `Support/feature_engineering.Rmd` as it is.
+      - Run each step with both criteria: forward selection path (`forward_select`), chart ranking steps 1-2
+        (`fit_and_rank`), lasso entry order. Use several seeds of the 80/20 split (and/or CV folds on train).
+      - Compare: same variable chosen per step, same best model on the validation path, rank agreement of the
+        candidates. Note the target is already capped at the 99.5th percentile, so RMSE outlier effects are smaller here.
+      - Decision rule: if they agree, use row-level RMSE in the selection code (simpler to explain) and keep the deviance
+        only as a remark; if not, keep the deviance in the selection code.
+      - Material either way: the Tweedie unit deviance in LaTeX (matches `tweedie_deviance()`, power 1.5), plus intuition:
+        for a Gaussian model the deviance is the RSS, and deviance explained = 1 - D_model / D_null is the GLM analogue of
+        R^2. Answers to the open questions (monotone on training data, no complexity penalty, empirical vs statistical)
+        go in the reply, not in the material.
+- [ ] `load_l6_data()` — remove the function and do its work once in `Support/feature_engineering.Rmd`. It currently does
+      three things: `Year` to character, `D_age_chart` banding (`cut()`), and the split on the existing `Dataset` column.
+      Plan:
+      - add the `Year` conversion and `D_age_chart` to the dataset in the FE step (cell_30 / `add_features`), then re-save
+        `Data/dt_engineered.rds` (check first that the saved file has the same values and types the function produces),
+      - students then read the RDS and filter on `Dataset`, e.g. `dt <- readRDS(...)`, `train <- dt[dt$Dataset == "train", ]`
+        (keep one file, no separate train/valid files),
+      - update every caller: `Exercises/Lesson6_Ex1_VariableSelection.Rmd` cell_03, `Exercises/Lesson6_Ex2_FinalModel.Rmd`
+        cell_03 (file open in the IDE), `Homework/my_homework.R` and `Homework/zadanie/hw_zadanie1-8.R` (the homework text
+        mentions load_l6_data),
+      - keep `candidate_vars` and `chart_columns` in `Support/selection_helpers.R` (they are not part of the loading),
+      - verify the results are unchanged (same train/valid rows, identical coefficients for one model) before and after.
+- [ ] Forward selection intuition image — generate an illustrative picture (or 2-3 variants to choose from) of the
+      forward selection idea: start from the base, try every remaining variable, keep the best, repeat. Use
+      `tools/image_generation/`: add a prompts file for Lesson 6 (with a `## Common style` block, as in
+      `image_prompts_lesson5.md`), check that the script's proxy variable names are filled in locally (not committed),
+      review each output against its prompt (values, arrows, colours). Save the chosen image in `Lesson6_alt/Support/`
+      and reference it in Ex1 Method 1.
+- [ ] Redesign the three helpers so the starting point is passed explicitly (nothing assumes Veh_type2_merged):
+      - current state: `forward_select()` and `lasso_entry_order()` take `base` and `start` but default `base` to
+        "Veh_type2_merged"; `fit_and_rank()` in Ex1 hard-codes "Veh_type2_merged" and takes only `selected`. The
+        mismatch ranking has no `base` argument at all.
+      - target: `base` and `start` are explicit arguments of all three methods (no hidden default). Candidates are
+        `setdiff(candidate_vars, c(base, start))` inside each method. Move the ranking step (`fit_and_rank` logic) into
+        `Support/selection_helpers.R` so the homework uses the same function (e.g. `rank_by_mismatch(train, base, start)`).
+      - must work for: (a) base = none, start = none (intercept only: forward selection from scratch, mismatch ranking from
+        the intercept model, lasso over all variables); (b) base = Veh_type2_merged, start = none; (c) base = none,
+        start = one variable; (d) base = Veh_type2_merged, start = one variable (the homework case, e.g.
+        Time_on_book_cap); (e) several start variables.
+      - edge cases to check: `reformulate()` with no terms (intercept-only formula), `model.matrix()` and the
+        `term_of_column` mapping when there is no base column, lasso with no unpenalised term, the 0.001 penalty for start.
+      - empirical test (script, results written down): run every method for cases (a)-(e), check no error, every
+        candidate returned once, start variables are in the path from step 0, and that the intercept-only mismatch
+        ranking matches a manual calculation for one variable.
+- [ ] L1 penalty — material for the lasso method in Ex1 (students are not familiar with L1):
+      - formula: the glmnet objective is the scaled negative log-likelihood (deviance / 2 over N, with exposure weights)
+        plus lambda times the sum of penalty.factor * |beta_j| (base 0, start 0.001, others 1). Verify the exact scaling
+        for the Tweedie family in the glmnet docs before writing it down.
+      - intuition: the penalty charges for the size of each coefficient; with a strong penalty every coefficient is
+        exactly zero, as lambda falls the variable with the largest effect switches on first. `entry_penalty` in the
+        output is the lambda at which a variable enters.
+      - note: glmnet standardises numeric columns by default (`standardize = TRUE`), so the penalty is on a comparable
+        scale; each dummy level is a separate column, so one level can enter alone (already a caveat in Ex1).
+      - visuals: a real coefficient-path plot from the fitted glmnet object (`plot(fit, xvar = "lambda")`) shows the entry
+        order accurately. Use an AI image (via `tools/image_generation/`) only for the geometric idea (loss contours
+        touching the L1 diamond at a corner, L2 circle does not), and check it against the real path.
+- [ ] (optional, low priority) Exact lasso scaling check. Only needed if the material states an exact lambda or entry
+      penalty formula. The intuition and the entry-order formula in the L1 item above do not need it. Findings so far
+      (train split, base Veh_type2_merged, candidates BonusMalus_adj, Time_on_book_cap, Sum_insured_log, Capacity_band):
+      - the entry formula's maximum is about 1.375 times glmnet's `lambda[1]`, both with `standardize = FALSE`
+        (70.52 vs 51.29) and `standardize = TRUE` (15.84 vs 11.52), so the approximation is off by a constant factor;
+      - with `standardize = FALSE`, glmnet's solution is a minimum of the objective in the L1 item (deviance / (2 sum w)
+        + lambda * sum p_j |beta_j|), confirmed by a perturbation test;
+      - with `standardize = TRUE` the same test failed (glmnet's solution was beaten by a nearby point). This is not yet
+        explained (possibly the standardised scaling or convergence), so the objective is not confirmed for that case;
+      - the per-candidate entry comparison did not finish (the run timed out with a fine lambda grid).
+      If pursued: finish the per-candidate check with a coarser lambda grid, settle the standardised scaling, and check
+      against the glmnet docs. If the material keeps only the intuition, drop this item.
+- [ ] Intercept-only baseline in Ex1 model comparison — add "Intercept only" (`Burning_Cost ~ 1`) as the first row of the
+      comparison in cell_15, before "Vehicle type". Keep Veh_type2_merged as the first added variable everywhere in the
+      material (Ex1, Ex2, FE, homework base), because the homework starting variable is an extra one on top of it.
+
+## Lesson 6 quiz visuals and modelling data stability (new)
+- [ ] L6 quiz — generate an illustrative image for each quiz question in L6. The images will probably be shown on
+      Slido as the slide background or image while the question is on screen, so keep them illustrative and not
+      distracting. Generate them with `tools/image_generation/` (see its README.md) and save the chosen images to the
+      L6 Support folder, following the same approach as the Lesson 4 images.
+- [ ] Investigate the instability of the modelling data in L5 and L6. RMSE and grouped RMSE change a lot between
+      runs and small data changes, so model comparisons can be misleading. Scope:
+      - measure the variability: repeat the train/valid split over several seeds (and k-fold CV) for the L5 Ex3
+        models and the L6 GBM and GLM models, and report the spread of RMSE and grouped RMSE,
+      - find the source: which policies or claims drive the variance (large losses, few claims per group, sparse
+        levels such as D_ZIP / VEH_brand), and how much of the RMSE comes from the top 1% of policies,
+      - check how the data size and structure affect it (number of policies, claims per policy, exposure, number
+        of rows per group in the grouped RMSE),
+      - propose options to stabilise the data, e.g. a larger or regenerated dataset, a different sample, data
+        augmentation, capping or banding (see the "cap the target" item above), grouping rare levels, or a
+        fixed-size stratified split, and state the trade-off of each option,
+      - list the implications across the lessons (L4 data prep and KPIs, L5 Ex1-Ex3 and homework RMSE references,
+        L6 GBM tuning and final fit, the BLOCKING regeneration list) for the preferred option.
+      Output: a short written investigation with the numbers, and a proposal to review before any data is changed.
+
 ## Class 2027 research — automated homework review on Posit Cloud
 - [ ] Research whether we can programmatically interact with the student projects in the Posit Cloud workspace
       (where the homework is done), so we can systematically suggest ratings, write comments, and spot patterns and
