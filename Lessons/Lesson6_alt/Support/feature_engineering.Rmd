@@ -741,9 +741,13 @@ add_features <- function(df, fe) {
 
       # D_age: clipped, no form of this variable helps (best effort)
       D_age_adj = pmin(pmax(D_age, 25), 80),
+      # banded copy of the age, for charts only (a chart by every age value would be just noise)
+      D_age_chart = cut(D_age_adj, breaks = c(0, 30, 40, 45, 50, 60, 70, Inf)),
 
       # VEH_brand: brands under 2% of the training exposure -> other
       VEH_brand_grp = ifelse(VEH_brand %in% fe$brands_keep, VEH_brand, "other"),
+
+      # Year is already a category (enforce_data_types above), so it needs no conversion here
 
       # D_ZIP: first digit
       D_ZIP_1 = substr(D_ZIP, 1, 1),
@@ -845,18 +849,66 @@ Reading the table:
     the ones where a single multiplier describes the effect, which is what makes
     a simple rating formula possible.
 
+#### Bottom line per variable
+
+The same table in words. The gain is the cross-validated deviance gain (in
+thousands) over the vehicle-type-only model, from the table above. Exercise 1
+shows a shorter version of this list.
+
+-   **Veh_type2_merged (the base, category).** The vehicle type from Lesson 5,
+    with the categories without exposure (blank, `OTHER`, `TRACTOR`) merged into
+    `CAR`. It is in every model, so it has no gain of its own.
+-   **BonusMalus_adj (number, gain 325).** Negatives to 1, the odd level 0 to
+    13. By far the strongest variable, and the only one where a single
+    multiplier per level is a clear, large effect.
+-   **Sum_insured_log (number, gain 13).** Invalid 0 replaced by the median,
+    then the log. A weak but real effect: a higher insured value means a higher
+    burning cost, strongest at the low end.
+-   **Time_on_book_cap (number, gain 13).** Capped at 8 years. Similar in
+    strength to the sum insured: customers with the company longer have a
+    lower burning cost.
+-   **Capacity_band (category, gain 9).** Invalid 0 replaced by the median,
+    then 6 bands. The effect is not monotonic, which is why it is a category and
+    not a number. It costs 5 extra parameters for a modest gain.
+-   **Construct_year_band (category, gain 6).** 3 bands. A small difference
+    between older and newer cars; the least convincing of the "useful" group.
+-   **Nr_of_seats_grp (category, gain 1).** Impossible values to the base,
+    4 groups. Practically no new information, because the seats overlap with the
+    vehicle type.
+-   **D_age_adj (number, gain -0.3).** Clipped to 25-80. No form helps (most
+    of the exposure sits at a few ages that look like a default value).
+-   **Year (category, gain -0.9).** Used as it is (4 levels). No information
+    beyond the vehicle type.
+-   **Customer_Type (category, gain -1.3).** Used as it is. No information
+    beyond the vehicle type.
+-   **D_ZIP_1 (category, gain -2.7).** First digit of the ZIP only. The finer
+    the region, the worse it gets; the first digit is the safest form.
+-   **VEH_brand_grp (category, gain -3.3).** Brands under 2% exposure to
+    `other`. Even after grouping, each brand estimate is more noise than signal.
+-   **Veh_type1_grp and VEH_type_grp (category, gain -3.4 and -3.6).** Levels
+    under 1% exposure to `other`. Other classifications of the same vehicle, so
+    nothing new next to `Veh_type2_merged`.
+
+A negative gain does not mean the variable is "bad" in general: it means that
+on unseen data the extra parameters cost more than they bring. The variables
+at the bottom are in the dataset on purpose, so a selection method has
+something to reject. (One consequence you will see in Exercise 1: a method that
+looks at the training data only can still pick one of them, because on the
+training data a variable never makes the fit worse.)
+
 ### Save the dataset
 
 ```{r cell_32}
 saveRDS(dt_engineered, file.path(proj, "Data/dt_engineered.rds"))
 ```
 
-### Appendix: why deviance and not the grouped RMSE?
+### Appendix: choosing between models - deviance and grouped RMSE
 
 The grouped RMSE from Lesson 5 compares the average actual and predicted
-burning cost in 5 groups of the validation data. With about 360 claims in the
-validation set it is a very noisy number, and it can even prefer a model
-without a variable we know is useful. Let's see it on 20 random 80/20 splits
+burning cost in 5 groups of the validation data. It is the right picture for
+"do the group averages match reality?", but with about 360 claims in the
+validation set it is a coarse number for telling close models apart, and it
+can even prefer a model without a variable we know is useful. Let's see it on 20 random 80/20 splits
 of the data: we add `BonusMalus_adj` (the strongest variable) to the
 vehicle-type-only model and check how often each metric says "better", with
 and without the cap on the target.
@@ -911,7 +963,7 @@ What to take from the table:
 -   **BonusMalus** is by far the best variable in the data, yet the grouped RMSE
     says that adding it makes the model *worse* in almost every split. The
     deviance says "better" in every split.
--   That is why Lesson 6 compares and selects variables with the deviance, and
-    why a single validation RMSE should never be the only argument in a model
-    decision. The RMSE still has its use as an intuitive, visual number (the
-    lift chart), just not for picking between close models.
+-   That is why Lesson 6 compares and selects variables with the deviance, which
+    uses every row. The grouped RMSE keeps its place as the intuitive, visual
+    check of the chosen model (the lift chart and the pooling idea from Lesson
+    5); it is just not the number to pick between close models with.

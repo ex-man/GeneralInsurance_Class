@@ -11,6 +11,6 @@
 # source("/cloud/project/Support/mismatch_rank.R")
 # source("/cloud/project/Support/selection_helpers.R")
 #
-# l6 <- load_l6_data("/cloud/project/Data/dt_engineered.rds")
-# train <- l6$train
-# valid <- l6$valid
+# dt <- readRDS("/cloud/project/Data/dt_engineered.rds")
+# train <- dt[dt$Dataset == "train", ]
+# valid <- dt[dt$Dataset == "valid", ]

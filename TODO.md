@@ -160,12 +160,12 @@ TODO
 
 ## Lesson 6 alt — blocking items for today (new)
 Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
-- [ ] Bottom-line prose per variable — add a short prose summary of each candidate variable and its final adjustment
+- [x] Bottom-line prose per variable — add a short prose summary of each candidate variable and its final adjustment
       (one paragraph or bullet each, plus Veh_type2_merged as the base). Decide where it goes: `Support/feature_engineering.Rmd`
       (next to the "Summary of the decisions" table, cell_31) and/or `Exercises/Lesson6_Ex1_VariableSelection.Rmd`
       (students read this, the FE file is "read, do not run"). Ex1 intro currently only says "every variable is already
       prepared". Cover all 13 `candidate_vars`; the content should match `decision_table` so the two do not diverge.
-- [ ] Deviance vs row-level RMSE for the selections — test whether row-level RMSE (no 5-group aggregation) would make the
+- [ ] (study done, decision pending - see reply) Deviance vs row-level RMSE for the selections — test whether row-level RMSE (no 5-group aggregation) would make the
       same decisions as the deviance in the three methods. Leave `Support/feature_engineering.Rmd` as it is.
       - Run each step with both criteria: forward selection path (`forward_select`), chart ranking steps 1-2
         (`fit_and_rank`), lasso entry order. Use several seeds of the 80/20 split (and/or CV folds on train).
@@ -177,7 +177,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         for a Gaussian model the deviance is the RSS, and deviance explained = 1 - D_model / D_null is the GLM analogue of
         R^2. Answers to the open questions (monotone on training data, no complexity penalty, empirical vs statistical)
         go in the reply, not in the material.
-- [ ] `load_l6_data()` — remove the function and do its work once in `Support/feature_engineering.Rmd`. It currently does
+- [x] `load_l6_data()` — remove the function and do its work once in `Support/feature_engineering.Rmd`. It currently does
       three things: `Year` to character, `D_age_chart` banding (`cut()`), and the split on the existing `Dataset` column.
       Plan:
       - add the `Year` conversion and `D_age_chart` to the dataset in the FE step (cell_30 / `add_features`), then re-save
@@ -189,13 +189,13 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         mentions load_l6_data),
       - keep `candidate_vars` and `chart_columns` in `Support/selection_helpers.R` (they are not part of the loading),
       - verify the results are unchanged (same train/valid rows, identical coefficients for one model) before and after.
-- [ ] Forward selection intuition image — generate an illustrative picture (or 2-3 variants to choose from) of the
+- [x] Forward selection intuition image — generate an illustrative picture (or 2-3 variants to choose from) of the
       forward selection idea: start from the base, try every remaining variable, keep the best, repeat. Use
       `tools/image_generation/`: add a prompts file for Lesson 6 (with a `## Common style` block, as in
       `image_prompts_lesson5.md`), check that the script's proxy variable names are filled in locally (not committed),
       review each output against its prompt (values, arrows, colours). Save the chosen image in `Lesson6_alt/Support/`
       and reference it in Ex1 Method 1.
-- [ ] Redesign the three helpers so the starting point is passed explicitly (nothing assumes Veh_type2_merged):
+- [x] Redesign the three helpers so the starting point is passed explicitly (nothing assumes Veh_type2_merged):
       - current state: `forward_select()` and `lasso_entry_order()` take `base` and `start` but default `base` to
         "Veh_type2_merged"; `fit_and_rank()` in Ex1 hard-codes "Veh_type2_merged" and takes only `selected`. The
         mismatch ranking has no `base` argument at all.
@@ -211,7 +211,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - empirical test (script, results written down): run every method for cases (a)-(e), check no error, every
         candidate returned once, start variables are in the path from step 0, and that the intercept-only mismatch
         ranking matches a manual calculation for one variable.
-- [ ] L1 penalty — material for the lasso method in Ex1 (students are not familiar with L1):
+- [x] L1 penalty — material for the lasso method in Ex1 (students are not familiar with L1):
       - formula: the glmnet objective is the scaled negative log-likelihood (deviance / 2 over N, with exposure weights)
         plus lambda times the sum of penalty.factor * |beta_j| (base 0, start 0.001, others 1). Verify the exact scaling
         for the Tweedie family in the glmnet docs before writing it down.
@@ -235,7 +235,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - the per-candidate entry comparison did not finish (the run timed out with a fine lambda grid).
       If pursued: finish the per-candidate check with a coarser lambda grid, settle the standardised scaling, and check
       against the glmnet docs. If the material keeps only the intuition, drop this item.
-- [ ] Intercept-only baseline in Ex1 model comparison — add "Intercept only" (`Burning_Cost ~ 1`) as the first row of the
+- [x] Intercept-only baseline in Ex1 model comparison — add "Intercept only" (`Burning_Cost ~ 1`) as the first row of the
       comparison in cell_15, before "Vehicle type". Keep Veh_type2_merged as the first added variable everywhere in the
       material (Ex1, Ex2, FE, homework base), because the homework starting variable is an extra one on top of it.
 

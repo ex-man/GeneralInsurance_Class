@@ -44,9 +44,9 @@ First we check it against the simpler candidates on the validation data, as
 before (this is the last time we use the split).
 
 ```{r cell_03}
-l6 <- load_l6_data("/cloud/project/Data/dt_engineered.rds")
-train <- l6$train
-valid <- l6$valid
+dt <- readRDS("/cloud/project/Data/dt_engineered.rds")
+train <- dt[dt$Dataset == "train", ]
+valid <- dt[dt$Dataset == "valid", ]
 
 models <- list(
   "Vehicle type" = glm_tweedie(Burning_Cost ~ Veh_type2_merged, train),
@@ -106,7 +106,7 @@ aside. More data gives more stable multipliers. We use the same features
 way) and the same reference levels.
 
 ```{r cell_06}
-all_data <- rbind(l6$train, l6$valid)
+all_data <- dt
 all_data$Capacity_band <- relevel(factor(all_data$Capacity_band, ordered = FALSE), ref = "1601-2000")
 all_data$Veh_type2_merged <- relevel(factor(all_data$Veh_type2_merged), ref = "CAR")
 

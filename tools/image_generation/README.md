@@ -27,6 +27,8 @@ uv run --no-project python tools/image_generation/generate_images.py [regex] [--
 ## Contents
 - `image_prompts.md` - prompts for the Lesson 4 Exercise 1 pictures (keys, summarize vs mutate, left joins, granularity),
   with the example data and colour code they share, and which generated version is used in the lesson.
+- `image_prompts_lesson6.md` - prompts for the Lesson 6 Exercise 1 pictures (forward selection in three variants, the L1 vs L2
+  penalty geometry); the chosen versions are `img_F1_forward_minimal.png` and `img_L1_penalty_geometry.png`.
 - `image_prompts_lesson5.md` - prompts for the Lesson 5 Exercise 2 pictures (validation methods, grouped RMSE / lift
   chart), the validation methods picture and the two-step grouped RMSE story (the chosen versions of three complexity levels
   that were tried; the other levels are in git history).
