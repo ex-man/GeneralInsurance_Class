@@ -21,31 +21,27 @@ order? In this exercise we look at three ways to do it:
 We use a dataset where every variable is already prepared (capped, merged,
 banded, transformed). How it was prepared and why is explained in
 `Support/feature_engineering.Rmd` - you can read it, you do not need to run it.
-In short, this is what we have (the vehicle type `Veh_type2_merged` is the base
-that is in every model, the other 13 are the candidates):
+In short, this is what we have. Imagine a stakeholder has asked for the
+vehicle type `Veh_type2_merged` to be in the model. So we start from it - it is
+the base that is in every model - and the selection methods only decide which
+of the other 13 variables (the candidates) get added on top:
 
-| Variable | Type | Adjustment | In one line |
-|---|---|---|---|
-| `BonusMalus_adj` | number | negatives to 1, odd level 0 to 13 | by far the strongest |
-| `Sum_insured_log` | number (log) | invalid 0 to median, log | weak but real |
-| `Time_on_book_cap` | number | capped at 8 | weak but real |
-| `Capacity_band` | category | invalid 0 to median, 6 bands | not monotonic, modest gain |
-| `Construct_year_band` | category | 3 bands | small difference old vs. newer cars |
-| `Nr_of_seats_grp` | category | impossible values to base, 4 groups | almost no new information |
-| `D_age_adj` | number | clipped to 25-80 | no form helps |
-| `Year` | category | as is | no new information |
-| `Customer_Type` | category | as is | no new information |
-| `D_ZIP_1` | category | first digit only | no new information |
-| `VEH_brand_grp` | category | brands under 2% exposure to other | noise outweighs signal |
-| `Veh_type1_grp` | category | levels under 1% to other | repeats the vehicle type |
-| `VEH_type_grp` | category | levels under 1% to other | repeats the vehicle type |
-
-The first six are the ones with some information, the rest are in the data on
-purpose, so that a selection method has something to reject.
-
-```{r cell_01, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+| Variable | Type | Adjustment |
+|---|---|---|
+| `Veh_type2_merged` | category | blank, `OTHER`, `TRACTOR` to `CAR` |
+| `BonusMalus_adj` | number | negatives to 1, odd level 0 to 13 |
+| `Sum_insured_log` | number (log) | invalid 0 to median, log |
+| `Time_on_book_cap` | number | capped at 8 |
+| `Capacity_band` | category | invalid 0 to median, 6 bands |
+| `Construct_year_band` | category | 3 bands |
+| `Nr_of_seats_grp` | category | impossible values to base, 4 groups |
+| `D_age_adj` | number | clipped to 25-80 |
+| `Year` | category | as is |
+| `Customer_Type` | category | as is |
+| `D_ZIP_1` | category | first digit only |
+| `VEH_brand_grp` | category | brands under 2% exposure to other |
+| `Veh_type1_grp` | category | levels under 1% to other |
+| `VEH_type_grp` | category | levels under 1% to other |
 
 ```{r cell_02, message=FALSE}
 library(dplyr)
@@ -74,9 +70,6 @@ split). Two things are different from Lesson 5:
 -   the predictors are the **engineered** versions (e.g. `BonusMalus_adj`,
     `Capacity_band`).
 
-Because of the capped target, RMSE values here are not comparable with the
-ones from Lesson 5.
-
 ```{r cell_03}
 dt <- readRDS("/cloud/project/Data/dt_engineered.rds")
 train <- dt[dt$Dataset == "train", ]
@@ -91,67 +84,84 @@ candidate_vars
 In Lesson 5 we used the grouped RMSE: sort the policies by predicted risk,
 make 5 groups, compare actual and predicted per group. It is intuitive and it
 answers a pricing question - do the group averages of the model match reality?
-- so it stays our tool for the final check of a model. For *choosing between
-close models* we want a number that uses every row, because with a few hundred
-claims in the validation data 5 group averages can move a lot. That number is
-the **deviance**, the loss that the GLM itself minimises
-(`tweedie_deviance()`). Lower is better. We show the grouped RMSE next to it so
-you can compare them.
+- so it stays our tool for the final check of a model. For *choosing variables*
+we use the **deviance** instead, the loss that the GLM itself minimises
+(`tweedie_deviance()`). Lower is better. We tried both criteria in forward
+selection on 8 random splits of the data. The deviance chose the same three
+variables on every split (`BonusMalus_adj` first in all of them). The RMSE also
+started with `BonusMalus_adj`, but it then took a different second variable than
+the deviance, and from the third variable on its choice changed from split to
+split. One reason is that a few rows decide the sum of squared errors: on the
+validation data the 5 policies with the largest errors make up about 40% of it,
+but the 5 largest contributions to the deviance only about 12%. We show the
+grouped RMSE next to the deviance so you can compare them.
 
 The deviance is the same idea as the squared error, adapted to our distribution.
-For one policy with actual value $y$ and prediction $\mu$, the Tweedie deviance
-with power 1.5 (the one we use) is
+For one policy with actual value $y$ and predicted mean $\mu$ (the prediction of
+the model), the Tweedie deviance with power 1.5 (the one we use) is
 
 $$
 d(y,\mu) \;=\; \frac{4\,(\sqrt{y}-\sqrt{\mu})^2}{\sqrt{\mu}}
 $$
 
-and the total is the exposure-weighted sum $D=\sum_i w_i\,d(y_i,\mu_i)$. It is
-zero for a perfect fit and grows with the gap between $y$ and $\mu$, like a
-squared error - but a gap counts less when the predicted burning cost is high,
-which suits a target with a long tail. For a *normal* distribution the deviance
-is exactly the sum of squared errors, so you can think of it as "RSS for
-GLMs". And in the same way as $R^2$ compares a model with the average,
+and the total is the exposure-weighted sum over all policies,
 
 $$
-\text{deviance explained} \;=\; 1-\frac{D_{\text{model}}}{D_{\text{null}}}
+D \;=\; \sum_i w_i\,d(y_i,\mu_i).
 $$
 
-compares the model with the intercept-only model $D_{\text{null}}$ (the same price for
-everybody): 0 means "no better than the average", 1 would be a perfect fit.
+It is zero for a perfect fit and grows with the gap between $y$ and $\mu$, like
+a squared error - but a gap counts less when the predicted burning cost is
+high, which suits a target with a long tail. For a *normal* distribution the
+deviance is exactly the sum of squared errors, so you can think of it as "RSS
+for GLMs". Let's try it on a few made-up values (exposure 1 for all):
 
 ```{r cell_04}
-model_veh <- glm_tweedie(Burning_Cost ~ Veh_type2_merged, train)
-model_bm <- glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj, train)
-
-compare_models(list("Vehicle type" = model_veh, "+ BonusMalus" = model_bm), train, valid)
-```
-
-`BonusMalus_adj` is a very strong variable, the deviance drops a lot, both on
-the training and on the validation data. Look at the grouped RMSE though: on the
-validation data it gets *worse*. That is not a one-off: in the appendix of
-`Support/feature_engineering.Rmd` the 5-group RMSE says the same in almost all of
-20 random splits, while the deviance says "better" in every one. Five group
-averages, each resting on a handful of claims, are a coarse yardstick for
-telling close models apart, so in this lesson we choose between models with the
-deviance and keep the grouped RMSE for the final check of the chosen model.
-
-```{r cell_04b}
-# deviance explained on the validation data, relative to a model that predicts the training average
-null_pred <- weighted.mean(train$Burning_Cost, train$Time_Exposure)
-null_dev <- tweedie_deviance(valid$Burning_Cost, rep(null_pred, nrow(valid)), valid$Time_Exposure)
-
 data.frame(
-  model = c("Vehicle type", "+ BonusMalus"),
-  valid_deviance_explained_pct = round(100 * (1 - c(
-    tweedie_deviance(valid$Burning_Cost, predict(model_veh, valid, type = "response"), valid$Time_Exposure),
-    tweedie_deviance(valid$Burning_Cost, predict(model_bm, valid, type = "response"), valid$Time_Exposure)
-  ) / null_dev), 1)
+  actual = c(0, 500, 0, 500),
+  predicted = c(50, 500, 500, 50),
+  deviance = c(
+    tweedie_deviance(0, 50, 1),
+    tweedie_deviance(500, 500, 1),
+    tweedie_deviance(0, 500, 1),
+    tweedie_deviance(500, 50, 1)
+  )
 )
 ```
 
-The share of deviance explained is small even for a good model - insurance
-claims are mostly chance. What matters is the comparison between models.
+A perfect fit (actual 500, predicted 500) gives 0, and the bigger the gap, the
+bigger the number.
+
+Now the same prediction (100) against a claim that gets larger and larger, next
+to the squared error that the RMSE is built from:
+
+```{r cell_04b}
+data.frame(
+  actual = c(500, 1000, 2000, 4000),
+  predicted = 100,
+  squared_error = c(
+    (500 - 100)^2,
+    (1000 - 100)^2,
+    (2000 - 100)^2,
+    (4000 - 100)^2
+  ),
+  deviance = c(
+    tweedie_deviance(500, 100, 1),
+    tweedie_deviance(1000, 100, 1),
+    tweedie_deviance(2000, 100, 1),
+    tweedie_deviance(4000, 100, 1)
+  )
+)
+```
+
+When the claim grows 8 times (500 to 4000), the squared error grows about 95
+times, but the deviance only about 19 times. One very large claim can therefore
+dominate a sum of squared errors, and much less a sum of deviances. This is why
+the deviance is the steadier criterion for choosing variables.
+
+The selection helpers below use the same `tweedie_deviance()` (defined in
+`Support/tweedie_deviance.R`), summed over all policies and divided by 1000 in
+the tables.
 
 ### Method 1: forward selection
 
@@ -177,6 +187,13 @@ and not only the last one.
 fwd <- forward_select(train, valid, candidate_vars, base = "Veh_type2_merged")
 fwd |>
   mutate(across(where(is.numeric), ~ round(.x, 1)))
+```
+
+This is the slowest step of the exercise. If it takes too long or your session
+crashed, load the saved result instead (it is the same table):
+
+```{r cell_05b, eval=FALSE}
+fwd <- readRDS("/cloud/project/Data/fwd_forward_select.rds")
 ```
 
 ```{r cell_06}
@@ -218,10 +235,28 @@ and the fitted line is flat. With 13 variables it takes a long time to go
 through all the charts. The idea here is to measure that difference and look
 at the variables in the order of how much the model misses.
 
-For each variable, `mismatch_rank()` takes the charts' two lines and computes
-the exposure-weighted average gap between them, as a share of the overall
-average burning cost. A level with a lot of exposure counts more than a level
-with almost none, as when we read the chart by eye.
+First, the chart for one variable that is not in the model yet. The reference
+is the model with the vehicle type only (the base; it is the same model as
+`base_model` in `Support/feature_engineering.Rmd`):
+
+```{r cell_07b}
+base_model <- glm_tweedie(Burning_Cost ~ Veh_type2_merged, train)
+base_data <- train
+base_data$pred <- predict(base_model, train, type = "response")
+
+emb_chart_plotly(model = NULL, x_var = "Time_on_book_cap", dt.frm = base_data)
+```
+
+Even with well-engineered variables, going through the chart of every variable
+in every step is slow. The ranking is there to point you to the charts worth
+looking at first. The model fit is already inside the ranking step, so you do
+not fit it yourself each time.
+
+For each variable, `rank_by_mismatch()` fits the model and then `mismatch_rank()`
+takes the charts' two lines and computes the exposure-weighted average gap
+between them, as a share of the overall average burning cost. A level with a
+lot of exposure counts more than a level with almost none, as when we read the
+chart by eye.
 
 ```{r cell_08}
 step1 <- rank_by_mismatch(train, candidate_vars, base = "Veh_type2_merged")
@@ -243,7 +278,7 @@ fitted line, and its mismatch is several times higher than for any other
 variable. We add it, refit and rank again:
 
 ```{r cell_10}
-step2 <- rank_by_mismatch(train, candidate_vars, base = "Veh_type2_merged", start = "BonusMalus_adj")
+step2 <- rank_by_mismatch(train, candidate_vars, base = c("Veh_type2_merged", "BonusMalus_adj"))
 step2$ranking
 ```
 
@@ -267,7 +302,7 @@ chosen_2
 
 step3 <- rank_by_mismatch(
   train, candidate_vars,
-  base = "Veh_type2_merged", start = c("BonusMalus_adj", chosen_2)
+  base = c("Veh_type2_merged", "BonusMalus_adj", chosen_2)
 )
 step3$ranking
 ```
@@ -283,8 +318,7 @@ check the result against the validation deviance in the comparison below.
 The third approach lets an algorithm do the work. The idea of the **lasso** (L1
 penalty): the model is fitted with a penalty on the size of the coefficients.
 With a strong penalty all coefficients are zero. We then relax the penalty step
-by step, and the variables "enter" the model one after another - the most
-useful ones first, the useless ones last or never.
+by step, and the variables "enter" the model one after another.
 
 **What is the L1 penalty?** Until now we fitted a GLM by minimising a loss (the
 deviance, which says how badly the model fits the data). The lasso minimises
@@ -303,30 +337,27 @@ every coefficient (the sum of the absolute values, "L1").
 -   With a very large $\lambda$ it is cheaper to set every coefficient to
     exactly zero than to pay for any of them: the model predicts one price for
     everybody.
--   As we lower $\lambda$, the coefficient that reduces the loss the most per
-    unit of penalty is the first one that is worth paying for - it "enters". The
-    next ones follow. This is why the order of entry is a ranking of the
-    variables. In the output below, `entry_penalty` is the value of $\lambda$ at
-    which a variable enters (a larger value = it entered earlier = it is more
-    important).
 -   A coefficient is not made small gradually, it is set to **exactly zero**.
     This is the difference from a "ridge" (squared) penalty, which only
     shrinks the coefficients and never removes a variable.
--   Penalty weights: $p_j = 0$ for the vehicle type (it is never penalised, so
-    it is always in), and $p_j = 1$ for the candidates. In the homework the
-    starting variable gets a tiny weight (0.001): practically always in, but the
-    fit stays stable.
+-   Penalty weights: the variables of the base get a tiny weight, so they are
+    practically always in, while the candidates get the full weight,
 
-Why exactly zero? The picture shows two coefficients. The blue ellipses are
-the loss: the centre is the best fit without any penalty and the model gets
-worse with every ellipse further out. The shaded shape is the set of
-coefficients we can afford for a given $\lambda$. We take the first ellipse
-that touches it. The L1 shape is a diamond with corners on the axes, and an
-ellipse typically touches a corner, where one coefficient is exactly zero. A
-round (L2) shape has no corners, so it is touched at a point where both
-coefficients are non-zero.
+    $$
+    p_j = 0.001 \;\text{(base)}, \qquad p_j = 1 \;\text{(candidates)}.
+    $$
 
-![L1 and L2 penalty](/cloud/project/Support/img_L1_penalty_geometry.png)
+    The base is not left completely unpenalised ($p_j = 0$), because a variable
+    with many sparse levels (e.g. the brand) can then break the fitting.
+
+**How is the entry order found?** The code loops over decreasing values of
+$\lambda$ and records, at each value, which variables have a non-zero
+coefficient. The order in which the variables first appear is their entry
+order. In the output below, `entry_penalty` is the value of $\lambda$ at which
+a variable enters (a larger value means it entered earlier). The idea: a
+variable that improves the fit a lot is worth paying the penalty for even when
+the penalty is high, so it enters early. A variable that improves the fit only
+a little enters late, or never.
 
 Two practical points. `glmnet` puts the numeric columns on a common scale
 before it applies the penalty (`standardize = TRUE`, the default), so a variable
@@ -344,11 +375,11 @@ lasso_order
 ```
 
 The coefficient path shows the same thing as a picture: every line is one
-coefficient, and $\lambda$ falls from left to right (the x axis is
-$\log\lambda$, so "the penalty gets weaker" reads right to left). All the lines
-start at zero, and the one that leaves zero first is the most important
-variable. The lines of the vehicle type are the exception: it is not
-penalised, so these coefficients are non-zero from the start.
+coefficient. The x axis is $\log\lambda$, so the penalty gets weaker from right
+to left. The candidates start at zero, and the line that leaves zero first is
+the variable that enters first. The lines of the vehicle type are the
+exception: its penalty is tiny, so these coefficients are non-zero from the
+start.
 
 ```{r cell_13b}
 plot(attr(lasso_order, "fit"), xvar = "lambda")
@@ -386,9 +417,15 @@ Let's check whether the choice matters, on the validation data:
 models <- list(
   "Intercept only" = glm_tweedie(Burning_Cost ~ 1, train),
   "Vehicle type" = glm_tweedie(Burning_Cost ~ Veh_type2_merged, train),
-  "Forward, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", fwd$added[2:4]), "Burning_Cost"), train),
-  "Chart ranking, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", "BonusMalus_adj", chosen_2, step3$ranking$variable[1]), "Burning_Cost"), train),
-  "Lasso, first 3" = glm_tweedie(reformulate(c("Veh_type2_merged", lasso_order$variable[1:3]), "Burning_Cost"), train)
+  "Forward, first 3" = glm_tweedie(
+    Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + VEH_brand_grp + Time_on_book_cap, train
+  ),
+  "Chart ranking, first 3" = glm_tweedie(
+    Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Sum_insured_log + Time_on_book_cap, train
+  ),
+  "Lasso, first 3" = glm_tweedie(
+    Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Sum_insured_log + Time_on_book_cap, train
+  )
 )
 
 compare_models(models, train, valid)
@@ -409,4 +446,6 @@ one you can explain best.
 ### Homework
 
 You repeat these three methods in your homework, each from a different
-starting variable. Instructions are in `Homework/my_homework.R`.
+starting variable: the one your stakeholder wants in the model, so it goes into
+`base`. The vehicle type is not the base there, it is one of the candidates.
+Instructions are in `Homework/my_homework.R`.

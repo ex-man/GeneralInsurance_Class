@@ -13,6 +13,8 @@ candidate_vars <- c(
 chart_columns <- setNames(candidate_vars, candidate_vars)
 chart_columns[["Sum_insured_log"]] <- "Sum_insured_band"
 chart_columns[["D_age_adj"]] <- "D_age_chart"
+# the vehicle type is the base in the lesson, but it can be a candidate (e.g. in the homework)
+chart_columns[["Veh_type2_merged"]] <- "Veh_type2_merged"
 
 # Burning_Cost ~ the given terms. No terms means the intercept-only model (one price for everybody).
 model_formula <- function(terms) {
@@ -38,25 +40,23 @@ score_model <- function(model, train, valid) {
 }
 
 # The three methods below share the same arguments:
-#   candidates - the variables to choose from (we remove `base` and `start` from them ourselves)
-#   base       - variables that are always in the model, e.g. "Veh_type2_merged" (character(0) = none)
-#   start      - the variable(s) we start from on top of the base, e.g. the homework variable (character(0) = none)
-# Nothing is assumed: with base = character(0) and start = character(0) we begin from the
-# intercept-only model.
+#   candidates - the variables to choose from (we remove `base` from them ourselves)
+#   base       - variables that are in the model from the start, e.g. "Veh_type2_merged" (character(0) = none).
+#                Several variables are allowed, e.g. c("Veh_type2_merged", "BonusMalus_adj").
+# Nothing is assumed: with base = character(0) we begin from the intercept-only model.
 
 # Method 1: forward selection.
-# We start from the `base` and `start` variables. In every step we try each remaining
-# candidate, fit the model on the TRAINING data and keep the candidate that gives the lowest
-# training deviance. After each step the model is also scored on the validation data, so we
-# can look at the whole path afterwards and decide where to stop.
-forward_select <- function(train, valid, candidates, base = character(0), start = character(0),
-                           max_steps = length(candidates)) {
-  selected <- start
-  remaining <- setdiff(candidates, c(base, start))
+# We start from the `base` variables. In every step we try each remaining candidate, fit the
+# model on the TRAINING data and keep the candidate that gives the lowest training deviance.
+# After each step the model is also scored on the validation data, so we can look at the whole
+# path afterwards and decide where to stop.
+forward_select <- function(train, valid, candidates, base = character(0), max_steps = length(candidates)) {
+  selected <- character(0)
+  remaining <- setdiff(candidates, base)
   path <- list()
 
-  model <- glm_tweedie(model_formula(c(base, selected)), train)
-  path[[1]] <- cbind(step = 0, added = "(start)", score_model(model, train, valid))
+  model <- glm_tweedie(model_formula(base), train)
+  path[[1]] <- cbind(step = 0, added = "(base)", score_model(model, train, valid))
 
   for (step in seq_len(min(max_steps, length(remaining)))) {
     train_dev <- sapply(remaining, function(v) {
@@ -76,15 +76,16 @@ forward_select <- function(train, valid, candidates, base = character(0), start 
 }
 
 # Method 2: ranking the charts.
-# Fits the model with the `base` and `start` variables and ranks the remaining candidates by how much
-# the model misses on them (see mismatch_rank()). Returns the model, the training data with its
-# prediction in the column `pred` (this is what the actual vs fitted charts need) and the ranking.
-rank_by_mismatch <- function(train, candidates, base = character(0), start = character(0)) {
-  model <- glm_tweedie(model_formula(c(base, start)), train)
+# Fits the model with the `base` variables and ranks the remaining candidates by how much the model
+# misses on them. rank_by_mismatch() is the step you run; the gap itself is computed by mismatch_rank().
+# Returns the model, the training data with its prediction in the column `pred` (this is what the
+# actual vs fitted charts need) and the ranking.
+rank_by_mismatch <- function(train, candidates, base = character(0)) {
+  model <- glm_tweedie(model_formula(base), train)
   ranked_data <- train
   ranked_data$pred <- predict(model, train, type = "response")
 
-  not_in_model <- setdiff(candidates, c(base, start))
+  not_in_model <- setdiff(candidates, base)
   list(
     model = model,
     data = ranked_data,
@@ -95,19 +96,47 @@ rank_by_mismatch <- function(train, candidates, base = character(0), start = cha
 # Method 3: lasso (L1 penalty).
 # The penalty shrinks coefficients towards zero. With a strong penalty all coefficients are zero,
 # as we relax it, the variables enter the model one after another - the most useful first.
-# The `base` variables are not penalised (always in). A `start` variable (the homework starting
-# variable) is penalised only very lightly: it is practically always in, but the fit stays stable
-# (a fully unpenalised variable with many sparse levels, e.g. the brand, can break the fitting).
+# The `base` variables are penalised only very lightly (weight 0.001 against 1 for the candidates):
+# they are practically always in, but the fit stays stable (a fully unpenalised variable with many
+# sparse levels, e.g. the brand, can break the fitting).
 # Returns for every candidate the step of the penalty path at which its first coefficient became
 # non-zero (lower = more important). Candidates that never enter get NA and are ranked last.
-lasso_entry_order <- function(train, candidates, base = character(0), start = character(0)) {
-  candidates <- setdiff(candidates, c(base, start))
-  all_terms <- c(base, start, candidates)
+#
+# Implementation notes (more exact than the lesson text):
+# - The entry order is a path, not a fixed score per variable. The first variable to enter is the one
+#   with the largest loss gradient at zero, divided by its penalty weight; later entries are judged
+#   given the variables that are already in the model.
+# - The path is recorded on a finite grid (60 values), so the order is discretised: variables that
+#   enter between two grid values get the same entry_step (ties in `rank`).
+# - glmnet standardises the numeric columns (standardize = TRUE), so the comparison is on
+#   standardised columns. A category is split into one column per level and a variable counts as
+#   entered when its first level does, so a single level can bring it in alone.
+# - Not checked: the exact scaling of lambda for the Tweedie family and of the "largest gradient"
+#   rule above (an earlier check found a constant-factor gap, see the optional lasso scaling todo in TODO.md).
+#   The lesson therefore does not quote exact lambda values.
+lasso_entry_order <- function(train, candidates, base = character(0)) {
+  candidates <- setdiff(candidates, base)
+  all_terms <- c(base, candidates)
   design <- model.matrix(reformulate(all_terms), train)
   term_of_column <- all_terms[attr(design, "assign")[-1]]
   design <- design[, -1, drop = FALSE]
 
-  penalty <- ifelse(term_of_column %in% base, 0, ifelse(term_of_column %in% start, 0.001, 1))
+  penalty <- ifelse(term_of_column %in% base, 0.001, 1)
+
+  # glmnet starts its automatic penalty grid where the first variable enters. With a tiny weight on
+  # the base that is far above the point where the candidates enter, and the path stops too early.
+  # So the grid starts where the first CANDIDATE enters (the base model is fitted by a plain GLM and
+  # goes in as an offset) and goes down by a factor of 1000.
+  base_model <- glm_tweedie(model_formula(base), train)
+  lambda_start <- glmnet::glmnet(
+    x = design[, !(term_of_column %in% base), drop = FALSE],
+    y = train$Burning_Cost,
+    family = statmod::tweedie(var.power = 1.5, link.power = 0),
+    weights = train$Time_Exposure,
+    offset = predict(base_model, train, type = "link"),
+    nlambda = 2
+  )$lambda[1]
+  lambda_grid <- exp(seq(log(lambda_start), log(lambda_start * 1e-3), length.out = 60))
 
   fit <- glmnet::glmnet(
     x = design,
@@ -115,7 +144,7 @@ lasso_entry_order <- function(train, candidates, base = character(0), start = ch
     family = statmod::tweedie(var.power = 1.5, link.power = 0),
     weights = train$Time_Exposure,
     penalty.factor = penalty,
-    nlambda = 60
+    lambda = lambda_grid
   )
 
   entry_step <- sapply(candidates, function(v) {

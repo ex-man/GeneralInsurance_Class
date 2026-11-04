@@ -16,10 +16,6 @@ something an insurer can use:
 3.  build a **rating table** and price a policy by hand,
 4.  check the result against the **premium we actually charge**.
 
-```{r cell_01, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r cell_02, message=FALSE}
 library(dplyr)
 library(ggplot2)
