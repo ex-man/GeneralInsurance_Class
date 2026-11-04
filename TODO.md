@@ -238,6 +238,194 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
 - [x] Intercept-only baseline in Ex1 model comparison — add "Intercept only" (`Burning_Cost ~ 1`) as the first row of the
       comparison in cell_15, before "Vehicle type". Keep Veh_type2_merged as the first added variable everywhere in the
       material (Ex1, Ex2, FE, homework base), because the homework starting variable is an extra one on top of it.
+- [ ] Ex1 backup RDS — save the output of `forward_select()` (cell_05, the only slow step in Ex1) as an `.rds` in
+      `Lesson6_alt/Data/` (name TBD, e.g. `fwd_forward_select.rds`), to load if time is short or a student's session crashes. Scope:
+      - build it with the same call as cell_05, after the `max_steps` decision, so the file matches the exercise;
+      - in Ex1, a `readRDS()` fallback next to cell_05 (e.g. a note "if your session crashed, load this instead");
+      - check: the loaded object prints the same as the live `fwd` (same variable order, same deviance values);
+      - regenerate it last, otherwise it goes stale if `max_steps` or base/start changes.
+      - note: `dplyr`, `statmod` and `glmnet` are not installed in the local R library (`Rscript` 4.6.1), so the
+        build step needs them installed first.
+- [ ] Add `Veh_type2_merged` as a row in the variable tables. It is the base in every model, so it is not a candidate,
+      but students should see its treatment in the final feature engineering next to the other 13.
+      - Ex1 intro table (`Exercises/Lesson6_Ex1_VariableSelection.Rmd` lines 27-41): add a first row, e.g.
+        `Veh_type2_merged` | category | blank, `OTHER`, `TRACTOR` to `CAR` | the base, in every model. Adjust the
+        sentence above it ("the other 13 are the candidates") so the table still reads correctly.
+      - `Support/feature_engineering.Rmd` decision table (cell_31, `final_forms` / `decision_table`, lines 794-831):
+        add a row. `compare_forms()` has no gain to report for the base itself, so either leave `cv_gain_k` as NA /
+        "base" or keep the row out of the join. Keep the type and adjustment text identical to the Ex1 row.
+      - `Support/feature_engineering.Rmd` "Bottom line per variable" (line 858): the bullet already exists. Check its
+        wording matches the new row, and that the rule is stated the same way in `add_features()` (line 701).
+      - Keep the rule consistent everywhere: blank, `OTHER` and `TRACTOR` go to `CAR` (cell_07 and `add_features()`).
+      - Do not change the base or the model code; this is documentation only.
+- [ ] Explain the starting variable as a stakeholder requirement, in the Ex1 intro and in the homework text. The concept:
+      a stakeholder has asked for a variable to be in the model, so we start from it and the selection methods only decide
+      what gets added on top. In Ex1 that variable is `Veh_type2_merged`. In the homework it is a different one for each
+      student (their assignment), so `Veh_type2_merged` must not be named as the homework starting variable.
+      - Ex1: reword lines 24-25 (`Exercises/Lesson6_Ex1_VariableSelection.Rmd`, "the vehicle type `Veh_type2_merged` is the
+        base that is in every model, the other 13 are the candidates") to give the reason, not only the fact. Keep it short.
+      - Homework: `Homework/my_homework.R` and `Homework/zadanie/hw_zadanie1-8.R` should present the starting variable as
+        the stakeholder's request for that student's assignment (each file names a different one, e.g. `Time_on_book_cap`
+        in hw1). Do not describe vehicle type as the homework starting point.
+      - Open question for the homework: whether `Veh_type2_merged` stays in every homework model as a base. The current
+        homework calls pass only `start` (no `base`), so as written the homework has no base. Decide and state it in the text.
+      - Keep the wording consistent with the new `Veh_type2_merged` row (previous todo) and with the "Intercept only" baseline.
+      - Documentation only; no change to the base or the model code.
+- [ ] Remove the `knitr::opts_chunk$set(echo = TRUE)` setup chunk (`cell_01`, `include = FALSE`) from the L6 alt
+      exercises. It is not needed: knitr's default for `echo` is already `TRUE` (checked with `Rscript`), and the
+      chunk is hidden, so students never see it. Check the same line in `Exercises/Lesson6_Ex2_FinalModel.Rmd` line 20
+      and remove it there too. Before deleting, check that no other chunk or text refers to the label `cell_01`.
+      Do not remove the `knitr::opts_chunk` lines in the other lessons' files in this todo (out of scope).
+- [ ] Remove the sentence "Because of the capped target, RMSE values here are not comparable with the ones from Lesson 5."
+      from the Data section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 77-78). After removing it, check that
+      the bullet list above it (target capped, engineered predictors) still reads correctly as the end of the section.
+      Documentation only.
+- [ ] Rewrite the criterion paragraph in the "How do we compare models? Deviance" section of
+      `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 91-99). Replace the "for *choosing between close models*"
+      reasoning with a plain statement: we tested both criteria (grouped RMSE and deviance) for the forward selection,
+      deviance was more stable, so deviance is the primary criterion for the whole variable selection section. Keep the
+      grouped RMSE as the final check of the chosen model and as a comparison column, as now.
+      - Keep the Lesson 5 reference (grouped RMSE, 5 groups) and the link to the deviance formula below the section.
+      - The claim has to match the study item in the "Lesson 6 alt" section (the deviance vs row-level RMSE study,
+        "decision pending"). Close that item with the result (which criterion was more stable, over which seeds/folds)
+        before this paragraph is published, so the text and the study say the same thing.
+      - Documentation only; no change to the code.
+- [ ] Decide the prediction symbol in the formulas of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (deviance section,
+      line 102 "prediction $\mu$"). Options: keep $\mu$ (the GLM mean, the usual notation for the Tweedie unit deviance),
+      or switch to $\hat{y}$ (the usual ML notation). Recommendation to decide on: keep $\mu$ in the Tweedie formula and
+      say once that $\mu$ is the model's predicted mean, so the notation matches the distribution; use $\hat{y}$ only if
+      the rest of the lesson does. Check every formula in the file (deviance, lasso objective, `$\beta_j$`) and in
+      `Support/feature_engineering.Rmd` uses the same choice. Documentation only.
+- [ ] Move all formulas into `$$ ... $$` display blocks in `Exercises/Lesson6_Ex1_VariableSelection.Rmd` so they render
+      as formulas. Currently the unit deviance is a display block, but the total deviance (`D = sum_i w_i d(y_i, mu_i)`,
+      line 109), the deviance explained (line 117) and the lasso objective are written inline or as a separate line.
+      Put each formula, including the sums, in a single `$$` block. Check that the text around them still reads correctly.
+      Also check `Support/feature_engineering.Rmd` and `Exercises/Lesson6_Ex2_FinalModel.Rmd` for the same pattern. Documentation only.
+- [ ] Justify the deviance criterion in the "How do we compare models? Deviance" section (Ex1, lines 91-99), and record the
+      evidence that supports it. Draft reasoning to verify, not yet a finding:
+      - RMSE takes the raw gap between actual and predicted, squared, so one large claim (even under the 99.5% cap) can
+        dominate the sum; the choice of variable then follows that one claim.
+      - The Tweedie unit deviance with power 1.5 is $4(\sqrt{y}-\sqrt{\mu})^2/\sqrt{\mu}$: the gap is taken on the
+        square-root scale and weighted by the predicted level, so a large actual value counts less than it does in
+        squared error. It is also exposure-weighted, as the model's fit is.
+      - Deviance is the loss the GLM is fitted with, so the criterion used to choose variables matches the criterion the
+        model optimises. RMSE does not.
+      - The intro comment does not need numbers, but it must rest on facts. Before writing it, investigate (in the
+        deviance vs row-level RMSE study, "decision pending") why the row-level RMSE choices changed so much:
+        - which rows drive the change: is the RMSE swing caused by a few large claims, or by the grouping of rows?
+        - does the deviance pick the same variable at each step across seeds or CV folds, and does RMSE not?
+        - does the deviance change less across seeds than RMSE for the same training rows, and by how much in
+          qualitative terms (e.g. "the same variable in all seeds" versus "a different one in half of them")?
+        Record the answers in the study item, then write the comment from those answers.
+      - The intro paragraph should state the reason in two or three sentences, in plain language, and point to the study
+        item for detail. It should not repeat the full argument. Documentation only.
+- [ ] Add a "chart ranking" lead-in to `Exercises/Lesson6_Ex1_VariableSelection.Rmd` after the intro paragraph at lines
+      215-224 (Method 2), before `rank_by_mismatch()` is called in cell_08. Content, in order:
+      1. A quick fit of a model with `Veh_type2_merged` only (the base), as the reference for the charts. This is the
+         same model as `base_model` in `Support/feature_engineering.Rmd` cell_08, so say that.
+      2. A quick plot of one unfitted variable, the actual vs fitted chart from Lesson 5, using `emb_chart_plotly()`. Use
+         a variable other than `BonusMalus_adj` (e.g. `Time_on_book_cap` or `Capacity_band`), so it is not the strongest
+         one. Check that the chart renders with the base model's predictions.
+      3. A sentence that says: even with well-engineered variables, reviewing every chart at every step is slow, so the
+         ranking is there to point you to the charts worth looking at first.
+      4. A sentence that says: the model fit is already inside the ranking step, so you do not fit it yourself each time.
+      - Naming: the comment at `Support/selection_helpers.R` line 80 and the text at line 221 say `mismatch_rank()`, but the
+        function the lesson calls is `rank_by_mismatch()` (selection_helpers.R line 82). `mismatch_rank()` is the lower-level
+        function in `Support/mismatch_rank.R` (line 15), called inside `rank_by_mismatch()`. In the lesson, mention only
+        `rank_by_mismatch()` for the step students run, and name `mismatch_rank()` once as the function that computes the
+        gap. Fix the wording at line 221 and the comment at selection_helpers.R line 80 to match.
+      - Also check `Homework/my_homework.R` line 11 (commented-out source of `mismatch_rank.R`) so the homework uses the same
+        naming.
+      - Documentation and one plot chunk; no change to the helper functions.
+- [ ] Merge `base` and `start` into one `base` argument in the selection helpers (`Support/selection_helpers.R`), and
+      remove `start`. Answer to the question: `base` already accepts a vector. Every use in the helpers is `c(base, ...)` or
+      `setdiff(candidates, c(base, start))`, so `base = c("Veh_type2_merged", "BonusMalus_adj")` works today. The two
+      arguments differ in only two places:
+      - lasso (`lasso_entry_order()`): `base` gets penalty 0, `start` gets 0.001 (selection_helpers.R lines 110, comments at
+        98-100). This is the only real behavioural difference.
+      - forward selection: the path's first row is labelled `"(start)"` (line 59). This is a label only.
+      Proposed rule: all variables in `base` are "in every model" and get the light 0.001 penalty in lasso (instead of 0).
+      Veh_type2_merged then gets 0.001 too, which the comment at lines 98-100 already says is practically always in. Check
+      that the lasso fit still converges with this for cases with a sparse variable as the homework start (e.g. VEH_brand_grp,
+      homework 5, which the comment says can break the fit unpenalised; with 0.001 it should be fine, verify).
+      - Steps: (1) change the helpers so `base` is the only argument and lasso uses 0.001 for all base variables; (2) rename
+        the path label `"(start)"` to `"(base)"`; (3) update the calls in `Exercises/Lesson6_Ex1_VariableSelection.Rmd` cells
+        05, 08, 10, 12, 13 and `Homework/zadanie/hw_zadanie1-8.R` and `Homework/my_homework.R` (they pass `start`), and the
+        lesson text that describes "start" (lines 48-50 of the helper header and Ex1 comparison text); (4) re-run the
+        empirical test for the helper cases in the "Redesign the three helpers" item, with `base` only.
+      - This also answers the open homework question in the stakeholder todo: the stakeholder's variable goes into
+        `base` (alongside `Veh_type2_merged` if it stays as a base), so the homework has a base as well.
+      - Conflict with a finished item: "Redesign the three helpers so the starting point is passed explicitly" is ticked
+        with `base` and `start` as two arguments. This todo changes that design, so re-check that item's cases (a)-(e)
+        after the merge.
+      - Keep the penalty choice (0.001 vs 0) as a decision to confirm with the user before implementation, because it
+        changes the lasso ranking for the base variables.
+- [ ] Simplify the lasso section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (Method 3, roughly lines 281-361).
+      - Formulas in `$$ ... $$` blocks: any expression with an operator or more than one symbol goes in its own display
+        block, not in prose. That covers the penalised objective, `p_j = 0`, `p_j = 1`, `0.001`, the `|beta_j|` term and
+        the `log lambda` axis. Currently these are inline at lines 296-301 and 315-318. A single symbol named in a sentence
+        (`$\lambda$`, `$\beta_j$`) can stay inline. Confirm this reading when implementing.
+      - Remove the picture: delete the `![L1 and L2 penalty](...img_L1_penalty_geometry.png)` line (line 329) and the
+        paragraph "Why exactly zero? The picture shows two coefficients..." (lines 320-327). Then grep the Lesson 6 folder
+        and `TODO.md` for `img_L1_penalty_geometry`, and delete `Support/img_L1_penalty_geometry.png` if nothing else uses
+        it. The "Lesson 6 alt" L1 penalty item (ticked) asked for an AI image of the geometry; that is superseded by this
+        removal, so note it there.
+      - Keep the bullet "a coefficient is set to exactly zero, not shrunk gradually" (lines 312-314) only if it still reads
+        well without the picture; it is the one-line form of the same point.
+      - Simplify the entry-order description (bullets at lines 303-311, sentence at lines 338-339) to: the code loops over
+        decreasing penalty values (lambda) and records, at each value, which variables have a non-zero coefficient. The
+        order in which they first appear is the entry order. It follows the variables that reduce the GLM loss the most
+        as the penalty is relaxed.
+      - Soundness check before the wording is final (not yet verified; this is reasoning from how the lasso path works):
+        - Sound for the first variable: at the largest lambda where every coefficient is zero, the first coefficient to
+          become non-zero is the one whose loss gradient at zero is largest after scaling by its penalty weight. That is
+          the variable that reduces the loss most per unit of penalty, which matches "helps decrease the loss most".
+        - Less exact for later variables: once earlier variables are in, the next entry is the one that still helps most
+          given those already in. The order is a path, not a fixed ranking of each variable's standalone value. The text
+          should say "in the order they enter", not "the ranking of variables". (The current bullet at lines 307-309
+          already says "the order of entry is a ranking"; soften it.)
+        - Caveats to keep: the path is recorded on a finite grid (`nlambda = 60`), so the entry order is discretised; a
+          dummy level can enter alone (already at lines 334-336); with `standardize = TRUE` the comparison is on
+          standardised columns.
+        - Verify with the glmnet documentation (`?glmnet`, `penalty.factor`, `standardize`) and a read-only check of the
+          entry order on the training data before the wording says "the most". Do not claim it without this check.
+      - Keep the coefficient path plot and its text (lines 346-355). It is a real fit from `glmnet`, not the removed
+        picture. Trim its wording to match the simplified description.
+      - Keep the practical points (lines 331-336) and the caveat (lines 357-361).
+      - Documentation only; no change to `lasso_entry_order()` or any helper.
+- [ ] Hardcode the variables in the cell_15 model comparison (`Exercises/Lesson6_Ex1_VariableSelection.Rmd`, lines 385-395)
+      instead of building formulas with `reformulate()` and indexing into `fwd$added`, `chosen_2`, `step3$ranking` and
+      `lasso_order`. The lesson should show the formula students can read, e.g. `Burning_Cost ~ Veh_type2_merged +
+      BonusMalus_adj + ...`, and the selections should be reproducible at this point.
+      - Steps: (1) run the three selection cells once from a clean session and write down the variables each returns:
+        `fwd$added[2:4]`, the first three of the chart ranking (`"BonusMalus_adj"`, `chosen_2`, `step3$ranking$variable[1]`),
+        and `lasso_order$variable[1:3]`; (2) write those names directly into the formulas, e.g. `glm_tweedie(Burning_Cost ~
+        Veh_type2_merged + VEH_brand_grp + ..., train)`; (3) keep `"Intercept only"` and `"Vehicle type"` as they are.
+      - Check that the hardcoded names match the run: the text at lines 401-403 says the chart ranking and lasso picked the
+        same three variables and forward selection took the vehicle brand instead of the sum insured. Verify this from the
+        run before the text is kept; if the names differ, update the text too.
+      - Keep `reformulate()` out of the lesson cells. It may still be used inside the helpers.
+      - Caveat for the step 1 run: it depends on the `max_steps` decision and the base/start merge. If those change the
+        selections, redo step 1 after those todos, and then hardcode the final names.
+      - Documentation/code only in this cell; no change to the helpers.
+- [ ] Simplify the "Deviance" section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 123-155: cell_04, the
+      "BonusMalus gets worse on RMSE" paragraph, cell_04b and the deviance-explained paragraph). Two options:
+      - Option A: remove cell_04, cell_04b and their prose. Shorter, but the RMSE example is the only in-lesson evidence
+        that grouped RMSE is unstable for choosing models, which the justification todo above relies on. If A is
+        chosen, that todo needs another source (e.g. the appendix of `Support/feature_engineering.Rmd`, cited with the
+        numbers it contains).
+      - Option B (proposed): keep one small chunk that calls the `tweedie_deviance()` helper on a few made-up values,
+        e.g. actual 0 and 500 against predictions 50 and 500, with exposure 1. It should show that a perfect fit gives 0
+        and a bigger gap gives a bigger number, which is what the prose at lines 109-111 says. Then the forward selection
+        intro says where the helper lives.
+      - For B, the wording must be accurate: `tweedie_deviance()` is defined in `Support/tweedie_deviance.R` (sourced in
+        cell_02). `Support/selection_helpers.R` does not define it; it uses it and needs it sourced first (its header,
+        line 2). Say "the selection helpers use the same `tweedie_deviance()`", not "included in the selection helpers".
+      - Check that the deviance-explained formula (lines 114-121) still has a use after the chunk is removed. If it does
+        not, either keep it as a one-line remark or drop it with the chunk.
+      - Decision: option B (chosen by the user). It keeps the deviance formula connected to code students run and keeps
+        the lesson short. The justification todo above can now cite this section, not the RMSE example.
+      - Documentation and one small chunk; no change to the helper or the model code.
 
 ## Lesson 6 quiz visuals and modelling data stability (new)
 - [ ] L6 quiz — generate an illustrative image for each quiz question in L6. The images will probably be shown on
