@@ -19,7 +19,6 @@ something an insurer can use:
 ```{r cell_02, message=FALSE}
 library(dplyr)
 library(ggplot2)
-library(plotly)
 library(statmod)
 options(scipen = 5)
 
@@ -31,10 +30,14 @@ source("/cloud/project/Support/selection_helpers.R")
 
 ### The final model
 
-From the selection exercise the strongest variables are `BonusMalus_adj`,
-`Time_on_book_cap` and `Sum_insured_log`; we add `Capacity_band` as well, because we want
-to show how each type of variable is read. Together with the vehicle type
-that gives a model with three numeric and two categorical variables.
+From the selection exercise we take the variables that the chart ranking and
+the lasso agreed on: `BonusMalus_adj`, `Time_on_book_cap` and
+`Sum_insured_log`, on top of the vehicle type. That is one categorical and
+three numeric variables. Forward selection took the vehicle brand
+instead of the sum insured. The brand has 15 levels, many of them with
+little exposure, while the sum insured is one number that is easy to read as a
+multiplier, and the difference between the two sets is small. So we choose the
+one we can explain best.
 
 First we check it against the simpler candidates on the validation data, as
 before (this is the last time we use the split).
@@ -48,66 +51,37 @@ models <- list(
   "Vehicle type" = glm_tweedie(Burning_Cost ~ Veh_type2_merged, train),
   "+ BonusMalus" = glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj, train),
   "+ Time on book" = glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap, train),
-  "+ Sum insured" = glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log, train),
-  "+ Capacity" = glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log + Capacity_band, train)
+  "+ Sum insured" = glm_tweedie(Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log, train)
 )
 
 compare_models(models, train, valid)
 ```
 
 Every step lowers the training deviance. On the validation data almost all
-of the gain comes with `BonusMalus`; the other variables add little, and not
-always in the right direction (the sum insured makes the validation deviance
-slightly worse, the capacity improves it again). With this amount of data we
-cannot separate these small differences, so we decide on whether the variable
-makes business sense and is supported by the charts and the tests below. (The
-grouped RMSE is noisy, as we saw in the last exercise, so we do not use it to
-decide.)
-
-Is `Capacity_band` worth it? Look at the coefficients of the last model:
-
-```{r cell_04}
-summary(models[["+ Capacity"]])$coefficients[, c(1, 4)] |> round(3)
-```
-
-None of the `Capacity_band` coefficients looks significant (the reference
-band here is the first level, `<=1000`). Be careful though: each
-p-value compares one band with the **reference band**, which is the first level of the
-factor (R takes the first level alphabetically), not necessarily the one with
-the most exposure. A thin reference band makes every comparison noisy. Let's use the band with the largest exposure as the reference and test
-the variable as a whole (all its bands together):
-
-```{r cell_05}
-train$Capacity_band <- relevel(factor(train$Capacity_band, ordered = FALSE), ref = "1601-2000")
-
-final_train <- glm_tweedie(
-  Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log + Capacity_band,
-  train
-)
-
-# test of removing each variable as a whole
-drop1(final_train, test = "F")
-```
-
-As a whole, `Capacity_band` is clearly significant, even though none of its
-bands differed significantly from the thin first band on its own. **Always
-judge a categorical variable as a whole and choose the reference level on
-purpose** (usually the level with the most exposure).
+of the gain comes with `BonusMalus`; the time on book adds a little, and the
+sum insured does not improve the validation deviance (it is slightly worse).
+With this amount of data we cannot separate such small differences, so we keep
+the variable that makes business sense and is supported by the selection
+exercise. We judge by the deviance, as in the last exercise.
 
 ### Refit on all the data
 
 The selection is done, so there is no reason to keep the validation rows
 aside. More data gives more stable multipliers. We use the same features
 (they were prepared once, so the validation rows are already treated the same
-way) and the same reference levels.
+way).
 
-```{r cell_06}
+The reference level of the vehicle type is `CAR`, the level with the most
+exposure (about three quarters of it). Each multiplier of the other vehicle types is
+a comparison with this level, so it is better to choose it on purpose than to
+leave it to the alphabet (here they happen to be the same).
+
+```{r cell_04}
 all_data <- dt
-all_data$Capacity_band <- relevel(factor(all_data$Capacity_band, ordered = FALSE), ref = "1601-2000")
 all_data$Veh_type2_merged <- relevel(factor(all_data$Veh_type2_merged), ref = "CAR")
 
 final_model <- glm_tweedie(
-  Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log + Capacity_band,
+  Burning_Cost ~ Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log,
   all_data
 )
 
@@ -123,38 +97,41 @@ The model has a log link, so the prediction is a **product**:
 and a multiplier is `exp(coefficient)`. How to read it depends on the type of
 the variable.
 
-```{r cell_07}
+```{r cell_05}
+beta <- coef(final_model)
+
 multipliers <- data.frame(
-  term = names(coef(final_model)),
-  coefficient = round(coef(final_model), 4),
-  multiplier = round(exp(coef(final_model)), 3)
+  term = names(beta),
+  coefficient = round(beta, 4),
+  multiplier = round(exp(beta), 3)
 )
 multipliers
+
+c(
+  "Sum insured, doubled" = unname(2^beta["Sum_insured_log"]),
+  "Sum insured, 10% more" = unname(1.1^beta["Sum_insured_log"])
+) |> round(3)
 ```
 
--   **Categories** (`Veh_type2_merged`, `Capacity_band`): the multiplier is the
-    risk of the level **relative to the reference level**, which is in the
-    intercept. A pickup multiplier of 0.73 means "27% less than a car, with
-    everything else equal".
+-   **Categories** (`Veh_type2_merged`): the multiplier is the risk of the level
+    **relative to the reference level**, which is in the intercept. A pickup
+    multiplier of 0.85 means "15% less than a car, with everything else equal".
 -   **A number** (`BonusMalus_adj`, `Time_on_book_cap`): the multiplier is for
     **one unit more**. With a log link the effect is the same *percentage* at every
     level, not the same amount. The multiplier of `BonusMalus_adj` is about 0.79:
     each next level multiplies the expected burning cost by 0.79 (about 21%
     less), whether we go from level 3 to 4 or from 12 to 13. Two levels up means
-    0.79 x 0.79 = 0.62 (about 38% less), because multipliers multiply.
+    0.79 x 0.79 = 0.62 (about 38% less), because multipliers multiply. For $x$
+    units the multiplier is $\exp(B)^x = \exp(B \cdot x)$, and the percentage
+    change for one unit is $(\exp(B) - 1) \cdot 100\%$.
 -   **A log of a number** (`Sum_insured_log`): the variable is `log(Sum_insured)`,
-    so the coefficient is for one unit of the *log*, and the natural reading
-    is a multiplier for **doubling**: `2^coefficient`.
-
-```{r cell_08}
-beta <- coef(final_model)
-
-c(
-  "Bonus-malus, one level up" = unname(exp(beta["BonusMalus_adj"])),
-  "Time on book, one year more" = unname(exp(beta["Time_on_book_cap"])),
-  "Sum insured, doubled" = unname(2^beta["Sum_insured_log"])
-) |> round(3)
-```
+    so the coefficient is for one unit of the *log*. The natural reading is a
+    multiplier for a **percentage change**: doubling gives `2^coefficient`, and
+    10% more gives `1.1^coefficient`. Why a log? The sum insured ranges from
+    hundreds to tens of thousands, and we want its effect to depend on the
+    *percentage* change, not on the amount (going from 1 000 to 2 000 should
+    matter as much as from 10 000 to 20 000), and a few very large values should
+    not decide the multiplier.
 
 The "Time on book" multiplier is for the years 1 to 8 (we capped the variable
 at 8), longer customers all get the multiplier of year 8.
@@ -165,13 +142,12 @@ An insurer does not use `exp(coef)` directly. It prepares a **rating table**:
 one table per variable with the multiplier for every value, relative to a
 **base**. First we define the base policy - a typical one - and its price.
 
-```{r cell_09}
+```{r cell_06}
 base_policy <- data.frame(
   Veh_type2_merged = "CAR",
-  BonusMalus_adj = 10,
+  BonusMalus_adj = 11,
   Time_on_book_cap = 3,
-  Sum_insured = 6000,
-  Capacity_band = "1601-2000"
+  Sum_insured = 6000
 )
 base_policy$Sum_insured_log <- log(base_policy$Sum_insured)
 
@@ -179,10 +155,26 @@ base_price <- predict(final_model, base_policy, type = "response")
 base_price
 ```
 
-The relativity of any value of a number is `exp(beta x (value - base value))`, for
-the log variable `(value / base value)^beta`:
+How do we get the multiplier of any other value? In a log model, the log of the price is a sum of
+the coefficients times the variables. If we change one variable and keep the others, everything else
+cancels and what is left is
 
-```{r cell_10}
+$$
+\frac{\text{new price}}{\text{base price}} = \exp\big(B \cdot (x_{new} - x_{base})\big).
+$$
+
+For a **plain number**, $x$ is the number itself, so $x_{new} - x_{base}$ is the
+number of units we move. For the **log variable**, $x = \log(\text{sum insured})$, so
+$x_{new} - x_{base} = \log(S_{new}) - \log(S_{base}) = \log(S_{new} / S_{base})$ and
+
+$$
+\exp\big(B \cdot \log(S_{new} / S_{base})\big) = \left(\frac{S_{new}}{S_{base}}\right)^B.
+$$
+
+It is the same formula, only simplified, so that we can put the sum insured in directly
+and do not have to take the log first.
+
+```{r cell_07}
 rating_numeric <- bind_rows(
   data.frame(
     variable = "BonusMalus_adj",
@@ -205,7 +197,19 @@ rating_numeric <- bind_rows(
 rating_numeric
 ```
 
-```{r cell_11}
+The two forms of the sum insured multiplier give the same numbers:
+
+```{r cell_08}
+si_values <- c(1000, 2000, 4000, 6000, 10000, 20000, 40000)
+
+data.frame(
+  value = si_values,
+  power_form = round((si_values / base_policy$Sum_insured)^beta[["Sum_insured_log"]], 3),
+  log_form = round(exp(beta[["Sum_insured_log"]] * (log(si_values) - log(base_policy$Sum_insured))), 3)
+)
+```
+
+```{r cell_09}
 ggplot(rating_numeric, aes(x = value, y = multiplier)) +
   geom_line() +
   geom_point() +
@@ -217,46 +221,49 @@ ggplot(rating_numeric, aes(x = value, y = multiplier)) +
 The multipliers for the categories are the exponentials of the coefficients,
 and 1 for the reference level:
 
-```{r cell_12}
+```{r cell_10}
 rating_categories <- multipliers |>
-  filter(grepl("^Veh_type2_merged|^Capacity_band", term)) |>
-  mutate(term = sub("^Veh_type2_merged", "Vehicle: ", sub("^Capacity_band", "Capacity: ", term))) |>
-  select(level = term, multiplier)
+  filter(grepl("^Veh_type2_merged", term)) |>
+  mutate(level = sub("^Veh_type2_merged", "", term)) |>
+  select(level, multiplier)
 
 bind_rows(
-  data.frame(level = c("Vehicle: CAR (reference)", "Capacity: 1601-2000 (reference)"), multiplier = 1),
+  data.frame(level = paste(levels(all_data$Veh_type2_merged)[1], "(reference)"), multiplier = 1),
   rating_categories
 )
 ```
 
+Two things to keep in mind. The table assumes that the variables do not
+interact: the bonus-malus multiplier is the same for a car and for a truck,
+which may not be true. And it is only one step of a tariff: a real tariff
+also needs the base level, rounding, and bands for the numeric variables
+instead of one multiplier for every value.
+
 ### A quote, calculated by hand
 
-Let's price a 2-year customer with a truck: bonus-malus level 5, sum insured
-15 000 and engine of 2 500 cm3. We multiply the base price by one multiplier
-per variable.
+Let's price a 2-year customer with a truck: bonus-malus level 5 and sum insured
+15 000. We multiply the base price by one multiplier per variable.
 
-```{r cell_13}
+```{r cell_11}
 quote <- data.frame(
   Veh_type2_merged = "TRUCK",
   BonusMalus_adj = 5,
   Time_on_book_cap = 2,
-  Sum_insured = 15000,
-  Capacity_band = "2001-3000"
+  Sum_insured = 15000
 )
 quote$Sum_insured_log <- log(quote$Sum_insured)
 
+# the coefficient of the vehicle type is named after the level, the reference (CAR) has none
 m_vehicle <- exp(beta[["Veh_type2_mergedTRUCK"]])
-m_capacity <- exp(beta[["Capacity_band2001-3000"]])
 m_bonus <- exp(beta[["BonusMalus_adj"]] * (quote$BonusMalus_adj - base_policy$BonusMalus_adj))
 m_tob <- exp(beta[["Time_on_book_cap"]] * (quote$Time_on_book_cap - base_policy$Time_on_book_cap))
 m_suminsured <- (quote$Sum_insured / base_policy$Sum_insured)^beta[["Sum_insured_log"]]
 
-by_hand <- unname(base_price) * m_vehicle * m_capacity * m_bonus * m_tob * m_suminsured
+by_hand <- unname(base_price) * m_vehicle * m_bonus * m_tob * m_suminsured
 
 c(
   base_price = unname(base_price),
   vehicle = m_vehicle,
-  capacity = m_capacity,
   bonus_malus = m_bonus,
   time_on_book = m_tob,
   sum_insured = m_suminsured,
@@ -274,20 +281,31 @@ applied as further multipliers or loadings on top of this number.
 ### Is the premium we charge adequate?
 
 The data also contain the premium that the company actually earned
-(`Premium_earned`). We can compare it with the loss cost the model predicts.
-A few rules for a fair comparison:
+(`Premium_earned`). We can compare it with the loss cost. A few rules for a
+fair comparison:
 
 -   Compare **totals**: premium per year of exposure is `sum(premium) /
     sum(exposure)`, never the average of premium / loss ratios per policy.
 -   Remove the policies with **zero premium** (free or incorrect records) from both
-    sides, so we compare the same policies.
+    sides, so we compare the same policies. Check first that this does not
+    hide losses: the share of the total loss in these rows is printed below.
 
-```{r cell_14}
+```{r cell_12}
+zero_premium <- all_data |>
+  filter(Premium_earned == 0)
+
+c(
+  removed_rows = nrow(zero_premium),
+  share_of_total_loss_pct = round(
+    100 * sum(zero_premium$Burning_Cost * zero_premium$Time_Exposure) /
+      sum(all_data$Burning_Cost * all_data$Time_Exposure),
+    2
+  )
+)
+
 priced <- all_data |>
   filter(Premium_earned > 0)
 priced$fitted <- predict(final_model, priced, type = "response")
-
-c(removed_zero_premium = nrow(all_data) - nrow(priced))
 
 priced |>
   summarise(
@@ -298,14 +316,16 @@ priced |>
   round(1)
 ```
 
-On the whole portfolio, the model reproduces the actual loss cost closely
-(a GLM with a log link and an intercept is balanced on the total, up to a
-small difference). The average premium is higher, the overall loss ratio is
-about 77%, which leaves room for expenses and profit. But a sufficient
-**average** can hide that some customers pay too much and others too little.
-Let's compare by the bonus-malus band:
+The removed rows carry a quarter of a percent of the loss, so removing them
+changes nothing in the conclusions. On the remaining policies the model total is
+close to the actual loss cost (about 1% above; a GLM with a log link and this
+variance power is not balanced exactly on the total, only close to it). The
+average premium is higher, the overall loss ratio is about 77%, which leaves room
+for expenses and profit. But a sufficient **average** can hide that some
+customers pay too much and others too little. Let's compare by the bonus-malus
+band:
 
-```{r cell_15}
+```{r cell_13}
 price_check <- function(data, by) {
   overall_ratio <- sum(data$Burning_Cost * data$Time_Exposure) / sum(data$Premium_earned)
 
@@ -320,7 +340,7 @@ price_check <- function(data, by) {
     ) |>
     mutate(
       loss_ratio = round(100 * loss_cost / premium),
-      # premium that would give the same loss ratio as the whole portfolio
+      # premium change that would give the band the same loss ratio as the whole portfolio
       adequate_change_pct = round(100 * (loss_cost / premium / overall_ratio - 1))
     )
 }
@@ -331,37 +351,24 @@ priced$BonusMalus_band <- cut(
   labels = c("1-3", "4-6", "7-9", "10-12", "13-15", "16+")
 )
 
-bm_check <- price_check(priced, "BonusMalus_band")
-bm_check
-```
-
-```{r cell_16}
-bm_check |>
-  tidyr::pivot_longer(c(premium, loss_cost), names_to = "what", values_to = "per_year") |>
-  ggplot(aes(x = group, y = per_year, fill = what)) +
-  geom_col(position = "dodge") +
-  labs(x = "bonus-malus band", y = "per year of exposure", fill = "")
+price_check(priced, "BonusMalus_band")
 ```
 
 This is the picture the model is for. The premium we charge falls only from
-about 390 to 300 across the bonus-malus bands, while the loss cost falls from
-about 870 to 13. The loss ratio is far above 100% in the worst band and a few
-percent in the best one, so the good customers subsidise the bad ones, and
-they are the ones likely to leave for a competitor who prices them better.
-`adequate_change_pct` shows how much the premium of the band should move to
-get the portfolio's overall loss ratio. (The band 13-15 also contains the
-policies with level 0, which we recoded to 13.)
+about 390 to about 300 across the bonus-malus bands, while the loss cost falls
+from about 870 to about 13. The loss ratio is far above 100% in the two worst
+bands and a few percent in the best one, so the good customers subsidise the
+bad ones. `adequate_change_pct` shows how much the premium of the band would have
+to move to get the portfolio's overall loss ratio. It is a way to see the size of
+the gap, not a recommendation: what is "adequate" is a pricing decision. (The band
+13-15 also contains the policies with level 0, which we recoded to 13.)
 
-The same view by the vehicle type:
-
-```{r cell_17}
-price_check(priced, "Veh_type2_merged")
-```
-
-By the vehicle type the loss ratios are much closer to each other (roughly
-65-90%): the current tariff already reflects the vehicle type, but not the
-bonus-malus level. (For the vehicle types with a small exposure, as the
-motorbikes, the numbers are noisy; read them as a hint, not as a conclusion.)
+The column `model_loss_cost` shows what the model gives for the same bands. It
+follows the falling trend, but not perfectly: it is too high in the worst
+band and in the two best ones, and too low in the bands 7-12. One multiplier per
+bonus-malus level is a straight line on the log scale, and the actual curve is
+not quite straight. For this lesson that is good enough; in a real project we
+would look for a better shape.
 
 ### What does this mean?
 
@@ -373,7 +380,7 @@ motorbikes, the numbers are noisy; read them as a hint, not as a conclusion.)
     the tariff also depends on the market, on expenses, on how customers react
     to a price change and on what we know that the data do not.
 -   The model uses a capped target, so the extreme single losses are not in the
-    risk price. In this data the cap removes only about 1% of the total loss, so
+    risk price. In this data the cap removes only about 1.2% of the total loss, so
     we ignore it. With a heavier tail it would have to be added back as a
     separate loading for large losses.
 

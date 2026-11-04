@@ -446,139 +446,29 @@ Results of the batch above (done with the merged `base`-only helpers):
 - Ex1 backup: `Data/fwd_forward_select.rds` built with the cell_05 call; the cell_15 formulas are now written out.
 - `Support/img_L1_penalty_geometry.png` deleted (superseded: the lasso section no longer has the picture).
 
-## L6 Ex2 — FinalModel: todos (todos only, nothing applied yet)
-Scope: `Lessons/Lesson6_alt/Exercises/Lesson6_Ex2_FinalModel.Rmd`. Lines refer to the file as it is now.
-Facts marked (verified) come from read-only checks on `Lessons/Lesson6_alt/Data/dt_engineered.rds` (30,424 rows).
-
-### L6 Ex2 — 1. Starting model (cell_03, lines 34-65)
-- [ ] Pick the starting model by the 2-out-of-3 rule. Run the Ex1 selection once and write down the top 3-4 variables from
-      each method: forward path (`fwd$added`), chart ranking (`step2`, `step3`), lasso (`lasso_order`). Keep a variable
-      if at least two methods agree on it. Use the same base, `Veh_type2_merged`.
-- [ ] Check the current text against that result. Ex2 uses `BonusMalus_adj`, `Time_on_book_cap`, `Sum_insured_log`.
-      Ex1 line 415 says forward selection took the vehicle brand instead of the sum insured. The deviance study (see the
-      Lesson 6 alt section above) also has forward selection choosing `VEH_brand_grp` in place of `Sum_insured_log`. Verify
-      before writing anything.
-- [ ] Fourth variable (`Capacity_band`): if the 2-of-3 rule does not pick it, choose the fourth variable by the same
-      methods (next entry in the ranking or the lasso order) and state that reason in the text. Replace the sentence
-      "we add `Capacity_band` as well, because we want to show how each type of variable is read" (lines 34-37).
-- [ ] Keep the requirement: at least one numeric and one categorical variable in the final model. Already met
-      (`Veh_type2_merged` categorical, `BonusMalus_adj` numeric). Keep the "three numeric and two categorical" count only
-      if the final set still has that shape.
-- [ ] Coordinate with the open Ex1 todo "Hardcode the variables in the cell_15 model comparison", so Ex2 and the Ex1
-      comparison use the same names.
-
-### L6 Ex2 — 2. Validation-deviance and RMSE wording (lines 58-65)
-- [ ] The deviance vs row-level RMSE study is only partly done (forward selection, 8 splits; see the study item above).
-      Chart ranking and lasso were not run with RMSE. Decide whether that extension is needed before replacing "(The
-      grouped RMSE is noisy, as we saw in the last exercise, so we do not use it to decide.)" in lines 63-65.
-- [ ] Until then, do not write any RMSE claim in Ex2. The sentence refers to Ex1's example, which the Ex1 deviance todo
-      (option B) replaces.
-- [ ] Check "the sum insured makes the validation deviance slightly worse, the capacity improves it again" (lines 60-61)
-      against the cell_03 output after item 1 is final. These statements are hardcoded.
-
-### L6 Ex2 — 3. Reference level by exposure, before the final model (cells 04-05, lines 67-95)
-Facts (verified): `Capacity_band` exposure is `<=1000` 811 (about 3% of 25,058), `1001-1300` 1,858, `1301-1600` 4,624,
-`1601-2000` 9,400 (largest), `2001-3000` 6,838, `3000+` 1,527. The current reference `<=1000` is both the first level
-alphabetically and the thinnest band. `Veh_type2_merged` exposure: CAR 19,246, PICKUP 4,319, TRUCK 1,215, MOTORBIKE 280.
-CAR is already the reference.
-- [ ] Remove the F-test (`drop1(final_train, test = "F")`, cell_05) and the "as a whole" sentence. The user does not want it.
-- [ ] Add a short section before "Refit on all the data" that:
-      1. shows the coefficient table with the thin reference (cell_04 already does this);
-      2. releveles `Capacity_band` to the highest-exposure band (`1601-2000`) and shows the coefficient table again;
-      3. explains that each p-value compares one band with the reference, so a thin reference makes the other bands look
-         insignificant even when the difference is real, and that the choice of reference changes what the table says
-         but not the fitted model.
-- [ ] Verify before the text is kept: "none of the bands differed significantly from the thin first band" (lines 73-74,
-      92-93). It is written from memory of an earlier run, not from a checked output.
-- [ ] Verify from the other side: with `1601-2000` as the reference, some bands are significant. If none are, the example
-      does not work and the text must not say it does.
-- [ ] Merge cell_05 and cell_06: both relevel `Capacity_band` (train in cell_05, all_data in cell_06). Keep one relevel
-      step on the data the final model uses.
-- [ ] Line 81 uses `factor(..., ordered = FALSE)` on a column that is not ordered. Check whether the argument does
-      anything and remove it if not.
-
-### L6 Ex2 — 4. Coefficient interpretation (cells 07-08, lines 117-160)
-Answer to the question: no, `exp(B * x)` is not `exp(B) * x`. For one unit the multiplier is `exp(B)`; for `x` units it is
-`exp(B)^x = exp(B * x)`. The multiplier compounds (two levels give `exp(B)^2`, which the text already does with 0.79 x
-0.79). The percentage change per unit is `(exp(B) - 1) * 100 %`, which is about `B * 100 %` only for small `B`. "The same
-percentage at every level" is right because of the log link (the effect is multiplicative), not because of the
-coefficient alone.
-- [ ] Add one sentence and the formula `(exp(B) - 1) * 100 %` next to the "one unit more" bullet (lines 139-144).
-- [ ] Check the pickup example "0.73 means 27% less than a car" (line 137) against the printed coefficient, after item 1.
-- [ ] Log variable (lines 145-147): `2^B` for doubling is correct, since `log(2 * SI) - log(SI) = log(2)`. Add the
-      equivalent for a 10% increase, `1.1^B`, so students see that the multiplier depends on the percentage change.
-- [ ] Check that `Time on book` is for years 1 to 8 (lines 159-160) against the data, not the text.
-
-### L6 Ex2 — 5. Short argument for the log transform
-- [ ] Add 1-2 sentences, either at the end of the Ex1 feature section or at the start of "Reading the coefficients" here.
-      Argument: with a log link, effects are multiplicative, so a variable with a large range (sum insured 1,000 to
-      40,000) gets a constant multiplier per percentage change, not per amount. The log makes the effect linear on the
-      model scale and keeps a few large values from driving the multiplier.
-- [ ] Source the wording from `Support/feature_engineering.Rmd` so it is not repeated. That file has the code
-      (`Sum_insured_log = log(...)`, line 710) but no written justification that I found.
-
-### L6 Ex2 — 6. Rating table (cells 09-12, lines 162-230)
-- [ ] `base_policy` says "a typical one" (line 166). Check its values (BonusMalus 10, Time on book 3, Sum insured 6,000,
-      CAR, 1601-2000) against exposure-weighted medians and modes before keeping "typical". BonusMalus ranges 1-20
-      (verified), so 10 is central; the other values are not checked.
-- [ ] Keep the `Sum_insured` relativity `(value / base)^beta` (cell_10), which is correct for the log variable, and say
-      in one line why (`exp(beta * log(value / base))`).
-- [ ] The category relativities (cell_12) type the reference labels by hand ("Vehicle: CAR (reference)"). Build them from
-      the same code path as the numeric ones, or from `multipliers`, so labels are not typed twice.
-- [ ] Simplify: cells 09-12 can become one helper `relativity_table(model, base_policy)` returning `variable`, `value`,
-      `multiplier`. The `exp(beta * (...))` pattern is currently written four times.
-- [ ] Insurance validity: state that relativities assume no interactions (e.g. bonus-malus effects that differ by vehicle
-      type). One sentence.
-- [ ] Insurance validity: the table is a single rating step. A tariff also needs the base level, rounding and bands for
-      the numeric variables. One sentence, no new code.
-
-### L6 Ex2 — 7. Quote by hand and premium check (cells 13-17, lines 232-364)
-Quote (cell_13):
-- [ ] Replace the hardcoded `beta[["Veh_type2_mergedTRUCK"]]` and `beta[["Capacity_band2001-3000"]]` with a lookup that does
-      not depend on exact spelling (e.g. `grep` on coefficient names, or the `multipliers` table from cell_07). They
-      break if the reference level changes.
-- [ ] Use the same helper as the rating table (item 6) for the quote, so there is one pricing path.
-- [ ] State explicitly that "2 500 cm3" falls in band `2001-3000`.
-- [ ] Keep "2-year customer" consistent with the `Time_on_book` variable name used elsewhere.
-
-"Is the premium we charge adequate?" (cells 14-17):
-- [ ] Lines 301-303, "a GLM with a log link and an intercept is balanced on the total, up to a small difference": probably
-      wrong here. For Tweedie with power 1.5 and a log link, the intercept score is `sum(w * (y - mu) * mu^(1 - p))`, so
-      `sum(fitted) = sum(actual)` holds exactly only for Poisson (p = 1). Verify numerically with item 1's model, then
-      reword to state how close the totals are, without claiming the property.
-- [ ] Zero-premium rows (lines 285-290): 788 of 30,424 rows have `Premium_earned = 0` (verified). The text removes them from
-      both sides. If they carry losses, removing them from the loss side hides losses and understates the loss cost.
-      Decide and state it: (a) keep the removal and call it a data-quality decision, or (b) drop them from the model too.
-- [ ] Capped losses (cell_15, cell_16): the actual loss cost uses the capped `Burning_Cost`. Raw losses are about 1.25%
-      higher (verified: raw/capped ratio 1.0125). Either use `Burning_Cost_raw` for the actual side, or state that the
-      comparison uses the capped target. Lines 375-378 say "about 1%", which should match the figure.
-- [ ] Hardcoded numbers (lines 346-349, 361-364): "falls from about 390 to 300", "loss cost falls from about 870 to 13",
-      "loss ratio far above 100% in the worst band", "roughly 65-90%" by vehicle. None is checked. Replace each with the
-      output of `bm_check` and the vehicle table, or remove it. "870 to 13" looks like a typo or a different unit.
-- [ ] Overall figures: loss ratio is about 77% on all rows (verified: premium 312.6 per year, loss 241.0 per year). Check the
-      same on the `priced` subset (cell_14) before keeping "about 77%".
-- [ ] `adequate_change_pct` (cell_15): the formula `loss_cost / premium / overall_ratio - 1` is the premium change that
-      brings a band to the portfolio loss ratio. Math is right. Add a one-line description, because "adequate" is a
-      judgement, not a fact.
-- [ ] Simplify: move the band cut (lines 328-332) into `price_check()` or a named step, and have cells 16 and 17 use the
-      same summary table instead of building their own.
-- [ ] "they are the ones likely to leave for a competitor" (line 349): not supported by the data. Mark it as a judgement
-      or remove it.
-
-### L6 Ex2 — 8. Other findings (not requested)
-- [ ] Line 107 relevels `Veh_type2_merged` to `CAR`, which is already the alphabetical default, so the line does nothing.
-      Keep it only if it documents the choice, and say so.
-- [ ] `source()` paths are `/cloud/project/...` (lines 26-29). Consistent with other Lesson 6 files; no change, but note it
-      for the homework template.
-- [ ] Line 382 "See `Support/whats_next.md`": the file exists (verified). Check its content still matches the end of this
-      exercise.
-
-### L6 Ex2 — open questions for the user
-1. Starting model: if Ex1's run disagrees with the text, should Ex2 follow the run (rewrite the text), or should Ex1 be
-   changed to fit Ex2?
-2. Zero-premium rows: data errors to remove from the model too, or policies to keep and report?
-3. Premium check: raw or capped losses for "actual"? Or keep the capped target and say so?
-4. Log-transform argument: one sentence in Ex2, or a fuller paragraph in the Ex1 feature section?
+## L6 Ex2 — FinalModel: reviewed and applied
+Scope: `Lessons/Lesson6_alt/Exercises/Lesson6_Ex2_FinalModel.Rmd`. The haiku todos were checked against `Data/dt_engineered.rds`
+(base R, hand-built Tweedie 1.5 log-link GLM; dplyr/statmod/glmnet are not installed locally, so the .Rmd was not knitted).
+User decisions: drop `Capacity_band`, keep the price check on actual capped losses, no `relativity_table()` helper, log argument
+in Ex2 only.
+- [x] Final model = Ex1 chart-ranking and lasso set: `Veh_type2_merged + BonusMalus_adj + Time_on_book_cap + Sum_insured_log`
+      (1 categorical, 3 numeric). Forward selection took `VEH_brand_grp` instead of `Sum_insured_log`; Ex2 says why we take the sum insured.
+      `Capacity_band` was in no Ex1 top 3 (8th in forward selection) and is removed everywhere, with its relevel section, the F-test
+      (`drop1`), and the no-op `ordered = FALSE`.
+- [x] Simplified: cells 07+08 merged, bar chart and by-vehicle table removed, the BonusMalus band cut sits in the chunk that uses it,
+      `plotly` not loaded (not used). Chunks renumbered.
+- [x] Rating formula explained: `exp(B * (x_new - x_base))` for a number, `(S_new / S_base)^B` for the log variable (same formula,
+      simplified), shown side by side with a check chunk. Added `(exp(B) - 1) * 100 %`, `1.1^B`, and the log-transform argument.
+- [x] Fixed claims: "balanced on the total" was wrong for Tweedie 1.5 (model +2.9% on all rows, +1.2% on priced rows); "typical" base
+      BonusMalus 10 -> 11 (exposure-weighted median); cap removes 1.24% of the loss (text: about 1.2%); pickup multiplier is 0.85, not 0.73.
+- [x] Checked and found fine (haiku doubted them): loss cost 866 -> 13 by BonusMalus band (not a typo); loss ratios 224% -> 4%; overall
+      77%; zero-premium rows are 788 rows with 0.25% of the loss, so removing them hides nothing (now printed in the text).
+- [x] Added: one-sentence note that the model follows the BonusMalus pattern only roughly (model 1079/515/247/127/68/27 vs actual
+      866/531/317/174/55/13 per band); validity notes (no interactions, a tariff needs base level, rounding and bands);
+      `adequate_change_pct` described as a gap measure, not a recommendation; the unsupported "likely to leave for a competitor" removed.
+- [ ] Not done / open: Ex1 line ~438-444 could point to Ex2 ("Ex2 continues with the chart-ranking/lasso set"); the chart-ranking and
+      lasso sets were taken from the Ex1 text, not re-run (selection helpers need glmnet/statmod/dplyr, run once in RStudio Cloud);
+      knit Ex2 once in RStudio Cloud to confirm no errors.
 
 ## Lesson 6 quiz visuals and modelling data stability (new)
 - [ ] L6 quiz — generate an illustrative image for each quiz question in L6. The images will probably be shown on
