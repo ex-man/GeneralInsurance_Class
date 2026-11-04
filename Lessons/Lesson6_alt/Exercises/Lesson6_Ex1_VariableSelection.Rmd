@@ -24,7 +24,7 @@ banded, transformed). How it was prepared and why is explained in
 In short, this is what we have. Imagine a stakeholder has asked for the
 vehicle type `Veh_type2_merged` to be in the model. So we start from it - it is
 the base that is in every model - and the selection methods only decide which
-of the other 13 variables (the candidates) get added on top:
+of the other variables in the table (the candidates) get added on top:
 
 | Variable | Type | Adjustment |
 |---|---|---|
@@ -76,7 +76,14 @@ train <- dt[dt$Dataset == "train", ]
 valid <- dt[dt$Dataset == "valid", ]
 
 c(train = nrow(train), valid = nrow(valid))
-candidate_vars
+
+# the variables the methods choose from: all of the table above (a method removes its base from the list itself)
+candidates <- c(
+  "Veh_type2_merged", "BonusMalus_adj", "Time_on_book_cap", "Sum_insured_log", "Capacity_band",
+  "Construct_year_band", "Nr_of_seats_grp", "D_age_adj", "VEH_brand_grp", "D_ZIP_1", "Year",
+  "Customer_Type", "Veh_type1_grp", "VEH_type_grp"
+)
+candidates
 ```
 
 ### How do we compare models? Deviance
@@ -184,7 +191,7 @@ the **validation** data, so that we can look at all the models on the path
 and not only the last one.
 
 ```{r cell_05}
-fwd <- forward_select(train, valid, candidate_vars, base = "Veh_type2_merged")
+fwd <- forward_select(train, valid, candidates, base = "Veh_type2_merged")
 fwd |>
   mutate(across(where(is.numeric), ~ round(.x, 1)))
 ```
@@ -259,7 +266,7 @@ lot of exposure counts more than a level with almost none, as when we read the
 chart by eye.
 
 ```{r cell_08}
-step1 <- rank_by_mismatch(train, candidate_vars, base = "Veh_type2_merged")
+step1 <- rank_by_mismatch(train, candidates, base = "Veh_type2_merged")
 step1$ranking
 ```
 
@@ -278,7 +285,7 @@ fitted line, and its mismatch is several times higher than for any other
 variable. We add it, refit and rank again:
 
 ```{r cell_10}
-step2 <- rank_by_mismatch(train, candidate_vars, base = c("Veh_type2_merged", "BonusMalus_adj"))
+step2 <- rank_by_mismatch(train, candidates, base = c("Veh_type2_merged", "BonusMalus_adj"))
 step2$ranking
 ```
 
@@ -301,7 +308,7 @@ chosen_2 <- step2$ranking$variable[1]
 chosen_2
 
 step3 <- rank_by_mismatch(
-  train, candidate_vars,
+  train, candidates,
   base = c("Veh_type2_merged", "BonusMalus_adj", chosen_2)
 )
 step3$ranking
@@ -370,7 +377,7 @@ variable counts as entered when its first level does).
 which its first coefficient became non-zero.
 
 ```{r cell_13}
-lasso_order <- lasso_entry_order(train, candidate_vars, base = "Veh_type2_merged")
+lasso_order <- lasso_entry_order(train, candidates, base = "Veh_type2_merged")
 lasso_order
 ```
 
@@ -449,3 +456,39 @@ You repeat these three methods in your homework, each from a different
 starting variable: the one your stakeholder wants in the model, so it goes into
 `base`. The vehicle type is not the base there, it is one of the candidates.
 Instructions are in `Homework/my_homework.R`.
+
+```{r cell_16}
+set.seed(456)
+
+students <- c(
+  "Student1",
+  "Student2",
+  "Student3",
+  "Student4",
+  "Student5",
+  "Student6",
+  "Student7",
+  "Student8",
+  "Student9",
+  "Student10",
+  "Student11",
+  "Student12",
+  "Student13",
+  "Student14",
+  "Student15",
+  "Student16",
+  "Student17",
+  "Student18",
+  "Student19",
+  "Student20"
+)
+
+assignments <- paste0("Zadanie", sample(1:8, size = length(students), replace = TRUE))
+assignments <- setNames(assignments, students)
+print(assignments)
+```
+
+# Homework information
+- Deadline is Sunday end of the day (midnight)
+- Submission - NO submission / sending needed, do the homework in your project and teacher will review it directly there
+- Questions - You can still ask questions about homework ([daniel.gabris\@zurich.com](mailto:daniel.gabris@zurich.com){.email})

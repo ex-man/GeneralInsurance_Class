@@ -1,20 +1,10 @@
 # Helpers for the variable selection methods in Lesson 6.
 # Needs: dplyr, statmod, glmnet and the functions rmse_group(), tweedie_deviance() and mismatch_rank() sourced first.
 
-# The candidate predictors (engineered columns, see Support/feature_engineering.Rmd) and the column
-# that is used to draw their "actual vs fitted" chart. A number with many values (the log of the
-# sum insured, the age) is drawn by a banded copy, because a chart by value would be just noise.
-candidate_vars <- c(
-  "BonusMalus_adj", "Time_on_book_cap", "Sum_insured_log", "Capacity_band", "Construct_year_band",
-  "Nr_of_seats_grp", "D_age_adj", "VEH_brand_grp", "D_ZIP_1", "Year", "Customer_Type",
-  "Veh_type1_grp", "VEH_type_grp"
-)
-
-chart_columns <- setNames(candidate_vars, candidate_vars)
-chart_columns[["Sum_insured_log"]] <- "Sum_insured_band"
-chart_columns[["D_age_adj"]] <- "D_age_chart"
-# the vehicle type is the base in the lesson, but it can be a candidate (e.g. in the homework)
-chart_columns[["Veh_type2_merged"]] <- "Veh_type2_merged"
+# The column that draws the "actual vs fitted" chart of a variable: the variable itself, except for these. A number
+# with many values (the log of the sum insured, the age) is drawn by a banded copy, because a chart by value
+# would be just noise. The candidate list is not defined here: the lesson and the homework pass their own.
+chart_column_overrides <- c(Sum_insured_log = "Sum_insured_band", D_age_adj = "D_age_chart")
 
 # Burning_Cost ~ the given terms. No terms means the intercept-only model (one price for everybody).
 model_formula <- function(terms) {
@@ -86,10 +76,14 @@ rank_by_mismatch <- function(train, candidates, base = character(0)) {
   ranked_data$pred <- predict(model, train, type = "response")
 
   not_in_model <- setdiff(candidates, base)
+  chart_columns <- setNames(not_in_model, not_in_model)
+  overridden <- intersect(not_in_model, names(chart_column_overrides))
+  chart_columns[overridden] <- chart_column_overrides[overridden]
+
   list(
     model = model,
     data = ranked_data,
-    ranking = mismatch_rank(ranked_data, "pred", chart_columns[not_in_model])
+    ranking = mismatch_rank(ranked_data, "pred", chart_columns)
   )
 }
 

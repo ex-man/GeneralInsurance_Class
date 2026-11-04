@@ -187,7 +187,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - update every caller: `Exercises/Lesson6_Ex1_VariableSelection.Rmd` cell_03, `Exercises/Lesson6_Ex2_FinalModel.Rmd`
         cell_03 (file open in the IDE), `Homework/my_homework.R` and `Homework/zadanie/hw_zadanie1-8.R` (the homework text
         mentions load_l6_data),
-      - keep `candidate_vars` and `chart_columns` in `Support/selection_helpers.R` (they are not part of the loading),
+      - keep `candidate_vars` and `chart_columns` in `Support/selection_helpers.R` (they are not part of the loading; superseded: `candidate_vars` is now hardcoded in Ex1 and the homework, see "L6 homework"),
       - verify the results are unchanged (same train/valid rows, identical coefficients for one model) before and after.
 - [x] Forward selection intuition image — generate an illustrative picture (or 2-3 variants to choose from) of the
       forward selection idea: start from the base, try every remaining variable, keep the best, repeat. Use
@@ -469,6 +469,21 @@ in Ex2 only.
 - [ ] Not done / open: Ex1 line ~438-444 could point to Ex2 ("Ex2 continues with the chart-ranking/lasso set"); the chart-ranking and
       lasso sets were taken from the Ex1 text, not re-run (selection helpers need glmnet/statmod/dplyr, run once in RStudio Cloud);
       knit Ex2 once in RStudio Cloud to confirm no errors.
+
+## L6 homework: assignment code, setup and template (applied)
+- [x] Assignment code from L5 Ex3 (same `set.seed(456)`, Student1..20, `sample(1:8)`) and the homework info block added at the end of
+      `Lesson6_Ex1_VariableSelection.Rmd` (cell_16). The names are still placeholders: replace them with the real student list.
+- [x] `Homework/my_homework.R`: libraries, `source()` calls, data load and split uncommented; the last 3 lines (`hw_candidates`) removed.
+- [x] Candidate list hardcoded as `candidates` (14 variables, vehicle type first) in Ex1 cell_03 and in `my_homework.R`; same name, same
+      vector, so the homework calls are the lesson calls. Methods remove the base from the list themselves.
+- [x] `Support/selection_helpers.R`: `candidate_vars` and the global `chart_columns` removed. `rank_by_mismatch()` builds the chart
+      column mapping from the candidates it gets, with `chart_column_overrides` (`Sum_insured_log`, `D_age_adj`). Results compared
+      before/after for 9 cases (rank and lasso for 4 bases, forward selection): identical.
+- [x] `hw_zadanie1-8.R` regenerated from the new template. Only `hw_zadanie7.R` (Sum_insured_log) has the extra hint that the
+      coefficient is per unit of the log (`2^B` for doubling, `1.1^B` for +10%).
+- [x] Tested all 8 start variables end to end (glm, forward selection, chart ranking two rounds, lasso) with the new `my_homework.R`
+      setup, and knitted Ex1 with the new chunks: no errors.
+- [ ] Open: step 1 hint for the four categorical start variables (reference level) was not added; the template wording was kept.
 
 ## Lesson 6 quiz visuals and modelling data stability (new)
 - [ ] L6 quiz — generate an illustrative image for each quiz question in L6. The images will probably be shown on

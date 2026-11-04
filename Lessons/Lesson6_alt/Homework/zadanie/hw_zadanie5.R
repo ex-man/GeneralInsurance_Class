@@ -1,25 +1,27 @@
-## Pouzi data 'train' a 'valid' z hodiny (nacitane podla 'my_homework.R').
+## Pouzi data 'train' a 'valid' z hodiny (uz nacitane na zaciatku 'my_homework.R').
 ##
-## Tvoja startovacia premenna je 'VEH_brand'. V datasete upravenom na hodine ju najdes ako 'VEH_brand_grp'
-## (povodna verzia 'VEH_brand' tam stale je, ale pouzivaj 'VEH_brand_grp').
+## Tvoja startovacia premenna je 'VEH_brand'. V datasete s finalnymi upravami ju najdes ako 'VEH_brand_grp'
+## (povodna verzia 'VEH_brand' tam stale je, ale pouzivaj upravenu 'VEH_brand_grp').
 ##
 ## Predstav si, ze zadavatel (stakeholder) vyslovene chce mat tuto premennu v modeli. Preto z nej vychadzame
 ## a vyberove metody len rozhoduju, co sa k nej este prida. V metodach je preto tvoja premenna v argumente 'base'.
-## Typ vozidla ('Veh_type2_merged') tu nie je zaklad, je to obycajny kandidat, ktoreho metody mozu pridat
-## (je v zozname 'hw_candidates' z 'my_homework.R').
+## Je to podobne ako na hodine v Exercise 1, kde bol zakladnou premennou typ vozidla ('Veh_type2_merged').
 
 ## 1. Vytvor glm model 'Burning_Cost ~ VEH_brand_grp'.
-## Interpretuj vysledok (nezabudni, ze exp(koeficient) je nasobok, nie pricitanie).
+## Interpretuj vysledok (nezabudni, ze exp(koeficient) je priemerny nasobok narastu cielovej premennej, nie jej nominalna zmena).
 ## Skus povedat, ci (a preco) vysledok dava zmysel.
 
-## 2. Forward selection: spusti forward_select(train, valid, hw_candidates, base = "VEH_brand_grp") a pozri sa
-## na vyvoj train_dev a valid_dev. Kolko premennych by si pridal a preco?
+## 2. Spusti forward selection podobne ako na hodine, s tym, ze pouzijes `base = "VEH_brand_grp"` (zoznam premennych je `candidates`).
+## Pozri sa na vyvoj training a validation deviance metriky. Kolko premennych by si pridal a preco?
 
-## 3. Poradie podla grafov: pre model z bodu 1 zavolaj rank_by_mismatch(train, hw_candidates, base = "VEH_brand_grp") a pozri si grafy (emb_chart_plotly na $data)
-## prvych par premennych. Pridaj vybranu premennu do 'base' (napr. base = c("<tvoja premenna>", "<pridana>")), zavolaj funkciu znova, a opakuj 2-krat. Ktore premenne si vybral?
+## 3. Spusti a postupne prejdi cez selekciu podla poradia v grafoch, podobne ako na hodine.
+## Pouzi funkciu `rank_by_mismatch` a `base = "VEH_brand_grp"`.
+## Pozri si grafy, pridaj premennu a niekolko razy zopakuj pre prvych par premennych.
+## Vybranu premennu vzdy pridaj do vektora argumentu 'base', napr. `base = c("premenna1", "premenna2")`.
+## Ktore a kolko premennych by si pridal a preco?
 
-## 4. Lasso: spusti lasso_entry_order(train, hw_candidates, base = "VEH_brand_grp").
+## 4. Spusti Lasso selection podobne ako na hodine, pouzi ako doteraz `base = "VEH_brand_grp"`.
 
-## 5. Porovnaj tri vybery (po 3 premenne ku startovacej). Ktore premenne sa objavili vo vsetkych troch,
+## 5. Porovnaj tri vybery (cca 3 premenne ku startovacej). Ktore premenne sa objavili vo vsetkych troch,
 ## ktore len v jednej? Porovnaj modely cez compare_models() na train aj valid datach
 ## a napis kratky komentar, ktoremu vyberu by si dal prednost a preco.
