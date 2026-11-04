@@ -92,7 +92,10 @@ Next to each step a monospace number for the training deviance: 1950, 1620, 1605
 
 ---
 
-## B. The L1 penalty (optional, check against the real coefficient path)
+## B. The L1 penalty (not used in the lesson any more)
+
+The picture was removed from Ex1 when the lasso section was simplified; the file is no longer in `Lesson6_alt/Support/`.
+The prompt stays here in case the geometry is wanted again.
 
 ### `img_L1_penalty_geometry.png`
 

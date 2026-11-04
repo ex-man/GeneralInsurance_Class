@@ -808,12 +808,13 @@ final_forms <- list(
 )
 
 decision_table <- data.frame(
-  form = names(final_forms),
+  form = c("Veh_type2_merged", names(final_forms)),
   type = c(
-    "number", "number", "number (log)", "category", "category", "category", "number",
+    "category", "number", "number", "number (log)", "category", "category", "category", "number",
     "category", "category", "category", "category", "category", "category"
   ),
   adjustment = c(
+    "blank, OTHER, TRACTOR -> CAR",
     "negatives -> 1, odd level 0 -> 13",
     "capped at 8",
     "invalid 0 -> median, log",
@@ -833,7 +834,7 @@ decision_table <- data.frame(
 decision_table |>
   left_join(compare_forms(final_forms, data = train_fe), by = "form") |>
   rename(column = form) |>
-  arrange(desc(cv_gain_k))
+  arrange(desc(coalesce(cv_gain_k, Inf)))
 ```
 
 Reading the table:

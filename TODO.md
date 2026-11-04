@@ -165,7 +165,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       (next to the "Summary of the decisions" table, cell_31) and/or `Exercises/Lesson6_Ex1_VariableSelection.Rmd`
       (students read this, the FE file is "read, do not run"). Ex1 intro currently only says "every variable is already
       prepared". Cover all 13 `candidate_vars`; the content should match `decision_table` so the two do not diverge.
-- [ ] (study done, decision pending - see reply) Deviance vs row-level RMSE for the selections — test whether row-level RMSE (no 5-group aggregation) would make the
+- [x] (study done) Deviance vs row-level RMSE for the selections — test whether row-level RMSE (no 5-group aggregation) would make the
       same decisions as the deviance in the three methods. Leave `Support/feature_engineering.Rmd` as it is.
       - Run each step with both criteria: forward selection path (`forward_select`), chart ranking steps 1-2
         (`fit_and_rank`), lasso entry order. Use several seeds of the 80/20 split (and/or CV folds on train).
@@ -238,7 +238,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
 - [x] Intercept-only baseline in Ex1 model comparison — add "Intercept only" (`Burning_Cost ~ 1`) as the first row of the
       comparison in cell_15, before "Vehicle type". Keep Veh_type2_merged as the first added variable everywhere in the
       material (Ex1, Ex2, FE, homework base), because the homework starting variable is an extra one on top of it.
-- [ ] Ex1 backup RDS — save the output of `forward_select()` (cell_05, the only slow step in Ex1) as an `.rds` in
+- [x] Ex1 backup RDS — save the output of `forward_select()` (cell_05, the only slow step in Ex1) as an `.rds` in
       `Lesson6_alt/Data/` (name TBD, e.g. `fwd_forward_select.rds`), to load if time is short or a student's session crashes. Scope:
       - build it with the same call as cell_05, after the `max_steps` decision, so the file matches the exercise;
       - in Ex1, a `readRDS()` fallback next to cell_05 (e.g. a note "if your session crashed, load this instead");
@@ -246,7 +246,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - regenerate it last, otherwise it goes stale if `max_steps` or base/start changes.
       - note: `dplyr`, `statmod` and `glmnet` are not installed in the local R library (`Rscript` 4.6.1), so the
         build step needs them installed first.
-- [ ] Add `Veh_type2_merged` as a row in the variable tables. It is the base in every model, so it is not a candidate,
+- [x] Add `Veh_type2_merged` as a row in the variable tables. It is the base in every model, so it is not a candidate,
       but students should see its treatment in the final feature engineering next to the other 13.
       - Ex1 intro table (`Exercises/Lesson6_Ex1_VariableSelection.Rmd` lines 27-41): add a first row, e.g.
         `Veh_type2_merged` | category | blank, `OTHER`, `TRACTOR` to `CAR` | the base, in every model. Adjust the
@@ -258,7 +258,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         wording matches the new row, and that the rule is stated the same way in `add_features()` (line 701).
       - Keep the rule consistent everywhere: blank, `OTHER` and `TRACTOR` go to `CAR` (cell_07 and `add_features()`).
       - Do not change the base or the model code; this is documentation only.
-- [ ] Explain the starting variable as a stakeholder requirement, in the Ex1 intro and in the homework text. The concept:
+- [x] Explain the starting variable as a stakeholder requirement, in the Ex1 intro and in the homework text. The concept:
       a stakeholder has asked for a variable to be in the model, so we start from it and the selection methods only decide
       what gets added on top. In Ex1 that variable is `Veh_type2_merged`. In the homework it is a different one for each
       student (their assignment), so `Veh_type2_merged` must not be named as the homework starting variable.
@@ -271,16 +271,16 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         homework calls pass only `start` (no `base`), so as written the homework has no base. Decide and state it in the text.
       - Keep the wording consistent with the new `Veh_type2_merged` row (previous todo) and with the "Intercept only" baseline.
       - Documentation only; no change to the base or the model code.
-- [ ] Remove the `knitr::opts_chunk$set(echo = TRUE)` setup chunk (`cell_01`, `include = FALSE`) from the L6 alt
+- [x] Remove the `knitr::opts_chunk$set(echo = TRUE)` setup chunk (`cell_01`, `include = FALSE`) from the L6 alt
       exercises. It is not needed: knitr's default for `echo` is already `TRUE` (checked with `Rscript`), and the
       chunk is hidden, so students never see it. Check the same line in `Exercises/Lesson6_Ex2_FinalModel.Rmd` line 20
       and remove it there too. Before deleting, check that no other chunk or text refers to the label `cell_01`.
       Do not remove the `knitr::opts_chunk` lines in the other lessons' files in this todo (out of scope).
-- [ ] Remove the sentence "Because of the capped target, RMSE values here are not comparable with the ones from Lesson 5."
+- [x] Remove the sentence "Because of the capped target, RMSE values here are not comparable with the ones from Lesson 5."
       from the Data section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 77-78). After removing it, check that
       the bullet list above it (target capped, engineered predictors) still reads correctly as the end of the section.
       Documentation only.
-- [ ] Rewrite the criterion paragraph in the "How do we compare models? Deviance" section of
+- [x] Rewrite the criterion paragraph in the "How do we compare models? Deviance" section of
       `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 91-99). Replace the "for *choosing between close models*"
       reasoning with a plain statement: we tested both criteria (grouped RMSE and deviance) for the forward selection,
       deviance was more stable, so deviance is the primary criterion for the whole variable selection section. Keep the
@@ -290,18 +290,18 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         "decision pending"). Close that item with the result (which criterion was more stable, over which seeds/folds)
         before this paragraph is published, so the text and the study say the same thing.
       - Documentation only; no change to the code.
-- [ ] Decide the prediction symbol in the formulas of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (deviance section,
+- [x] Decide the prediction symbol in the formulas of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (deviance section,
       line 102 "prediction $\mu$"). Options: keep $\mu$ (the GLM mean, the usual notation for the Tweedie unit deviance),
       or switch to $\hat{y}$ (the usual ML notation). Recommendation to decide on: keep $\mu$ in the Tweedie formula and
       say once that $\mu$ is the model's predicted mean, so the notation matches the distribution; use $\hat{y}$ only if
       the rest of the lesson does. Check every formula in the file (deviance, lasso objective, `$\beta_j$`) and in
       `Support/feature_engineering.Rmd` uses the same choice. Documentation only.
-- [ ] Move all formulas into `$$ ... $$` display blocks in `Exercises/Lesson6_Ex1_VariableSelection.Rmd` so they render
+- [x] Move all formulas into `$$ ... $$` display blocks in `Exercises/Lesson6_Ex1_VariableSelection.Rmd` so they render
       as formulas. Currently the unit deviance is a display block, but the total deviance (`D = sum_i w_i d(y_i, mu_i)`,
       line 109), the deviance explained (line 117) and the lasso objective are written inline or as a separate line.
       Put each formula, including the sums, in a single `$$` block. Check that the text around them still reads correctly.
       Also check `Support/feature_engineering.Rmd` and `Exercises/Lesson6_Ex2_FinalModel.Rmd` for the same pattern. Documentation only.
-- [ ] Justify the deviance criterion in the "How do we compare models? Deviance" section (Ex1, lines 91-99), and record the
+- [x] Justify the deviance criterion in the "How do we compare models? Deviance" section (Ex1, lines 91-99), and record the
       evidence that supports it. Draft reasoning to verify, not yet a finding:
       - RMSE takes the raw gap between actual and predicted, squared, so one large claim (even under the 99.5% cap) can
         dominate the sum; the choice of variable then follows that one claim.
@@ -319,7 +319,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         Record the answers in the study item, then write the comment from those answers.
       - The intro paragraph should state the reason in two or three sentences, in plain language, and point to the study
         item for detail. It should not repeat the full argument. Documentation only.
-- [ ] Add a "chart ranking" lead-in to `Exercises/Lesson6_Ex1_VariableSelection.Rmd` after the intro paragraph at lines
+- [x] Add a "chart ranking" lead-in to `Exercises/Lesson6_Ex1_VariableSelection.Rmd` after the intro paragraph at lines
       215-224 (Method 2), before `rank_by_mismatch()` is called in cell_08. Content, in order:
       1. A quick fit of a model with `Veh_type2_merged` only (the base), as the reference for the charts. This is the
          same model as `base_model` in `Support/feature_engineering.Rmd` cell_08, so say that.
@@ -337,7 +337,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - Also check `Homework/my_homework.R` line 11 (commented-out source of `mismatch_rank.R`) so the homework uses the same
         naming.
       - Documentation and one plot chunk; no change to the helper functions.
-- [ ] Merge `base` and `start` into one `base` argument in the selection helpers (`Support/selection_helpers.R`), and
+- [x] Merge `base` and `start` into one `base` argument in the selection helpers (`Support/selection_helpers.R`), and
       remove `start`. Answer to the question: `base` already accepts a vector. Every use in the helpers is `c(base, ...)` or
       `setdiff(candidates, c(base, start))`, so `base = c("Veh_type2_merged", "BonusMalus_adj")` works today. The two
       arguments differ in only two places:
@@ -360,7 +360,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         after the merge.
       - Keep the penalty choice (0.001 vs 0) as a decision to confirm with the user before implementation, because it
         changes the lasso ranking for the base variables.
-- [ ] Simplify the lasso section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (Method 3, roughly lines 281-361).
+- [x] Simplify the lasso section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (Method 3, roughly lines 281-361).
       - Formulas in `$$ ... $$` blocks: any expression with an operator or more than one symbol goes in its own display
         block, not in prose. That covers the penalised objective, `p_j = 0`, `p_j = 1`, `0.001`, the `|beta_j|` term and
         the `log lambda` axis. Currently these are inline at lines 296-301 and 315-318. A single symbol named in a sentence
@@ -393,7 +393,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
         picture. Trim its wording to match the simplified description.
       - Keep the practical points (lines 331-336) and the caveat (lines 357-361).
       - Documentation only; no change to `lasso_entry_order()` or any helper.
-- [ ] Hardcode the variables in the cell_15 model comparison (`Exercises/Lesson6_Ex1_VariableSelection.Rmd`, lines 385-395)
+- [x] Hardcode the variables in the cell_15 model comparison (`Exercises/Lesson6_Ex1_VariableSelection.Rmd`, lines 385-395)
       instead of building formulas with `reformulate()` and indexing into `fwd$added`, `chosen_2`, `step3$ranking` and
       `lasso_order`. The lesson should show the formula students can read, e.g. `Burning_Cost ~ Veh_type2_merged +
       BonusMalus_adj + ...`, and the selections should be reproducible at this point.
@@ -408,7 +408,7 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - Caveat for the step 1 run: it depends on the `max_steps` decision and the base/start merge. If those change the
         selections, redo step 1 after those todos, and then hardcode the final names.
       - Documentation/code only in this cell; no change to the helpers.
-- [ ] Simplify the "Deviance" section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 123-155: cell_04, the
+- [x] Simplify the "Deviance" section of `Exercises/Lesson6_Ex1_VariableSelection.Rmd` (lines 123-155: cell_04, the
       "BonusMalus gets worse on RMSE" paragraph, cell_04b and the deviance-explained paragraph). Two options:
       - Option A: remove cell_04, cell_04b and their prose. Shorter, but the RMSE example is the only in-lesson evidence
         that grouped RMSE is unstable for choosing models, which the justification todo above relies on. If A is
@@ -426,6 +426,25 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
       - Decision: option B (chosen by the user). It keeps the deviance formula connected to code students run and keeps
         the lesson short. The justification todo above can now cite this section, not the RMSE example.
       - Documentation and one small chunk; no change to the helper or the model code.
+
+Results of the batch above (done with the merged `base`-only helpers):
+- Helpers re-tested after the merge: 11 base cases (none; vehicle type; Time_on_book_cap; vehicle type + BonusMalus_adj; each of
+  the 8 homework variables), all three methods, 144 checks, no errors or warnings. Forward selection and chart ranking are
+  identical to the old design (only the label `(start)` -> `(base)`). The old `start` argument errors now.
+- Lasso needed one change beyond the plan: with a base penalty of 0.001, glmnet's automatic lambda grid starts where the base itself
+  enters and the path stopped after 15-30 of 60 values (the candidates never entered). The helper now builds the grid itself,
+  starting where the first candidate enters (base fitted by a plain GLM and passed as an offset) and going down by a factor of 1000.
+  Entry order for the lesson base (vehicle type) is unchanged at the top (BonusMalus_adj, Sum_insured_log, Time_on_book_cap) but
+  the later steps shift (the grid is different). A base of Capacity_band made an unpenalised glmnet fit fail ("cannot correct
+  step size"), which is why the offset approach is used.
+- Deviance vs row-level RMSE study (scope done: forward selection only, 8 random 80/20 splits, first 5 steps, row-level RMSE on
+  train; chart ranking and lasso were NOT run with RMSE): the deviance chose BonusMalus_adj, VEH_brand_grp, Time_on_book_cap
+  (in the same set, order differed in 1 split) on all 8; the RMSE chose BonusMalus_adj, Sum_insured_log and then a different
+  third variable in nearly every split. On the official validation split the 5 largest squared errors are about 43% of the total
+  squared error, the 5 largest deviance contributions about 12% of the deviance. The paragraph in Ex1 states exactly this.
+  Open: whether this should be extended to the chart-ranking and lasso steps.
+- Ex1 backup: `Data/fwd_forward_select.rds` built with the cell_05 call; the cell_15 formulas are now written out.
+- `Support/img_L1_penalty_geometry.png` deleted (superseded: the lasso section no longer has the picture).
 
 ## Lesson 6 quiz visuals and modelling data stability (new)
 - [ ] L6 quiz — generate an illustrative image for each quiz question in L6. The images will probably be shown on
@@ -456,6 +475,17 @@ Scope: `Lessons/Lesson6_alt/` (Exercises, Support, Homework). Blocks Lesson 6.
 - [ ] Related: write a short skill / rating guide so an automatic AI rater understands the rating criteria for each
       lesson's applicable homework (what a good answer looks like, which errors matter, how to weigh them, and what
       feedback tone to use). Start with L5 homework as the pilot.
+- [ ] Class 2027 idea (untested) — compare MAE with RMSE and deviance as a model-selection criterion in Lesson 6. Why: the
+      Lesson 6 study (forward selection, 8 random splits) showed row-level RMSE is unstable (a few large claims carry about 43%
+      of the squared error on validation), so MAE, which is less dominated by large errors, may be more stable.
+      - Caveat to check first: only about 6% of validation rows have a claim (358 of 6085), and MAE is minimised by the median,
+        which is 0 for this target. MAE may therefore prefer models that predict near zero and may not rank mean models
+        (the GLM predicts the mean) sensibly. It is not the loss the GLM is fitted with, unlike the deviance.
+      - Test: repeat the Lesson 6 study with MAE (row-level, exposure-weighted) added: same variable chosen per step across
+        seeds, validation-path minimum, and agreement with the deviance. Also try MAE on the grouped (5 groups) averages.
+      - Decide whether it is worth mentioning in Ex1 at all; the deviance stays the primary criterion unless MAE clearly
+        agrees with it and is simpler to explain.
+      - Also extend the study to chart ranking and lasso, which were not run with RMSE in 2026.
 
 ## BLOCKING before teaching Lesson 5 — align L5/L6 with corrected Lesson 4 data
 Lesson 4 Ex1 now removes claims whose loss date lies outside the policy's period of cover (37 claims,
