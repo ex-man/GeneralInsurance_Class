@@ -8,10 +8,10 @@
 
 ## Lesson 1
 
-**1. Aky je zakladny rozdiel medzi actuary a underwriter?**
+**1. Aky je zakladny rozdiel medzi aktuarom a underwriterom?**
 
-- A) Obaja pracuju len s datami, lisia sa iba tym, ze actuary ma certifikaciu
-- B) Actuary predava poistne produkty klientom a underwriter vybavuje skody
+- A) Obaja pracuju len s datami, lisia sa iba tym, ze aktuar ma certifikaciu
+- B) Aktuar predava poistne produkty klientom a underwriter vybavuje skody
 - C) Actuary analyzuje data a predpoveda buduce skody, underwriter posudzuje konkretne riziko na zaklade skusenosti a odborneho usudku
 - D) Actuary pocita, kolko kavy sa vypije na porade, a underwriter urcuje, kto ju kupi
 

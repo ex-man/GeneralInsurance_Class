@@ -30,6 +30,11 @@ uv run --no-project python tools/image_generation/generate_images.py [regex] [--
 - `image_prompts_lesson6.md` - prompts for the Lesson 6 Exercise 1 pictures (forward selection in three variants, the L1 vs L2
   penalty geometry); the chosen version of the forward selection picture is `img_F1_forward_minimal.png`. The L1 vs L2
   picture is no longer used in the lesson (the lasso section was simplified and the picture removed).
+- `image_prompts_quiz_l6.md` - prompts for the text-free background pictures of the Lesson 6 quiz (title picture
+  `img_Q00` plus one per question; `Lessons/Lesson6_alt/Support/quiz_L6.md`); the pictures only set the topic and never
+  hint at the correct answer.
+- `render_code_image.py` - draws the R code of quiz question 3 as an image with Pillow (`uv run --no-project --with pillow
+  python tools/image_generation/render_code_image.py`), because image models garble code.
 - `image_prompts_lesson5.md` - prompts for the Lesson 5 Exercise 2 pictures (validation methods, grouped RMSE / lift
   chart), the validation methods picture and the two-step grouped RMSE story (the chosen versions of three complexity levels
   that were tried; the other levels are in git history).
