@@ -205,12 +205,12 @@ fwd <- readRDS("/cloud/project/Data/fwd_forward_select.rds")
 
 ```{r cell_06}
 fwd |>
-  tidyr::pivot_longer(c(train_dev, valid_dev), names_to = "data", values_to = "deviance") |>
-  ggplot(aes(x = step, y = deviance, colour = data)) +
+  tidyr::pivot_longer(c(train_dev, valid_dev, valid_rmse), names_to = "data", values_to = "value") |>
+  ggplot(aes(x = step, y = value, colour = data)) +
   geom_line() +
   geom_point() +
   facet_wrap(~data, scales = "free_y") +
-  labs(x = "number of variables added")
+  labs(x = "number of variables added", y = NULL)
 ```
 
 How to read this:
@@ -225,6 +225,11 @@ How to read this:
     deviance, but do not trust the exact position of the minimum too much - a
     couple of steps with a similar value are practically the same model. The
     shape (a big win at the beginning, then a plateau) is the message.
+-   The **validation RMSE** (grouped, as in Lesson 5) does not show this
+    pattern. It jumps from about 30 in the base model to about 94 after the
+    first variable and then moves between about 80 and 125 without a clear
+    minimum. The section "How do we compare models? Deviance" above explains
+    why we still choose by deviance.
 
 On our data the lowest validation deviance is at the third variable, and
 that is also where the big gains have ended. We continue with the first 3
@@ -382,9 +387,11 @@ lasso_order
 ```
 
 The coefficient path shows the same thing as a picture: every line is one
-coefficient. The x axis is $\log\lambda$, so the penalty gets weaker from right
-to left. The candidates start at zero, and the line that leaves zero first is
-the variable that enters first. The lines of the vehicle type are the
+coefficient. The x axis is $-\log\lambda$ (the minus sign is the default of
+`plot()` for `glmnet`), so read the chart **from left to right**: the penalty
+gets weaker, and the number of non-zero coefficients (the numbers above the
+plot) grows. The candidates start at zero, and the line that leaves zero first
+is the variable that enters first. The lines of the vehicle type are the
 exception: its penalty is tiny, so these coefficients are non-zero from the
 start.
 

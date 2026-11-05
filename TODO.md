@@ -148,6 +148,9 @@ TODO
       vague. Investigate: point it to the specific part of the exercise or to `Homework/homework_hints.md`, or drop
       it. The D_ZIP and Capacity info (truncating, rounding) is now in both the Ex3 Rmd and the homework hints, so the
       hint may not be needed at all.
+- [ ] L5 Homework instructions — add one sentence saying students should give a brief reasoning for why they chose
+      each additional variable, since most do not comment on it. Add it to the homework text (`Homework/` and the
+      zadanie files).
 - [ ] L5 `Homework/homework_hints.md` — add guidance on interpreting GLM coefficients. Most students read them like
       linear regression coefficients, which is wrong with a log link:
       - categorical: each coefficient is a multiplier relative to the baseline level (exp(Beta)), not an additive
@@ -490,6 +493,19 @@ in Ex2 only.
       Slido as the slide background or image while the question is on screen, so keep them illustrative and not
       distracting. Generate them with `tools/image_generation/` (see its README.md) and save the chosen images to the
       L6 Support folder, following the same approach as the Lesson 4 images.
+- [ ] L6 quiz — add one dplyr-related question to the Kahoot quiz (`Support/quiz_L6.md`). Keep the same format
+      (4 answers, one correct, Slovak text, K/T/U/F key row).
+- [ ] L6 quiz Q9 (TRUCK vs CAR, log link) — replace answer B "Priemerná poistná udalosť je o 0,405 dolárov vyššia"
+      with "Riziko je o 59,5 % nižšie" as a second confusing answer. It is a plausible distractor: 1 − 0,405 = 0,595,
+      so it reads the raw coefficient as a multiplier. Update the K/T/U/F key row to match.
+- [ ] L6 quiz Q9 image — generate an image (later, with `tools/image_generation/`) that looks like a raw GLM
+      coefficient output (e.g. an R `summary()` / `coef()` table with Estimate column), so it reinforces that the
+      number is the raw coefficient on the log scale. It should hint toward exp() without showing it.
+      - Categories: use the `Veh_type2_merged` levels from the L6 final dataset (`Data/dt_engineered.rds`), with CAR as
+        the baseline in the intercept row and TRUCK showing `0.405` exactly as in the question. Check the level names
+        in the RDS before generating.
+      - Keep every number in the image aligned with the question text (coefficient 0,405, baseline CAR).
+      - Review the output against the prompt (values, labels, layout) before saving it to `Support/quiz_images/`.
 - [ ] Investigate the instability of the modelling data in L5 and L6. RMSE and grouped RMSE change a lot between
       runs and small data changes, so model comparisons can be misleading. Scope:
       - measure the variability: repeat the train/valid split over several seeds (and k-fold CV) for the L5 Ex3
@@ -594,6 +610,14 @@ Steps (in order):
   from the repo root (it replaces existing labels, keeps chunk options and CRLF/LF line endings).
 - Folding pilot: Lesson4_Ex2_TargetAnalysis.Rmd (heading levels normalised, `#### Background...` sub-sections that
   students can fold with the gutter arrow). If it works in RStudio, roll out to the other Rmd files.
+
+## Lesson 6 naming — after most feasible todos (new)
+- [ ] Once most of the feasible Lesson 6 alt todos are done, rename the two Lesson 6 versions:
+      - `Lessons/Lesson6_alt/` -> Lesson 6 option 1
+      - current (prior) `Lessons/Lesson6/` -> Lesson 6 option 2
+      - Before renaming, grep the repo (README files, the root README, slides, `TODO.md`, `tools/`, and the
+        `/cloud/project/...` paths in the Rmd and R files) for both folder names, and update the references.
+      - Check the Lesson 6 folder-name references in the homework and the `Data/` and `Support/` paths.
 
 DONE
 - Lesson 5 review: Ex1 rewritten (categorical predictors / banding intuition, CAS monograph), Ex2 images
