@@ -611,6 +611,38 @@ Steps (in order):
 - Folding pilot: Lesson4_Ex2_TargetAnalysis.Rmd (heading levels normalised, `#### Background...` sub-sections that
   students can fold with the gutter arrow). If it works in RStudio, roll out to the other Rmd files.
 
+## Repository hygiene — remove student names from git history (new)
+Goal: some branches probably contain student names in their history (commit messages, author/committer fields, file
+contents or file names). Rewrite the history so those names become the generic student names used in Class 2027.
+Constraint: change nothing in the history beyond what is needed to remove the names.
+- [ ] 1. Inventory (read-only): search all branches, tags and remote refs for student names, in commit messages, author
+      and committer fields, file contents and file paths (`git log --all`, `git grep` over every ref). List the names and
+      the commits and paths where they occur. Get the name list from the class records, not from memory.
+- [ ] 2. Choose the mapping: each real name -> the generic name used in Class 2027 (check the 2027 materials for the
+      exact scheme). Write the mapping down outside the repo, so the real names are not stored in the repo afterwards.
+- [ ] 3. Backup, outside the repo, before anything is changed:
+      - `git clone --mirror` of the repo into `C:\Users\DANIEL.GABRIS\Downloads\` (all branches, tags and refs),
+      - `git bundle create` of all refs into the same folder, and a copy of the mapping file,
+      - check both backups (`git bundle verify`, `git -C <mirror> log --all --oneline | wc -l` compared with the source).
+      - the user copies the folder to OneDrive manually. Do not start step 4 until the user confirms the copy is done.
+- [ ] 4. Rewrite the history with `git filter-repo` (not `filter-branch`), using the mapping file (`--replace-text` for
+      contents and `--mailmap` for author/committer names, `--replace-message` for commit messages). Rewrite only the
+      strings in the mapping; do not run other filters, do not drop or reorder commits, and do not change file
+      contents beyond the replacement. Note: rewriting a commit changes the hashes of all its descendants, so every
+      branch that contains a changed commit gets new hashes. That is expected; the content of unchanged commits does not change.
+      Run it on a fresh clone, not on the working copy in this repo.
+- [ ] 5. Verify on the fresh clone before pushing: no student names left in any ref (`git grep` over `--all`, log
+      search), the number of commits per branch matches the backup, and the tree of each branch's tip is identical to
+      the backup apart from the replaced strings (`git diff` against the mirror).
+- [ ] 6. Push to the remote (`origin`, https://github.com/ex-man/GeneralInsurance_Class.git) with `git push --force --all`
+      and `git push --force --tags`. Before this, tell collaborators that their local branches will need a re-clone or a
+      hard reset. Do the force push only after the user confirms the backup and the verification.
+- [ ] 7. After the push: GitHub can still show the old commits through pull request refs, forks and cached pages until
+      they are garbage-collected. Check open PRs and forks, and ask GitHub Support to purge the old objects if the names
+      must not stay reachable. Check that the names no longer appear in the default branch on GitHub.
+- [ ] 8. Afterwards: add a short note to the repo README about the mapping (generic names only, no real names) and
+      keep the mapping file out of the repo.
+
 ## Lesson 6 naming — after most feasible todos (new)
 - [ ] Once most of the feasible Lesson 6 alt todos are done, rename the two Lesson 6 versions:
       - `Lessons/Lesson6_alt/` -> Lesson 6 option 1
